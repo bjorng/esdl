@@ -1,0 +1,60 @@
+<HTML><HEAD><TITLE>ESDL - SDL and OpenGL for Erlang</TITLE></HEAD>
+  <BODY BGCOLOR="#FFFFFF">
+    <h3> ESDL Introduction </h3>
+    <p>
+      ESDL is an api which invokes corresponding functions in the
+      Sdl and Opengl libraries. 
+    </p>
+    
+    <p> Since most of the functions are 1 to 1 mapping to the original
+      libraries, the descriptions (if any) are brief. For detailed 
+      descriptions and manual pages take a look at the 
+      <a href="http://www.libsdl.org">SDL</a> and 
+      <a href="http://www.opengl.org"> Opengl </a> sites which should 
+      be able guide you to the documentation. I have tried to generate link 
+      to the descriptions on net, but may have failed in some cases.
+    </p>
+    
+    <p>
+      With some common sense you should be able to figure out the arguments 
+      and return values to the functions. Arguments in the 'C' libraries that
+      are used as out parameters, are often returned as a tuple with values.      
+      C functions that take pointer to an array as argument takes a list 
+      as argument in erlang (and/or tuple).
+    </p>
+    
+    <p> The thing that differs are of course the memory handling and 
+      memory references, check out the examples.
+    </p>
+    
+    <p> 
+      If you have complaints of non trivial (or errors) arguments or return values,
+      send me an email and I'll try to update the documentation or  (the fast way) 
+      check the source.
+    </p>
+    
+    <h3>SDL commands</h3>
+    <p>
+      <a href="sdl.html">Init and Quit Functions</a> <br>
+      <a href="sdl_video.html">Video Functions</a><br>
+      <a href="sdl_audio.html">Audio Functions</a><br>
+      <a href="sdl_events.html">General Event Functions</a><br>
+      <UL>
+	<a href="sdl_keyboard.html">Keyboard Functions</a><br>
+	<a href="sdl_mouse.html"> Mouse Functions</a><br>
+	<a href="sdl_joystick.html"> Joystick Functions</a><br>
+	<a href="sdl_active.html">Active Events</a><br>
+    </UL>
+    <h3>OpenGL</h3>    
+    <p>
+      Opengl functions that uses pointers requires
+      that you use the memory functions in <a href="sdl_util.html">sdl_util</a> 
+      to handle the memory references.
+
+      <br>
+      <a href="gl.html"> GL Functions</a><br>
+      <a href="glu.html">GLU Functions</a><br>	
+      
+    <h3> Additions</h3>
+    <a href="sdl_util.html">Memory and Utility functions</a> <br>
+</html>

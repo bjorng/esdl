@@ -1,0 +1,873 @@
+/*
+ *  Copyright (c) 2001 Dan Gudmundsson
+ *  See the file "license.terms" for information on usage and redistribution
+ *  of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+ * 
+ *     $Id$
+ */
+/* 
+ * sdl_video functions
+ */
+
+#include <string.h>
+#include <stdlib.h>
+#include "esdl.h"
+
+#ifdef WIN32
+#include <SDL_syswm.h>
+#else
+#include <SDL/SDL_syswm.h>
+#endif
+
+void es_setVideoMode(sdl_data *sd, int len, char* bp) 
+{
+    char* start;
+    int w, h, bpp, type;
+    int sendlen;
+    SDL_Surface *screen;
+    int sptr;
+  
+    w    = get16be(bp);
+    h    = get16be(bp);
+    bpp  = get16be(bp);
+    type = get32be(bp);
+
+    screen = SDL_SetVideoMode(w, h, bpp, type);
+
+    if ((type & SDL_OPENGL) == SDL_OPENGL) {
+      init_glexts(sd);
+    }
+    
+    bp = start = sdl_get_temp_buff(sd, 4);
+    sptr = (unsigned int) screen;
+    put32be(bp, sptr);
+    
+    sendlen = bp - start;
+    sdl_send(sd, sendlen);
+}
+
+void es_videoDriverName(sdl_data *sd, int len, char *buff)
+{
+  char *bp;
+  int sendlen = 0;
+
+  bp = sdl_get_temp_buff(sd, 512);
+  if (SDL_VideoDriverName(bp, 512) != NULL) {
+    sendlen = strlen(bp);
+  }
+  sdl_send(sd, sendlen);
+}
+
+void es_getVideoSurface(sdl_data *sd, int len, char *buff)
+{
+   char *bp, *start;
+   int sendlen;
+   SDL_Surface *ref;
+   bp = start = sdl_get_temp_buff(sd, 4);
+   
+   ref = SDL_GetVideoSurface();
+   put32be(bp, (int) ref);
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_getVideoInfo(sdl_data *sd, int len, char *buff)
+{
+   char *bp, *start;
+   int sendlen;
+   SDL_VideoInfo *vi;
+   bp = start = sdl_get_temp_buff(sd, 9+2*4);
+   (const SDL_VideoInfo *) vi = SDL_GetVideoInfo();
+   if(vi->hw_available)   put8(bp, 1);
+   else                   put8(bp, 0);
+   if(vi->wm_available)   put8(bp, 1);
+   else                   put8(bp, 0);
+   if(vi->blit_hw)        put8(bp, 1);
+   else                   put8(bp, 0);
+   if(vi->blit_hw_CC)     put8(bp, 1);
+   else                   put8(bp, 0);
+   if(vi->blit_hw_A)      put8(bp, 1);
+   else                   put8(bp, 0);
+   if(vi->blit_sw)        put8(bp, 1);
+   else                   put8(bp, 0);
+   if(vi->blit_sw_CC)     put8(bp, 1);
+   else                   put8(bp, 0);
+   if(vi->blit_sw_A)      put8(bp, 1);
+   else                   put8(bp, 0);
+   if(vi->blit_fill)      put8(bp, 1);
+   else                   put8(bp, 0);
+   put32be(bp, vi->video_mem);   
+   put32be(bp, (int) vi->vfmt);   
+   
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_videoModeOK(sdl_data *sd, int len, char *buff)
+{   
+   char *bp, *start;
+   int w, h, bpp, type;
+   int sendlen;
+   int res;
+  
+   bp = buff;
+  
+   w    = get16be(bp);
+   h    = get16be(bp);
+   bpp  = get16be(bp);
+   type = get32be(bp);
+  
+   res = SDL_VideoModeOK(w,h,bpp,type);
+    
+   bp = start = sdl_get_temp_buff(sd, 1);
+   put8(bp, res);
+    
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_listModes(sdl_data *sd, int len, char *buff)
+{
+   char *bp, *start;
+   int sendlen, i;
+   Uint32 flags;
+   SDL_PixelFormat *pfp, pf;
+   SDL_Rect ** res; 
+
+   bp = buff;   
+   flags = get32be(bp);
+   switch(get8(bp)) {
+   case 0:
+      pfp = (SDL_PixelFormat *) get32be(bp);
+      break;
+   case 1:
+      pf.palette = (SDL_Palette *) get32be(bp);
+      pf.BitsPerPixel = get8(bp);
+      pf.BytesPerPixel = get8(bp);
+      pf.Rloss = get8(bp);
+      pf.Gloss = get8(bp);
+      pf.Bloss = get8(bp);
+      pf.Aloss = get8(bp);   
+      pf.Rshift = get8(bp);  
+      pf.Gshift = get8(bp);
+      pf.Bshift = get8(bp);  
+      pf.Ashift = get8(bp);
+      pf.Rmask  = get32be(bp);
+      pf.Gmask  = get32be(bp);
+      pf.Bmask  = get32be(bp);
+      pf.Amask  = get32be(bp);  
+      pf.colorkey= get32be(bp);
+      pf.alpha= get8(bp);
+      pfp = &pf;
+   default:
+      error();
+   }
+
+   bp = start = sdl_get_temp_buff(sd, 128*2*4+1);
+   res = SDL_ListModes(pfp, flags);
+   switch((int)res) {
+   case 0: /* NULL */
+      put8(bp, 0);      
+      break;
+   case -1:
+      put8(bp,-1);
+      break;
+   default: 
+      put8(bp,0); /* Wasted byte :- )*/
+      for(i=0; res[i]; i++) {
+	 put16be(bp, res[i]->x); 
+	 put16be(bp, res[i]->y); 
+	 put16be(bp, res[i]->w); 
+	 put16be(bp, res[i]->h); 	 
+      }
+   }
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_flip(sdl_data *sd, int len, char *buff)
+{
+   char *bp, *start;
+   int sendlen, res;
+   SDL_Surface *ref;
+   bp = buff;
+
+   ref = (SDL_Surface *) get32be(bp);   
+   res = SDL_Flip(ref);
+   start = bp = sdl_get_temp_buff(sd, 1);
+   put8(bp, res);
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_setColors(sdl_data *sd, int len, char *buff)
+{
+   char *bp, *start;
+   int sendlen, res = 1, first, length, i, tot =0;
+   SDL_Surface *ref;
+   SDL_Color colors[256];
+   bp = buff;
+   
+   ref = (SDL_Surface *) get32be(bp);
+   first  = get32be(bp);  
+   length = get32be(bp);  
+   do {
+      for(i = 0; i < length && i < 256; i++) {
+	 colors[i].r = get8(bp);
+	 colors[i].b = get8(bp);
+	 colors[i].g = get8(bp);
+      };   
+      res &= SDL_SetColors(ref, colors, first, i);
+      tot += i;
+      first += i;      
+   } while(tot < length);
+
+   start = bp = sdl_get_temp_buff(sd, 1);
+   put8(bp, res);
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_mapRGB(sdl_data *sd, int len, char *buff)
+{
+   char *bp, *start;  
+   int sendlen;
+   SDL_Surface * sptr;
+   Uint32 res;
+   Uint8 r,g,b;
+   
+   bp = buff;
+   sptr = (SDL_Surface *) get32be(bp);
+   r = get8(bp);
+   g = get8(bp);
+   b = get8(bp);
+   if(sptr == NULL  || sptr->format == NULL) 
+      error();
+   res = SDL_MapRGB(sptr->format, r,g,b);
+   
+   bp = start = sdl_get_temp_buff(sd, 4);
+   put32be(bp, res);
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_getRGB(sdl_data *sd, int len, char *buff)
+{
+   error();      
+}
+
+void es_blitSurface(sdl_data *sd, int len, char * buff)
+{
+   char *bp, *start;  
+   int sendlen;
+   char type, res;
+   SDL_Surface *sptr, *dptr;   
+   SDL_Rect s, d, *src, *dest;
+   
+   bp = buff;
+   sptr = (SDL_Surface *) get32be(bp);
+   dptr = (SDL_Surface *) get32be(bp);
+   src = &s;
+   dest = &d;
+
+   switch get8(bp) {
+   case 0:
+      src = NULL;
+      dest= NULL;
+      type = 0;
+      break;
+   case 1:
+      src->x = get16be(bp);
+      src->y = get16be(bp);
+      src->w = get16be(bp);
+      src->h = get16be(bp);     
+      dest = NULL;
+      type = 1;
+      break;
+   case 2:
+      dest->x = get16be(bp);
+      dest->y = get16be(bp);
+      dest->w = get16be(bp);
+      dest->h = get16be(bp);
+      src = NULL;
+      type = 2;
+      break;
+   case 3:
+      src->x  = get16be(bp);
+      src->y  = get16be(bp);
+      src->w  = get16be(bp);
+      src->h  = get16be(bp);
+      dest->x = get16be(bp);
+      dest->y = get16be(bp);
+      dest->w = get16be(bp);
+      dest->h = get16be(bp);
+      type = 3;
+      break;
+   default:
+      error();
+   };
+   
+   res = SDL_BlitSurface(sptr, src, dptr, dest);
+   bp = start = sdl_get_temp_buff(sd, 9*2);
+   put8(bp, res);
+   put8(bp, type);
+   switch(type) {
+   case 0:
+      break;
+   case 1:
+      put16be(bp, src->x);
+      put16be(bp, src->y);
+      put16be(bp, src->w);
+      put16be(bp, src->h);     
+      break;
+   case 2:
+      put16be(bp, dest->x);
+      put16be(bp, dest->y);
+      put16be(bp, dest->w);
+      put16be(bp, dest->h);
+      break;
+   case 3:
+      put16be(bp, src->x);
+      put16be(bp, src->y);
+      put16be(bp, src->w);
+      put16be(bp, src->h);
+      put16be(bp, dest->x);
+      put16be(bp, dest->y);
+      put16be(bp, dest->w);
+      put16be(bp, dest->h);
+      break;
+   default:
+      error();
+   };
+   
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void print_rect(SDL_Rect * r)
+{
+   if(r)
+      fprintf(stderr, "x %d y %d w %d h %d \n\r", 
+              r->x, r->y, r->w, r->h);
+   else
+      fprintf(stderr, "Rect is null\n\r");     
+}
+
+void es_fillRect(sdl_data *sd, int len, char * buff)
+{
+   char *bp, *start;  
+   int sendlen;
+   char res;
+   SDL_Surface *sptr;
+   SDL_Rect s, *src;
+   Uint32 color;
+
+   src = &s;
+   bp = buff;
+   sptr = (SDL_Surface *) get32be(bp);
+   color = get32be(bp);
+   
+   if(get8(bp) == 0) {
+      src = NULL;
+   } else {
+      src->x = get16be(bp);
+      src->y = get16be(bp);
+      src->w = get16be(bp);
+      src->h = get16be(bp);
+   }
+   res = SDL_FillRect(sptr, src, color);
+   
+   bp = start = sdl_get_temp_buff(sd, 1);
+   put8(bp, res);
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+
+void es_updateRects(sdl_data *sd, int len, char * buff)
+{
+   char *bp;  
+   int length, i, all;
+   SDL_Surface *sptr;
+   SDL_Rect s[64], *sr;
+   
+   bp = buff;
+   sptr = (SDL_Surface *) get32be(bp);
+   length  = get16be(bp);
+
+   all = 0;
+   while(all < length) {
+      sr = s;
+      for(i = 0; i < 64 && all < length; i++, all++) {
+         sr->x = get16be(bp);
+         sr->y = get16be(bp);
+         sr->w = get16be(bp);
+         sr->h = get16be(bp);
+         sr++;
+      }
+      SDL_UpdateRects(sptr, i, s);
+   }
+}
+
+void es_setColorKey(sdl_data *sd, int len, char * buff)
+{
+   char *bp, *start;  
+   int sendlen;
+   SDL_Surface * sptr;
+   Uint32 flag, key;
+   int res;
+   
+   bp = buff;
+   sptr = (SDL_Surface *) get32be(bp);
+   if(sptr == NULL) 
+      error();
+   flag = get32be(bp);
+   key  = get32be(bp);
+    
+   res  = SDL_SetColorKey(sptr, flag, key);
+    
+   bp = start = sdl_get_temp_buff(sd, 1);
+   put8(bp, res);    
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_displayFormat(sdl_data *sd, int len, char * buff)
+{
+   char *bp, *start;  
+   int sendlen;
+   SDL_Surface * sptr, *new;
+    
+   bp = buff;
+   sptr = (SDL_Surface *) get32be(bp);
+   if(sptr == NULL) 
+      error();            
+   new = SDL_DisplayFormat(sptr);
+   bp = start = sdl_get_temp_buff(sd, 4);
+   put32be(bp, (int) new);
+    
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_createRGBSurface(sdl_data *sd, int len, char *buff){
+   char *bp, *start;  
+   int sendlen;
+   SDL_Surface * sptr;
+   int width, height, depth;
+   Uint32 flags, rmask, gmask, bmask, amask;
+    
+   bp = buff;
+   flags  = get32be(bp);
+   width  = get16be(bp);
+   height = get16be(bp);
+   depth  = get8(bp); 
+   rmask  = get32be(bp);
+   gmask  = get32be(bp);
+   bmask  = get32be(bp);
+   amask  = get16be(bp);
+   
+   sptr = SDL_CreateRGBSurface(flags, width, height, depth, 
+			       rmask, gmask, bmask, amask);
+   bp = start = sdl_get_temp_buff(sd, 4);
+   put32be(bp, (int) sptr);
+    
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_createRGBSurfaceFrom(sdl_data *sd, int len, char *buff){
+   char *bp, *start;  
+   int sendlen;
+   SDL_Surface * sptr;
+   void * pixels;
+   int width, height, depth, pitch, size;
+   Uint32 rmask, gmask, bmask, amask;
+    
+   bp = buff;
+   width  = get16be(bp);
+   height = get16be(bp);
+   depth  = get8(bp); 
+   pitch  = get16be(bp);
+   rmask  = get32be(bp);
+   gmask  = get32be(bp);
+   bmask  = get32be(bp);
+   amask  = get16be(bp);
+   size   = get32be(bp);
+   
+   if(size == -1) 
+   {
+      pixels = (void *) get32be(bp);
+   }
+   else {
+      /* Get Pixels */
+      if((pixels = malloc(size)) == NULL){
+	 bp = start = sdl_get_temp_buff(sd, 4);
+	 sptr = NULL;
+	 put32be(bp, (int) sptr);	   
+	 sendlen = bp - start;
+	 sdl_send(sd, sendlen);
+	 return;
+      }
+      memcpy(pixels, (void *) bp, size);
+   }; 
+   
+   sptr = SDL_CreateRGBSurfaceFrom(pixels, width, height, depth, pitch,
+				   rmask, gmask, bmask, amask);
+   bp = start = sdl_get_temp_buff(sd, 4);
+   put32be(bp, (int) sptr);
+   
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_freeSurface(sdl_data *sd, int len, char * buff)
+{
+    char *bp;  
+    SDL_Surface * sptr;
+    
+    bp = buff;
+    sptr = (SDL_Surface *) get32be(bp);
+    if(sptr == NULL) 
+	error();            
+    SDL_FreeSurface(sptr);
+}
+
+void es_lockSurface(sdl_data *sd, int len, char * buff)
+{
+   char *bp, *start;  
+   SDL_Surface * sptr;
+   int sendlen, res;
+   
+   bp = buff;
+   sptr = (SDL_Surface *) get32be(bp);
+   if(sptr == NULL) 
+      error();             
+   res = SDL_LockSurface(sptr);
+   bp = start = sdl_get_temp_buff(sd, 1);
+   put8(bp, res);
+   
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_unlockSurface(sdl_data *sd, int len, char * buff)
+{
+   char *bp;  
+   SDL_Surface * sptr;
+   
+   bp = buff;
+   sptr = (SDL_Surface *) get32be(bp);
+   SDL_UnlockSurface(sptr);
+}
+
+void es_loadBMP(sdl_data *sd, int len, char* bp)
+{
+   char *start;
+   SDL_Surface *bmpSurface;
+   int sendlen;
+
+   bmpSurface = SDL_LoadBMP(bp);    
+   bp = start = sdl_get_temp_buff(sd, 4);
+   put32be(bp, (int) bmpSurface); 
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_saveBMP(sdl_data *sd, int len, char* bp)
+{
+   char *start;
+   SDL_Surface *sptr;
+   int sendlen, res;
+
+   sptr = (SDL_Surface *) get32be(bp);
+   res = SDL_SaveBMP(sptr, bp);    
+   bp = start = sdl_get_temp_buff(sd, 1);
+   put8(bp, res); 
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_setAlpha(sdl_data *sd, int len, char *buff)
+{
+   char *bp, *start;
+   SDL_Surface *sptr;
+   int sendlen, res;
+   Uint32 flag, alpha;
+   bp = buff;   
+   sptr = (SDL_Surface *) get32be(bp);
+   flag =  get32be(bp);
+   alpha = get32be(bp);
+   res = SDL_SetAlpha(sptr, flag, alpha);
+   bp = start = sdl_get_temp_buff(sd, 4);
+   put32be(bp, res); 
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_setClipping(sdl_data *sd, int len, char *buff)
+{
+   char *bp;
+   SDL_Surface *sptr;
+   int top, left, bottom, right;
+   bp = buff;   
+   sptr = (SDL_Surface *) get32be(bp);
+   top =  get32be(bp);
+   left = get32be(bp); 
+   bottom =  get32be(bp);
+   right = get32be(bp); 
+   
+   /*   SDL_SetClipping(sptr, top, left, bottom, right);  Disappeared ?? */
+   error();
+}
+
+void es_setGamma(sdl_data *sd, int len, char *bp)
+{
+   char *start;
+   int sendlen, res;
+   float red, green, blue;
+
+   red   = * (float *) bp; bp += sizeof(float);
+   green = * (float *) bp; bp += sizeof(float);
+   blue  = * (float *) bp; bp += sizeof(float);
+   res = SDL_SetGamma(red, green, blue);
+   bp = start = sdl_get_temp_buff(sd, 4);
+   * (float *) bp = res;
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_setGammaRamp(sdl_data *sd, int len, char * buff) 
+{
+   char *bp, *start;
+   int sendlen, res;
+   Uint16 *red,*green,*blue;
+   bp = buff;   
+   red   = (Uint16 *) bp; bp += 256*sizeof(Uint16);
+   green = (Uint16 *) bp; bp += 256*sizeof(Uint16);
+   blue  = (Uint16 *) bp; bp += 256*sizeof(Uint16);
+   res = SDL_SetGammaRamp(red,green,blue);
+   bp = start = sdl_get_temp_buff(sd, 4);
+   put32be(bp, res); 
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_getGammaRamp(sdl_data *sd, int len, char * buff)
+{
+   char *bp, *start;
+   int sendlen, res, i;
+   Uint16 red[256], green[256],blue[256];
+   res = SDL_GetGammaRamp(red,green,blue);
+   bp = start = sdl_getbuff(sd, 4 + 256*2*3);
+   put32be(bp, res); 
+   for(i=0; i<256; i++) {
+      put16be(bp, red[i]);
+   }
+   for(i=0; i<256; i++) {
+      put16be(bp, green[i]);
+   }
+   for(i=0; i<256; i++) {
+      put16be(bp, blue[i]);
+   }
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_wm_setCaption(sdl_data *sd, int len, char *bp) 
+{ 
+  char* title;
+  char* icon;
+
+  title = bp;
+  icon = title + strlen(title) + 1;
+   
+  SDL_WM_SetCaption(title, icon);      
+}
+
+void es_wm_getCaption(sdl_data *sd, int len, char *buff) 
+{
+   char * title, *icon, *bp, *start;
+   int i, titlelen, iconlen, sendlen;
+   
+   SDL_WM_GetCaption(&title, &icon);
+   for(titlelen = 0; title[titlelen] != '\0'; titlelen++);
+   for(iconlen = 0; icon[iconlen] != '\0'; iconlen++);
+   
+   bp = start = sdl_get_temp_buff(sd, 4+titlelen+iconlen);
+   put16be(bp, titlelen);
+   put16be(bp, iconlen);
+   for(i = 0; i < titlelen; i++)
+      put8(bp, title[i]);
+   for(i = 0; i < iconlen; i++)
+      put8(bp, icon[i]);   
+   
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_wm_setIcon(sdl_data *sd, int len, char *buff) 
+{
+   char *bp;
+   SDL_Surface *sptr;
+   Uint8 mask[64*64];
+   Uint16 size;
+   int i;
+
+   bp = buff;   
+   sptr = (SDL_Surface *) get32be(bp);
+   size  =  get16be(bp);
+   if(size > 0 && size < 64*64) {      
+      for(i=0; i < size; i++) 
+	 mask[i] = get8(bp);
+      SDL_WM_SetIcon(sptr, mask);
+   } else {
+      SDL_WM_SetIcon(sptr, NULL);
+   }
+}
+
+void es_wm_iconifyWindow(sdl_data *sd, int len, char *buff) 
+{
+   SDL_WM_IconifyWindow();     
+}
+
+void es_wm_toggleFullScreen(sdl_data *sd, int len, char *buff) 
+{
+   char *bp, *start;
+   SDL_Surface *sptr;
+   int res, sendlen;
+  
+   bp = buff;   
+   sptr = (SDL_Surface *) get32be(bp);
+   res = SDL_WM_ToggleFullScreen(sptr);
+   bp = start = sdl_get_temp_buff(sd, 1);
+   
+   put8(bp, res); 
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+
+void es_wm_grabInput(sdl_data *sd, int len, char *bp) 
+{
+  char *start;
+  SDL_GrabMode mode;
+  int sendlen;
+
+  mode = (SDL_GrabMode) *bp;
+  mode = SDL_WM_GrabInput(mode);
+  bp = start = sdl_get_temp_buff(sd, 1);
+  *bp++ = mode;
+  sendlen = bp - start;
+  sdl_send(sd, sendlen);
+}
+
+void es_wm_getInfo(sdl_data *sd, int len, char *buff) 
+{
+   char *bp, *start;
+   SDL_SysWMinfo info;
+   int sendlen;
+
+   bp = buff;   
+   SDL_VERSION(&info.version);
+   SDL_GetWMInfo(&info);
+   bp = start = sdl_get_temp_buff(sd, 7);
+/*    fprintf(stderr, "es_wm_getInfo %d %d %d %d %d \r\n",  */
+/* 	   (unsigned int *) &info, (unsigned int*) &info.version, */
+/* 	   info.version.major, */
+/* 	   info.version.minor, */
+/* 	   info.version.patch); */
+
+   put8(bp, info.version.major);
+   put8(bp, info.version.minor);
+   put8(bp, info.version.patch);
+#ifdef WIN32
+   if(sizeof(info.window) == 4)
+      put32be(bp, (unsigned int) info.window);
+   else
+      put32be(bp, 0);
+#else
+   put32be(bp, 0);
+#endif
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_wm_isMaximized(sdl_data *sd, int len, char *buff)
+{
+     int sendlen;
+     char *bp, *start;
+     int s;
+     
+#ifdef _WIN32
+     {
+	SDL_SysWMinfo info;
+	
+	SDL_VERSION(&info.version);
+	SDL_GetWMInfo(&info);     
+	s = IsZoomed(info.window);
+     }
+#else
+     {  /* Workaround for missing functions, window manager dep functions */
+/* 	SDL_Surface *screen; */
+/* 	SDL_Rect **modes; */
+	
+ 	s = 0; 
+/* 	screen = SDL_GetVideoSurface();		    */
+	/* Get available fullscreen modes, I think it gives the max resolution */
+/* 	modes = SDL_ListModes(screen->format, screen->flags | SDL_FULLSCREEN);  */
+	/* Check is there are any modes available */
+/* 	if(modes == (SDL_Rect **)0  || modes == (SDL_Rect **)-1) { */
+/* 	   s = 0;   */  /* We don't know ?? */
+/* 	}  */
+/* 	else { */
+/* 	   if ( screen->w >= modes[0]->w && screen->h >= modes[0]->h)  */
+/* 	      s = 1; */
+/* 	   else */
+/* 	      s = 0; */
+/* 	} */
+     }
+#endif
+
+     start = bp = sdl_get_temp_buff(sd, 1);
+     put8(bp, s);
+     sendlen = bp - start;
+     sdl_send(sd, sendlen);
+}
+
+void es_gl_setAttribute(sdl_data *sd, int len, char *buff)
+{
+    char *bp;
+    int attr, val;
+    bp = buff;
+    attr = get16be(bp);
+    val = get32be(bp);
+    SDL_GL_SetAttribute(attr, val);
+}
+
+void es_gl_getAttribute(sdl_data *sd, int len, char *buff)
+{
+    char *bp, *start;
+    int attr, val, sendlen;
+    bp = buff;
+    attr = get16be(bp);
+    SDL_GL_GetAttribute(attr, &val);
+    bp = start = sdl_get_temp_buff(sd, 4);
+    put32be(bp, val);
+    sendlen = bp - start;
+    sdl_send(sd, sendlen);
+}
+
+void es_gl_swapBuffers(sdl_data *sd, int len, char *buff)
+{   
+   char *bp, *start;
+   int sendlen;
+   Uint32 ts;
+
+   SDL_GL_SwapBuffers();
+   bp = start = sdl_get_temp_buff(sd, 4);
+   ts = SDL_GetTicks();
+   put32be(bp, ts);
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}

@@ -1,0 +1,97 @@
+# -*- makefile -*-
+#  Copyright (c) 2001 Dan Gudmundsson
+#  See the file "license.terms" for information on usage and redistribution
+#  of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+# 
+#     $Id$
+#
+#  MacOSX needs some attention
+#  this first version provided by Håkan Stenholm
+#
+#  ... gracefully ruined by David Wallin [david@wallin.cx]
+
+
+CC = cc
+
+CFLAGS	= -g -O2 -Wall -D_THREAD_SAFE -D_OSX_COCOA -F$(HOME)/Library/Frameworks $(ERLINC)
+
+LDFLAGS = -F$(HOME)/Library/Frameworks -framework OpenGL -framework SDL -framework OpenGL -framework AGL -framework IOKit -framework Cocoa -L. -lsdlmain
+
+TARGETDIR = ../priv
+
+## The driver part needs erlang includes
+ERL_DIR := $(shell echo 'io:format("~s~n",[code:root_dir()]),halt().' | erl | sed 's,^[0-9]*> *,,g' | tail +2)
+ERLINC = -I$(ERL_DIR)/usr/include
+
+
+# Files
+
+COMMON	=	esdl_wrapper esdl_gen esdl_spec esdl_util \
+		esdl_video esdl_events esdl_audio \
+		esdl_gl esdl_glu esdl_glext
+
+COMMON_OBJ	= $(COMMON:%=%.o)
+
+# Targets
+
+#target: libsdlmain.a $(TARGETDIR)/sdlwrapper $(TARGETDIR)/sdl_driver.so
+target:  $(TARGETDIR)/sdl_driver.so
+
+
+clean:  
+	rm -f $(COMMON_OBJ) 
+	rm -f ../priv/*.so ../priv/sdlwrapper *.o libsdlmain.a
+	rm -f *~ erl_crash.dump
+
+##
+##
+
+%.o:	%.c
+	$(CC) -c $(CFLAGS) $<
+
+%.o:	%.m
+	$(CC) -c -I$(HOME)/Library/Frameworks/SDL.framework/Headers $(CFLAGS) $<
+
+
+#esdl_main.o :	esdl_main.c
+#	$(CC) -c -ObjC $(CFLAGS) $(ERLINC) $<
+
+
+esdl_driver.o :	esdl_driver.c
+	$(CC) -c -ObjC $(CFLAGS) $(ERLINC) $<
+
+libsdlmain.a	: SDLMain.o
+	ar cru libsdlmain.a SDLMain.o
+	ranlib libsdlmain.a
+
+
+##
+## sdlwrapper
+
+#$(TARGETDIR)/sdlwrapper: esdl_main.o esdl_stream.o $(COMMON_OBJ) 
+#	$(CC) $< esdl_stream.o $(COMMON_OBJ) $(LDFLAGS) -o $@
+
+##
+## sdl_driver.so
+
+$(TARGETDIR)/sdl_driver.so: esdl_driver.o $(COMMON_OBJ)
+	$(CC) $< $(COMMON_OBJ) $(LDFLAGS) -bundle -flat_namespace -undefined suppress -o $@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
