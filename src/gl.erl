@@ -5870,3 +5870,167 @@ stencilOpSeparateATI(Face, Sfail, Dpfail, Dppass) ->
 stencilFuncSeparateATI(Frontfunc, Backfunc, Ref, Mask) -> 
  cast(?glStencilFuncSeparateATI, <<Frontfunc:32/?UN, Backfunc:32/?UN, Ref:32/?SN, Mask:32/?UN>>).
 
+%% Func:    isRenderbufferEXT 
+%% Args:    Renderbuffer
+%% Returns: ?GL_BYTE
+%% C-API func: GLboolean glIsRenderbufferEXT(GLuint renderbuffer)
+isRenderbufferEXT(Renderbuffer) -> 
+ Bin = call(?glIsRenderbufferEXT, <<Renderbuffer:32/?UN>>), 
+ case Bin of 
+	<<Ret:8/unsigned>> -> 
+   Ret /= ?GL_FALSE;
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    bindRenderbufferEXT 
+%% Args:    Target, Renderbuffer
+%% Returns: ok
+%% C-API func: void glBindRenderbufferEXT(GLenum target, GLuint renderbuffer)
+bindRenderbufferEXT(Target, Renderbuffer) -> 
+ cast(?glBindRenderbufferEXT, <<Target:32/?UN, Renderbuffer:32/?UN>>).
+
+%% Func:    deleteRenderbuffersEXT 
+%% Args:    N, <<[Renderbuffers]>>
+%% Returns: ok
+%% C-API func: void glDeleteRenderbuffersEXT(GLsizei n,  const GLuint * renderbuffers)
+deleteRenderbuffersEXT(N, Renderbuffers) -> 
+ NewRenderbuffers = if
+	is_list(Renderbuffers) ; is_tuple(Renderbuffers) -> term2bin(Renderbuffers, N, ?GL_UNSIGNED_INT);
+	is_binary(Renderbuffers) -> Renderbuffers;
+	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Renderbuffers})
+ end, 
+ cast(?glDeleteRenderbuffersEXT, [<<N:32/?SN>>,NewRenderbuffers]).
+
+%% Func:    genRenderbuffersEXT 
+%% Args:    N
+%% Returns: [Renderbuffers]
+%% C-API func: void glGenRenderbuffersEXT(GLsizei n, GLuint * renderbuffers)
+genRenderbuffersEXT(N) -> 
+ Bin = call(?glGenRenderbuffersEXT, <<N:32/?SN>>), 
+ case Bin of 
+	<<Renderbuffers:N/binary-unit:?GL_UNSIGNED_INT_SIZE>> -> 
+	 bin2list(N, ?GL_UNSIGNED_INT, Renderbuffers);
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    renderbufferStorageEXT 
+%% Args:    Target, Internalformat, Width, Height
+%% Returns: ok
+%% C-API func: void glRenderbufferStorageEXT(GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
+renderbufferStorageEXT(Target, Internalformat, Width, Height) -> 
+ cast(?glRenderbufferStorageEXT, <<Target:32/?UN, Internalformat:32/?UN, Width:32/?SN, Height:32/?SN>>).
+
+%% Func:    getRenderbufferParameterivEXT 
+%% Args:    Target, Pname
+%% Returns: [Params]
+%% C-API func: void glGetRenderbufferParameterivEXT(GLenum target, GLenum pname, GLint * params)
+getRenderbufferParameterivEXT(Target, Pname) -> 
+ Bin = call(?glGetRenderbufferParameterivEXT, <<Target:32/?UN, Pname:32/?UN>>), 
+ case Bin of 
+	<<Params:32/?SN>> -> 
+	 Params;
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    isFramebufferEXT 
+%% Args:    Framebuffer
+%% Returns: ?GL_BYTE
+%% C-API func: GLboolean glIsFramebufferEXT(GLuint framebuffer)
+isFramebufferEXT(Framebuffer) -> 
+ Bin = call(?glIsFramebufferEXT, <<Framebuffer:32/?UN>>), 
+ case Bin of 
+	<<Ret:8/unsigned>> -> 
+   Ret /= ?GL_FALSE;
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    bindFramebufferEXT 
+%% Args:    Target, Framebuffer
+%% Returns: ok
+%% C-API func: void glBindFramebufferEXT(GLenum target, GLuint framebuffer)
+bindFramebufferEXT(Target, Framebuffer) -> 
+ cast(?glBindFramebufferEXT, <<Target:32/?UN, Framebuffer:32/?UN>>).
+
+%% Func:    deleteFramebuffersEXT 
+%% Args:    N, <<[Framebuffers]>>
+%% Returns: ok
+%% C-API func: void glDeleteFramebuffersEXT(GLsizei n,  const GLuint * framebuffers)
+deleteFramebuffersEXT(N, Framebuffers) -> 
+ NewFramebuffers = if
+	is_list(Framebuffers) ; is_tuple(Framebuffers) -> term2bin(Framebuffers, N, ?GL_UNSIGNED_INT);
+	is_binary(Framebuffers) -> Framebuffers;
+	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Framebuffers})
+ end, 
+ cast(?glDeleteFramebuffersEXT, [<<N:32/?SN>>,NewFramebuffers]).
+
+%% Func:    genFramebuffersEXT 
+%% Args:    N
+%% Returns: [Framebuffers]
+%% C-API func: void glGenFramebuffersEXT(GLsizei n, GLuint * framebuffers)
+genFramebuffersEXT(N) -> 
+ Bin = call(?glGenFramebuffersEXT, <<N:32/?SN>>), 
+ case Bin of 
+	<<Framebuffers:N/binary-unit:?GL_UNSIGNED_INT_SIZE>> -> 
+	 bin2list(N, ?GL_UNSIGNED_INT, Framebuffers);
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    checkFramebufferStatusEXT 
+%% Args:    Target
+%% Returns: ?GL_INT
+%% C-API func: GLenum glCheckFramebufferStatusEXT(GLenum target)
+checkFramebufferStatusEXT(Target) -> 
+ Bin = call(?glCheckFramebufferStatusEXT, <<Target:32/?UN>>), 
+ case Bin of 
+	<<Ret:32/?UN>> -> 
+   Ret;
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    framebufferTexture1DEXT 
+%% Args:    Target, Attachment, Textarget, Texture, Level
+%% Returns: ok
+%% C-API func: void glFramebufferTexture1DEXT(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level)
+framebufferTexture1DEXT(Target, Attachment, Textarget, Texture, Level) -> 
+ cast(?glFramebufferTexture1DEXT, <<Target:32/?UN, Attachment:32/?UN, Textarget:32/?UN, Texture:32/?UN, Level:32/?SN>>).
+
+%% Func:    framebufferTexture2DEXT 
+%% Args:    Target, Attachment, Textarget, Texture, Level
+%% Returns: ok
+%% C-API func: void glFramebufferTexture2DEXT(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level)
+framebufferTexture2DEXT(Target, Attachment, Textarget, Texture, Level) -> 
+ cast(?glFramebufferTexture2DEXT, <<Target:32/?UN, Attachment:32/?UN, Textarget:32/?UN, Texture:32/?UN, Level:32/?SN>>).
+
+%% Func:    framebufferTexture3DEXT 
+%% Args:    Target, Attachment, Textarget, Texture, Level, Zoffset
+%% Returns: ok
+%% C-API func: void glFramebufferTexture3DEXT(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLint zoffset)
+framebufferTexture3DEXT(Target, Attachment, Textarget, Texture, Level, Zoffset) -> 
+ cast(?glFramebufferTexture3DEXT, <<Target:32/?UN, Attachment:32/?UN, Textarget:32/?UN, Texture:32/?UN, Level:32/?SN, Zoffset:32/?SN>>).
+
+%% Func:    framebufferRenderbufferEXT 
+%% Args:    Target, Attachment, Renderbuffertarget, Renderbuffer
+%% Returns: ok
+%% C-API func: void glFramebufferRenderbufferEXT(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer)
+framebufferRenderbufferEXT(Target, Attachment, Renderbuffertarget, Renderbuffer) -> 
+ cast(?glFramebufferRenderbufferEXT, <<Target:32/?UN, Attachment:32/?UN, Renderbuffertarget:32/?UN, Renderbuffer:32/?UN>>).
+
+%% Func:    getFramebufferAttachmentParameterivEXT 
+%% Args:    Target, Attachment, Pname
+%% Returns: [Params]
+%% C-API func: void glGetFramebufferAttachmentParameterivEXT(GLenum target, GLenum attachment, GLenum pname, GLint * params)
+getFramebufferAttachmentParameterivEXT(Target, Attachment, Pname) -> 
+ Bin = call(?glGetFramebufferAttachmentParameterivEXT, <<Target:32/?UN, Attachment:32/?UN, Pname:32/?UN>>), 
+ case Bin of 
+	<<Params:32/?SN>> -> 
+	 Params;
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    generateMipmapEXT 
+%% Args:    Target
+%% Returns: ok
+%% C-API func: void glGenerateMipmapEXT(GLenum target)
+generateMipmapEXT(Target) -> 
+ cast(?glGenerateMipmapEXT, <<Target:32/?UN>>).
+

@@ -1609,7 +1609,7 @@ skip_extensions("GL_ATI_separate_stencil",_R) -> false;
 skip_extensions("GL_NV_float_buffer",_R) -> false;
 skip_extensions("GL_ATI_texture_float",_R) -> false;
 skip_extensions("GL_EXT_texture_mirror_clamp",_R) -> false;
-
+skip_extensions("GL_EXT_framebuffer_object",_) -> false;
 
 %% skip the rest.
 skip_extensions("GL_ARB_" ++ _, R) ->

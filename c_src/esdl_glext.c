@@ -3547,3 +3547,283 @@ void egl_stencilFuncSeparateATI(sdl_data *egl_sd, int egl_len, char *egl_buff)
 }
 
 
+void egl_isRenderbufferEXT(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLboolean egl_res; 
+ GLuint * renderbuffer;
+ bp = egl_buff;
+ renderbuffer = (GLuint *) bp; 
+ egl_res =  esdl_glIsRenderbufferEXT(*renderbuffer);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLboolean) );
+ * (GLboolean *) bp = egl_res;
+ bp += sizeof(GLboolean);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_bindRenderbufferEXT(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLenum * target;
+ GLuint * renderbuffer;
+ bp = egl_buff;
+ target = (GLenum *) bp; bp += sizeof(GLenum); 
+ renderbuffer = (GLuint *) bp; 
+ esdl_glBindRenderbufferEXT(*target, *renderbuffer);
+}
+
+
+void egl_deleteRenderbuffersEXT(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLsizei * n;
+ GLuint * renderbuffers = NULL; 
+ bp = egl_buff;
+ n = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ renderbuffers = (GLuint *) bp;
+ esdl_glDeleteRenderbuffersEXT(*n, renderbuffers);
+}
+
+
+void egl_genRenderbuffersEXT(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLsizei * n;
+ GLuint * renderbuffers = NULL;
+ bp = egl_buff;
+ n = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ renderbuffers = (GLuint*) malloc(sizeof(GLuint)*(*n));
+ esdl_glGenRenderbuffersEXT(*n, renderbuffers);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLuint) * (*n));
+ memcpy(bp, renderbuffers, sizeof(GLuint)*(*n));
+ bp += sizeof(GLuint)*(*n);
+ free(renderbuffers);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_renderbufferStorageEXT(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLenum * target;
+ GLenum * internalformat;
+ GLsizei * width;
+ GLsizei * height;
+ bp = egl_buff;
+ target = (GLenum *) bp; bp += sizeof(GLenum); 
+ internalformat = (GLenum *) bp; bp += sizeof(GLenum); 
+ width = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ height = (GLsizei *) bp; 
+ esdl_glRenderbufferStorageEXT(*target, *internalformat, *width, *height);
+}
+
+
+void egl_getRenderbufferParameterivEXT(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLenum * target;
+ GLenum * pname;
+ GLint params[1]; 
+ bp = egl_buff;
+ target = (GLenum *) bp; bp += sizeof(GLenum); 
+ pname = (GLenum *) bp; bp += sizeof(GLenum); 
+ esdl_glGetRenderbufferParameterivEXT(*target, *pname, params);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLint) *1);
+ * (GLint *)bp = params[0]; bp += sizeof(GLint);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_isFramebufferEXT(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLboolean egl_res; 
+ GLuint * framebuffer;
+ bp = egl_buff;
+ framebuffer = (GLuint *) bp; 
+ egl_res =  esdl_glIsFramebufferEXT(*framebuffer);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLboolean) );
+ * (GLboolean *) bp = egl_res;
+ bp += sizeof(GLboolean);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_bindFramebufferEXT(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLenum * target;
+ GLuint * framebuffer;
+ bp = egl_buff;
+ target = (GLenum *) bp; bp += sizeof(GLenum); 
+ framebuffer = (GLuint *) bp; 
+ esdl_glBindFramebufferEXT(*target, *framebuffer);
+}
+
+
+void egl_deleteFramebuffersEXT(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLsizei * n;
+ GLuint * framebuffers = NULL; 
+ bp = egl_buff;
+ n = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ framebuffers = (GLuint *) bp;
+ esdl_glDeleteFramebuffersEXT(*n, framebuffers);
+}
+
+
+void egl_genFramebuffersEXT(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLsizei * n;
+ GLuint * framebuffers = NULL;
+ bp = egl_buff;
+ n = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ framebuffers = (GLuint*) malloc(sizeof(GLuint)*(*n));
+ esdl_glGenFramebuffersEXT(*n, framebuffers);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLuint) * (*n));
+ memcpy(bp, framebuffers, sizeof(GLuint)*(*n));
+ bp += sizeof(GLuint)*(*n);
+ free(framebuffers);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_checkFramebufferStatusEXT(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLenum egl_res; 
+ GLenum * target;
+ bp = egl_buff;
+ target = (GLenum *) bp; 
+ egl_res =  esdl_glCheckFramebufferStatusEXT(*target);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLenum) );
+ * (GLenum *) bp = egl_res;
+ bp += sizeof(GLenum);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_framebufferTexture1DEXT(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLenum * target;
+ GLenum * attachment;
+ GLenum * textarget;
+ GLuint * texture;
+ GLint * level;
+ bp = egl_buff;
+ target = (GLenum *) bp; bp += sizeof(GLenum); 
+ attachment = (GLenum *) bp; bp += sizeof(GLenum); 
+ textarget = (GLenum *) bp; bp += sizeof(GLenum); 
+ texture = (GLuint *) bp; bp += sizeof(GLuint); 
+ level = (GLint *) bp; 
+ esdl_glFramebufferTexture1DEXT(*target, *attachment, *textarget, *texture, *level);
+}
+
+
+void egl_framebufferTexture2DEXT(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLenum * target;
+ GLenum * attachment;
+ GLenum * textarget;
+ GLuint * texture;
+ GLint * level;
+ bp = egl_buff;
+ target = (GLenum *) bp; bp += sizeof(GLenum); 
+ attachment = (GLenum *) bp; bp += sizeof(GLenum); 
+ textarget = (GLenum *) bp; bp += sizeof(GLenum); 
+ texture = (GLuint *) bp; bp += sizeof(GLuint); 
+ level = (GLint *) bp; 
+ esdl_glFramebufferTexture2DEXT(*target, *attachment, *textarget, *texture, *level);
+}
+
+
+void egl_framebufferTexture3DEXT(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLenum * target;
+ GLenum * attachment;
+ GLenum * textarget;
+ GLuint * texture;
+ GLint * level;
+ GLint * zoffset;
+ bp = egl_buff;
+ target = (GLenum *) bp; bp += sizeof(GLenum); 
+ attachment = (GLenum *) bp; bp += sizeof(GLenum); 
+ textarget = (GLenum *) bp; bp += sizeof(GLenum); 
+ texture = (GLuint *) bp; bp += sizeof(GLuint); 
+ level = (GLint *) bp; bp += sizeof(GLint); 
+ zoffset = (GLint *) bp; 
+ esdl_glFramebufferTexture3DEXT(*target, *attachment, *textarget, *texture, *level, *zoffset);
+}
+
+
+void egl_framebufferRenderbufferEXT(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLenum * target;
+ GLenum * attachment;
+ GLenum * renderbuffertarget;
+ GLuint * renderbuffer;
+ bp = egl_buff;
+ target = (GLenum *) bp; bp += sizeof(GLenum); 
+ attachment = (GLenum *) bp; bp += sizeof(GLenum); 
+ renderbuffertarget = (GLenum *) bp; bp += sizeof(GLenum); 
+ renderbuffer = (GLuint *) bp; 
+ esdl_glFramebufferRenderbufferEXT(*target, *attachment, *renderbuffertarget, *renderbuffer);
+}
+
+
+void egl_getFramebufferAttachmentParameterivEXT(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLenum * target;
+ GLenum * attachment;
+ GLenum * pname;
+ GLint params[1]; 
+ bp = egl_buff;
+ target = (GLenum *) bp; bp += sizeof(GLenum); 
+ attachment = (GLenum *) bp; bp += sizeof(GLenum); 
+ pname = (GLenum *) bp; bp += sizeof(GLenum); 
+ esdl_glGetFramebufferAttachmentParameterivEXT(*target, *attachment, *pname, params);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLint) *1);
+ * (GLint *)bp = params[0]; bp += sizeof(GLint);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_generateMipmapEXT(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLenum * target;
+ bp = egl_buff;
+ target = (GLenum *) bp; 
+ esdl_glGenerateMipmapEXT(*target);
+}
+
+

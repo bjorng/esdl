@@ -199,7 +199,14 @@ add() ->
      {"glGetAttribLocation", {[{"name", pointer, string}], []}},
      {"glDrawBuffers", {[{"bufs", "n"}], []}},
      {"glGetAttachedShaders", {[{"count", 1},{"obj", {"count","maxCount"}}], []}},
-     {"glGetShaderiv", {[{"params", 1}], []}}
+     {"glGetShaderiv", {[{"params", 1}], []}},
+     %% GL_EXT_framebuffer_object
+     {"glDeleteRenderbuffersEXT", {[{"renderbuffers", "n"}], []}},
+     {"glGenRenderbuffersEXT", {[{"renderbuffers", "n"}], []}},
+     {"glGetRenderbufferParameterivEXT", {[{"params", 1}], []}},
+     {"glDeleteFramebuffersEXT", {[{"framebuffers", "n"}], []}},
+     {"glGenFramebuffersEXT", {[{"framebuffers", "n"}], []}},
+     {"glGetFramebufferAttachmentParameterivEXT", {[{"params", 1}], []}}
     ].
 
 init_erl(Fd) -> 

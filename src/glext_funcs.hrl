@@ -1,5 +1,5 @@
 %%
-%%  Copyright (c) 2001 Dan Gudmundsson
+%%  Copyright (c) 2005 Dan Gudmundsson
 %%
 %%  See the file "license.terms" for information on usage and redistribution
 %%  of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -231,3 +231,20 @@
 -define(glGetProgramString, ?SDL_OPENGL_EXTS_HRL + 222).
 -define(glStencilOpSeparateATI, ?SDL_OPENGL_EXTS_HRL + 223).
 -define(glStencilFuncSeparateATI, ?SDL_OPENGL_EXTS_HRL + 224).
+-define(glIsRenderbufferEXT, ?SDL_OPENGL_EXTS_HRL + 225).
+-define(glBindRenderbufferEXT, ?SDL_OPENGL_EXTS_HRL + 226).
+-define(glDeleteRenderbuffersEXT, ?SDL_OPENGL_EXTS_HRL + 227).
+-define(glGenRenderbuffersEXT, ?SDL_OPENGL_EXTS_HRL + 228).
+-define(glRenderbufferStorageEXT, ?SDL_OPENGL_EXTS_HRL + 229).
+-define(glGetRenderbufferParameterivEXT, ?SDL_OPENGL_EXTS_HRL + 230).
+-define(glIsFramebufferEXT, ?SDL_OPENGL_EXTS_HRL + 231).
+-define(glBindFramebufferEXT, ?SDL_OPENGL_EXTS_HRL + 232).
+-define(glDeleteFramebuffersEXT, ?SDL_OPENGL_EXTS_HRL + 233).
+-define(glGenFramebuffersEXT, ?SDL_OPENGL_EXTS_HRL + 234).
+-define(glCheckFramebufferStatusEXT, ?SDL_OPENGL_EXTS_HRL + 235).
+-define(glFramebufferTexture1DEXT, ?SDL_OPENGL_EXTS_HRL + 236).
+-define(glFramebufferTexture2DEXT, ?SDL_OPENGL_EXTS_HRL + 237).
+-define(glFramebufferTexture3DEXT, ?SDL_OPENGL_EXTS_HRL + 238).
+-define(glFramebufferRenderbufferEXT, ?SDL_OPENGL_EXTS_HRL + 239).
+-define(glGetFramebufferAttachmentParameterivEXT, ?SDL_OPENGL_EXTS_HRL + 240).
+-define(glGenerateMipmapEXT, ?SDL_OPENGL_EXTS_HRL + 241).
