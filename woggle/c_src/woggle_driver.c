@@ -86,6 +86,8 @@ static ErlDrvData wog_driver_start(ErlDrvPort port, char *buff)
       data->qh = NULL;
       memset(&(data->wd),0,sizeof(WogWindowData));
 #endif
+      data->save_x = data->save_y = -1;
+      data->saved_event = NULL;
       init_fps(data);
       data->extensions_loaded = 0;
    }
@@ -96,6 +98,10 @@ static void
 wog_driver_stop(ErlDrvData handle) 
 {  
     sdl_data *sd = ((sdl_data *)handle);
+
+    if (sd->saved_event != NULL) {
+	wog_free_event_message(sd->saved_event);
+    }
     wog_close_window(&(sd->wd));
 #ifdef HARDDEBUG
     FreeConsole();

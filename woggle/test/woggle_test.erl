@@ -2,14 +2,54 @@
 
 -compile(export_all).
 -include("sdl_video.hrl").
+-include("sdl_events.hrl").
 -include("gl.hrl").
 
 go() ->
     code:add_path("../../ebin"),
     woggle:init(),
+    io:format("Driver ~p ~n", [sdl_video:videoDriverName()]),
     io:format("~p~n",[woggle:listModes()]),
     io:format("~p~n",[sdl_video:listModes(null,?SDL_FULLSCREEN)]),
+
+    %% Misconseption from testgl.erl, but compatibility is useful anyway...
+     AvailableWindowedSzs = sdl_video:listModes(null, ?SDL_FULLSCREEN),
+     io:format("Available WindowSizes ~p ~n", [AvailableWindowedSzs]),
+     case AvailableWindowedSzs of
+ 	[{_, 0,0,W,H}|_] ->
+ 	    Res = [Test || Test <- [32,24,16,15],
+ 			   true == sdl_video:videoModeOK(W,H,Test,0)],
+ 	    io:format("A guess at max video res is ~px~p:~p ~n", [W,H, hd(Res)]);
+ 	_ ->
+ 	    io:format("Can't guess max resolution~n", [])
+     end,
+
     sdl_video:setVideoMode(640,480,16,?SDL_OPENGL bor ?SDL_RESIZABLE),
+    sdl_video:gl_setAttribute(?SDL_GL_DOUBLEBUFFER, 1), %Ignored
+    Rs= sdl_video:gl_getAttribute(?SDL_GL_RED_SIZE),
+    Gs= sdl_video:gl_getAttribute(?SDL_GL_GREEN_SIZE),
+    Bs= sdl_video:gl_getAttribute(?SDL_GL_BLUE_SIZE),
+    Ds= sdl_video:gl_getAttribute(?SDL_GL_DEPTH_SIZE),
+    Dz= sdl_video:gl_getAttribute(?SDL_GL_BUFFER_SIZE),
+    Db= (1 == sdl_video:gl_getAttribute(?SDL_GL_DOUBLEBUFFER)),
+    io:format("OpenGL attributes ~n"),
+    io:format("Sizes in bits Red ~p Green ~p Blue ~p Depth ~p Buffer ~p Doublebuffered ~p~n",
+	      [Rs, Gs, Bs, Ds, Dz, Db]),   
+    io:format("Vendor:     ~s~n",  [gl:getString(?GL_VENDOR)]),
+    io:format("Renderer:   ~s~n",  [gl:getString(?GL_RENDERER)]),
+    io:format("Version:    ~s~n",  [gl:getString(?GL_VERSION)]),
+    io:format("GL AUX BUFFERS ~p~n",  [gl:getIntegerv(?GL_AUX_BUFFERS)]),
+    io:format("SDL Version ~p~n",  [sdl_video:wm_getInfo()]),
+
+    io:format("Extensions: ~s~n",  [gl:getString(?GL_EXTENSIONS)]),    
+    io:format("Maximized: ~p~n",   [sdl_video:wm_isMaximized()]), 
+
+    io:format("~p", [catch gl:getConvolutionParameterfv(16#8011, 16#801A)]),
+    sdl_events:eventState(?SDL_ALLEVENTS ,?SDL_IGNORE),
+    sdl_events:eventState(?SDL_KEYDOWN ,?SDL_ENABLE),
+    sdl_events:eventState(?SDL_QUIT ,?SDL_ENABLE),
+    sdl_events:eventState(?SDL_VIDEORESIZE, ?SDL_ENABLE),
+
     dogl_start(),
     dogl(1000).
 
@@ -111,9 +151,17 @@ dogl(N) ->
     gl:rotatef(5.0, 1.0, 1.0, 1.0),
     woggle:swapBuffers(),
     %gl:swapBuffers(),
+    poll_events(),
     dogl(N-1).
     
-
+poll_events() ->
+     case sdl_events:pollEvent() of 
+	 no_event ->
+	     ok;
+	 Event ->
+	     io:format("Got event ~p~n", [Event]),
+	     poll_events()
+     end.
 
 
 

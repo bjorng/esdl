@@ -3,6 +3,18 @@
 #include <windows.h>
 #include <winuser.h>
 
+/* Graphic/OpenGL attributes */
+#define WOG_ATTR_RED_SIZE 1
+#define WOG_ATTR_GREEN_SIZE 2
+#define WOG_ATTR_BLUE_SIZE 3
+#define WOG_ATTR_DEPTH_SIZE 4
+#define WOG_ATTR_DOUBLEBUFFER 5
+#define WOG_ATTR_ALPHA_SIZE 6
+#define WOG_ATTR_BUFFER_SIZE 7
+
+/* Window system related attributes */
+#define WOG_WMATTR_MAXIMIZED 1
+
 typedef enum {
     WogWindowCreated,
     WogMouseDown,
@@ -14,6 +26,7 @@ typedef enum {
     WogMouseMove,
     WogMouseDelta,
     WogResize,
+    WogActivate,
     WogClose,
     WogGoodbye,
     WogPaint
@@ -29,6 +42,7 @@ typedef enum {
     WogListenChar,
     WogListenResize,
     WogListenPaint,
+    WogListenActivate,
     WogListenClose,
     WogListenAll,
     WogDeltaMouse,
@@ -122,6 +136,13 @@ typedef struct {
 typedef struct {
     WogEventTag tag;
     WogWindowToken token;
+    int active;
+    int iconic;
+} WogEvActivate;    
+
+typedef struct {
+    WogEventTag tag;
+    WogWindowToken token;
 } WogEvClose;    
 
 typedef struct {
@@ -154,6 +175,7 @@ typedef union {
     WogEvMouseDelta mouse_delta;
     WogEvResize resize;
     WogEvPaint paint;
+    WogEvActivate activate;
     WogEvClose close;
     WogEvGoodbye goodbye;
 } WogEventMessage;
@@ -234,4 +256,7 @@ void wog_swap_buffers(WogWindowData *wd);
 unsigned wog_get_tick(void);
 int wog_list_modes(WogRes **res);
 void wog_set_current_window(WogWindowData *wd);
+int wog_get_attr(const WogWindowData *wd, int item);
+int wog_get_wmattr(const WogWindowData *wd, int item);
+int wog_listen(const WogWindowData *wd, WogCommandTag tag, int onoff);
 #endif

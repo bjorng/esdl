@@ -152,14 +152,24 @@ GENTYPE=$1
 CALLTYPE=$2
 ERLNAME=$3
 UNDERSCORED=`echo $ERLNAME | sed 's,[A-Z],_&,g' | tr "[:upper:]" "[:lower:]"`
-initial=`echo $ERLNAME | sed 's,\(.\).*,\1,g'`
-rest=`echo $ERLNAME | sed 's,.\(.*\),\1,g'`
+
+case $ERLNAME in
+    gl_*|wm_*)
+	initial=`echo $ERLNAME | sed 's,\(....\).*,\1,g'`;
+	rest=`echo $ERLNAME | sed 's,....\(.*\),\1,g'`;;
+    *)    
+	initial=`echo $ERLNAME | sed 's,\(.\).*,\1,g'`;
+	rest=`echo $ERLNAME | sed 's,.\(.*\),\1,g'`;;
+esac
 cinitial=`echo $initial | tr "[:lower:]" "[:upper:]"`
 if [ $cinitial = $initial ]; then
     echo "initial character of erlang name should be lowercase."
     usage
 fi
 CAPERLNAME=${cinitial}${rest}
+
+ESDL_HEADERS="../../c_src/esdl_video.h ../../c_src/esdl_events.h"
+
 if [ $GENTYPE = woggle ]; then
     ERLOPNAME=WOGGLE_$CAPERLNAME
     COPNAME=WOGGLE_${CAPERLNAME}Func
@@ -171,13 +181,13 @@ if [ $GENTYPE = woggle ]; then
     c_source $CFUNNAME $WOGGLE_TOP/c_src/woggle_if.c
     eval "$FINAL_COMMAND echo Changes stored."
 else
-    matches=`grep _${CAPERLNAME}Func ../../c_src/esdl_video.h | grep -v "(.*_${CAPERLNAME}Func *+ *1 *)" | wc -l`
-    
+    matches=`grep -h _${CAPERLNAME}Func $ESDL_HEADERS | grep -v ".*_${CAPERLNAME}Func *+ *1 *" | wc -l`
+    echo grep -h _${CAPERLNAME}Func $ESDL_HEADERS '|' grep -v '"'"(.*_${CAPERLNAME}Func *+ *1 *)"'"'
     if [ $matches -ne 1 ]; then
 	echo Could not resolve opcode for $ERLNAME
 	exit 1
     fi
-    COPNAME=`grep _${CAPERLNAME}Func ../../c_src/esdl_video.h | grep -v "(.*_${CAPERLNAME}Func *+ *1 *)" | awk '{print $2}'`
+    COPNAME=`grep -h _${CAPERLNAME}Func $ESDL_HEADERS | grep -v ".*_${CAPERLNAME}Func *+ *1 *" | awk '{print $2}'`
     CFUNNAME="wog_compat_if_$UNDERSCORED"
     c_opcode_compat $CFUNNAME $WOGGLE_TOP/c_src/woggle_compat_if.h
     c_funtab $COPNAME $CFUNNAME $WOGGLE_TOP/c_src/woggle_compat_if_fp.h

@@ -2,4 +2,12 @@
       wog_compat_if_swap_buffers },
 { SDL_ListModesFunc, "SDL_ListModesFunc", wog_compat_if_list_modes},
 { SDL_SetVideoModeFunc, "SDL_SetVideoModeFunc", wog_compat_if_set_video_mode},
+{ SDL_VideoDriverNameFunc, "SDL_VideoDriverNameFunc", wog_compat_if_video_driver_name},
+{ SDL_GL_SetAttributeFunc, "SDL_GL_SetAttributeFunc", wog_compat_if_gl_set_attribute},
+{ SDL_GL_GetAttributeFunc, "SDL_GL_GetAttributeFunc", wog_compat_if_gl_get_attribute},
+{ SDL_WM_GetInfoFunc, "SDL_WM_GetInfoFunc", wog_compat_if_wm_get_info},
+{ SDL_WM_IsMaximizedFunc, "SDL_WM_IsMaximizedFunc", wog_compat_if_wm_is_maximized},
+{ SDL_VideoModeOKFunc, "SDL_VideoModeOKFunc", wog_compat_if_video_mode_o_k},
+{ SDL_EventStateFunc, "SDL_EventStateFunc", wog_compat_if_event_state},
+{ SDL_PollEventFunc, "SDL_PollEventFunc", wog_compat_if_poll_event},
 /*PLACEHOLDER_FOR_GENERATED_FUNCTIONS*/

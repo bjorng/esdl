@@ -391,8 +391,14 @@ static void enable_opengl(HWND hWnd, HDC * hDC, HGLRC * hRC, int depth)
 	pfd.nVersion = 1;
 	pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
 	pfd.iPixelType = PFD_TYPE_RGBA;
+	/*
+	 * The parameter depth is the color depth, not the Z-buffer depth,
+	 * which has gotten me deeply confused more than once...
+	 * I have no interface for setting the Z-buffer depth, 
+	 * When I try 32 I get 16, when I try 24 I get 24...
+	 */
 	pfd.cColorBits = depth;
-	pfd.cDepthBits = 32;
+	pfd.cDepthBits = 24;
 	pfd.iLayerType = PFD_MAIN_PLANE;
 	format = ChoosePixelFormat( *hDC, &pfd );
 	SetPixelFormat( *hDC, format, &pfd );
@@ -457,6 +463,16 @@ LRESULT CALLBACK wog_process_events(HWND window, UINT message,
     debugf("Window message %d\n",message);
 #endif
     switch(message){
+    case WM_ACTIVATE:
+	if ((twd->event_mask[WogListenActivate])) {
+	    wem = wog_alloc_event_message();
+	    wem->any.token = twd->token;
+	    wem->any.tag = WogActivate;
+	    wem->activate.active = (LOWORD(wp) != WA_INACTIVE);
+	    wem->activate.iconic = (int) HIWORD(wp);
+	    wog_post_event_message(NULL,wem);
+	}
+	return DefWindowProc(window, message, wp, lp);
     case WM_SIZE:
 	if (!(twd->event_mask[WogListenResize]))
 	    return DefWindowProc(window, message, wp, lp);
@@ -772,6 +788,9 @@ void wog_close_window(WogWindowData *wd)
 {
     WogCommandMessage *cmd;
     
+    if (wd->hWindow == NULL) {
+	return;
+    }
     disable_opengl(wd->hWindow, wd->hdc, wd->hrc);
     cmd = wog_alloc_command_message();
     cmd->tag = WogCloseWindow;
@@ -890,6 +909,57 @@ int wog_list_modes(WogRes **res) {
     }
     *res = buffer;
     return i;
+}
+int wog_get_attr(const WogWindowData *wd, int item)
+{
+    PIXELFORMATDESCRIPTOR  pfd;
+    int i;
+
+    if (!(i = GetPixelFormat(wd->hdc))) {
+	return -1;
+    }
+    if (!DescribePixelFormat(wd->hdc, i, sizeof(pfd), &pfd)) {
+	return -1;
+    }
+    switch (item) {
+    case WOG_ATTR_RED_SIZE:
+	return (int) (pfd.cRedBits);
+    case WOG_ATTR_GREEN_SIZE:
+	return (int) (pfd.cGreenBits);
+    case WOG_ATTR_BLUE_SIZE:
+	return (int) (pfd.cBlueBits);
+    case WOG_ATTR_ALPHA_SIZE: /* Not supported on windows I think... */
+	return (int) (pfd.cAlphaBits);
+    case WOG_ATTR_DEPTH_SIZE:
+	return (int) (pfd.cDepthBits); /* Z buffer depth */
+    case WOG_ATTR_BUFFER_SIZE:
+	return (int) (pfd.cColorBits); /* color depth */
+    /* I actually provide no interface to change this, 
+       it should always be true */
+    case WOG_ATTR_DOUBLEBUFFER:
+	return (int) (!!(pfd.dwFlags & PFD_DOUBLEBUFFER));
+    default:
+	return -1;
+    }
+}
+int wog_get_wmattr(const WogWindowData *wd, int item)
+{
+    switch (item) {
+    case WOG_WMATTR_MAXIMIZED:
+	return (int) IsZoomed(wd->hWindow);
+    default:
+	return -1;
+    }
+}
+
+int wog_listen(const WogWindowData *wd, WogCommandTag tag, int onoff)
+{
+    WogCommandMessage *cmd;
+    cmd = wog_alloc_command_message();
+    cmd->tag = tag;
+    cmd->onoff = onoff;
+    wog_post_command_message(WOG_COMMAND_QUE(wd),cmd);
+    return 0;
 }
 
 BOOL APIENTRY DllMain(HANDLE hModule, 

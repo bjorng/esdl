@@ -16,6 +16,10 @@
 #define SDL_LITTLEENDIAN 1
 #define SDL_BYTEORDER SDL_LITTLEENDIAN
 
+#define WOGGLE_VERSION_MAJOR 0
+#define WOGGLE_VERSION_MINOR 1
+#define WOGGLE_VERSION_PATCH 0
+
 typedef unsigned char Uint8;
 typedef unsigned int Uint32;
 
@@ -70,7 +74,8 @@ typedef struct sdl_data_def {
     HANDLE qh;
 
     WogWindowData wd;
-    
+    WogEventMessage *saved_event; /* Used by compatibility interface */
+    int save_x,save_y;            /* Used by compat IF */
     int op;			/* Current (or last) function */
     int len;			/* Length of message buffer */
     void* buff;			/* Pointer to message buffer */
@@ -93,10 +98,10 @@ void init_glexts(sdl_data*);
 #define SDL_H                20
 #endif
 #define VIDEO_H              30
+#define EVENTS_H            100
 
 /* This is how they are in SDL */
 #if 0 
-#define EVENTS_H            100
 #define MOUSE_H             110
 #define KEYBOARD_H          120
 #define ACTIVE_H            130
