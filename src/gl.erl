@@ -3336,8 +3336,14 @@ drawRangeElements(Mode, Start, End, Count, Type, Indices) ->
 %% Returns: ok
 %% C-API func: void glColorTable(GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type,  const GLvoid * table)
 colorTable(Target, Internalformat, Width, Format, Type, Table) -> 
- sdl:send_bin(Table, ?MODULE, ?LINE),
- cast(?glColorTable, <<Target:32/?UN, Internalformat:32/?UN, Width:32/?SN, Format:32/?UN, Type:32/?UN>>).
+%% Maybe NULL or offset sometimes
+ NewTable =
+   if is_integer(Table) -> Table;
+      true ->
+        sdl:send_bin(Table, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glColorTable, [<<Target:32/?UN, Internalformat:32/?UN, Width:32/?SN, Format:32/?UN, Type:32/?UN, NewTable:32/?SN>>]).
 
 %% Func:    colorTableParameterfv 
 %% Args:    Target, Pname, <<[Params]>>
@@ -3407,8 +3413,14 @@ getColorTableParameteriv(Target, Pname) ->
 %% Returns: ok
 %% C-API func: void glColorSubTable(GLenum target, GLsizei start, GLsizei count, GLenum format, GLenum type,  const GLvoid * data)
 colorSubTable(Target, Start, Count, Format, Type, Data) -> 
- sdl:send_bin(Data, ?MODULE, ?LINE),
- cast(?glColorSubTable, <<Target:32/?UN, Start:32/?SN, Count:32/?SN, Format:32/?UN, Type:32/?UN>>).
+%% Maybe NULL or offset sometimes
+ NewData =
+   if is_integer(Data) -> Data;
+      true ->
+        sdl:send_bin(Data, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glColorSubTable, [<<Target:32/?UN, Start:32/?SN, Count:32/?SN, Format:32/?UN, Type:32/?UN, NewData:32/?SN>>]).
 
 %% Func:    copyColorSubTable 
 %% Args:    Target, Start, X, Y, Width
@@ -3422,16 +3434,28 @@ copyColorSubTable(Target, Start, X, Y, Width) ->
 %% Returns: ok
 %% C-API func: void glConvolutionFilter1D(GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type,  const GLvoid * image)
 convolutionFilter1D(Target, Internalformat, Width, Format, Type, Image) -> 
- sdl:send_bin(Image, ?MODULE, ?LINE),
- cast(?glConvolutionFilter1D, <<Target:32/?UN, Internalformat:32/?UN, Width:32/?SN, Format:32/?UN, Type:32/?UN>>).
+%% Maybe NULL or offset sometimes
+ NewImage =
+   if is_integer(Image) -> Image;
+      true ->
+        sdl:send_bin(Image, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glConvolutionFilter1D, [<<Target:32/?UN, Internalformat:32/?UN, Width:32/?SN, Format:32/?UN, Type:32/?UN, NewImage:32/?SN>>]).
 
 %% Func:    convolutionFilter2D 
 %% Args:    Target, Internalformat, Width, Height, Format, Type, <<[Image]>>
 %% Returns: ok
 %% C-API func: void glConvolutionFilter2D(GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type,  const GLvoid * image)
 convolutionFilter2D(Target, Internalformat, Width, Height, Format, Type, Image) -> 
- sdl:send_bin(Image, ?MODULE, ?LINE),
- cast(?glConvolutionFilter2D, <<Target:32/?UN, Internalformat:32/?UN, Width:32/?SN, Height:32/?SN, Format:32/?UN, Type:32/?UN>>).
+%% Maybe NULL or offset sometimes
+ NewImage =
+   if is_integer(Image) -> Image;
+      true ->
+        sdl:send_bin(Image, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glConvolutionFilter2D, [<<Target:32/?UN, Internalformat:32/?UN, Width:32/?SN, Height:32/?SN, Format:32/?UN, Type:32/?UN, NewImage:32/?SN>>]).
 
 %% Func:    convolutionParameterf 
 %% Args:    Target, Pname, Params
@@ -3542,9 +3566,21 @@ getSeparableFilter(Target, Format, Type, #sdlmem{bin=Row}, #sdlmem{bin=Column}, 
 %% Returns: ok
 %% C-API func: void glSeparableFilter2D(GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type,  const GLvoid * row,  const GLvoid * column)
 separableFilter2D(Target, Internalformat, Width, Height, Format, Type, Row, Column) -> 
- sdl:send_bin(Row, ?MODULE, ?LINE),
- sdl:send_bin(Column, ?MODULE, ?LINE),
- cast(?glSeparableFilter2D, <<Target:32/?UN, Internalformat:32/?UN, Width:32/?SN, Height:32/?SN, Format:32/?UN, Type:32/?UN>>).
+%% Maybe NULL or offset sometimes
+ NewRow =
+   if is_integer(Row) -> Row;
+      true ->
+        sdl:send_bin(Row, ?MODULE, ?LINE),
+       0
+   end,
+%% Maybe NULL or offset sometimes
+ NewColumn =
+   if is_integer(Column) -> Column;
+      true ->
+        sdl:send_bin(Column, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glSeparableFilter2D, [<<Target:32/?UN, Internalformat:32/?UN, Width:32/?SN, Height:32/?SN, Format:32/?UN, Type:32/?UN, NewRow:32/?SN, NewColumn:32/?SN>>]).
 
 %% Func:    getHistogram 
 %% Args:    Target, Reset, Format, Type, #sdlmem{} = Values
@@ -3643,16 +3679,28 @@ resetMinmax(Target) ->
 %% Returns: ok
 %% C-API func: void glTexImage3D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type,  const GLvoid * pixels)
 texImage3D(Target, Level, Internalformat, Width, Height, Depth, Border, Format, Type, Pixels) -> 
- sdl:send_bin(Pixels, ?MODULE, ?LINE),
- cast(?glTexImage3D, <<Target:32/?UN, Level:32/?SN, Internalformat:32/?SN, Width:32/?SN, Height:32/?SN, Depth:32/?SN, Border:32/?SN, Format:32/?UN, Type:32/?UN>>).
+%% Maybe NULL or offset sometimes
+ NewPixels =
+   if is_integer(Pixels) -> Pixels;
+      true ->
+        sdl:send_bin(Pixels, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glTexImage3D, [<<Target:32/?UN, Level:32/?SN, Internalformat:32/?SN, Width:32/?SN, Height:32/?SN, Depth:32/?SN, Border:32/?SN, Format:32/?UN, Type:32/?UN, NewPixels:32/?SN>>]).
 
 %% Func:    texSubImage3D 
 %% Args:    Target, Level, Xoffset, Yoffset, Zoffset, Width, Height, Depth, Format, Type, <<[Pixels]>>
 %% Returns: ok
 %% C-API func: void glTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type,  const GLvoid * pixels)
 texSubImage3D(Target, Level, Xoffset, Yoffset, Zoffset, Width, Height, Depth, Format, Type, Pixels) -> 
- sdl:send_bin(Pixels, ?MODULE, ?LINE),
- cast(?glTexSubImage3D, <<Target:32/?UN, Level:32/?SN, Xoffset:32/?SN, Yoffset:32/?SN, Zoffset:32/?SN, Width:32/?SN, Height:32/?SN, Depth:32/?SN, Format:32/?UN, Type:32/?UN>>).
+%% Maybe NULL or offset sometimes
+ NewPixels =
+   if is_integer(Pixels) -> Pixels;
+      true ->
+        sdl:send_bin(Pixels, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glTexSubImage3D, [<<Target:32/?UN, Level:32/?SN, Xoffset:32/?SN, Yoffset:32/?SN, Zoffset:32/?SN, Width:32/?SN, Height:32/?SN, Depth:32/?SN, Format:32/?UN, Type:32/?UN, NewPixels:32/?SN>>]).
 
 %% Func:    copyTexSubImage3D 
 %% Args:    Target, Level, Xoffset, Yoffset, Zoffset, X, Y, Width, Height
@@ -3959,48 +4007,84 @@ sampleCoverage(Value, Invert) ->
 %% Returns: ok
 %% C-API func: void glCompressedTexImage3D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLsizei imageSize,  const GLvoid * data)
 compressedTexImage3D(Target, Level, Internalformat, Width, Height, Depth, Border, ImageSize, Data) -> 
- sdl:send_bin(Data, ?MODULE, ?LINE),
- cast(?glCompressedTexImage3D, <<Target:32/?UN, Level:32/?SN, Internalformat:32/?UN, Width:32/?SN, Height:32/?SN, Depth:32/?SN, Border:32/?SN, ImageSize:32/?SN>>).
+%% Maybe NULL or offset sometimes
+ NewData =
+   if is_integer(Data) -> Data;
+      true ->
+        sdl:send_bin(Data, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glCompressedTexImage3D, [<<Target:32/?UN, Level:32/?SN, Internalformat:32/?UN, Width:32/?SN, Height:32/?SN, Depth:32/?SN, Border:32/?SN, ImageSize:32/?SN, NewData:32/?SN>>]).
 
 %% Func:    compressedTexImage2D 
 %% Args:    Target, Level, Internalformat, Width, Height, Border, ImageSize, <<[Data]>>
 %% Returns: ok
 %% C-API func: void glCompressedTexImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize,  const GLvoid * data)
 compressedTexImage2D(Target, Level, Internalformat, Width, Height, Border, ImageSize, Data) -> 
- sdl:send_bin(Data, ?MODULE, ?LINE),
- cast(?glCompressedTexImage2D, <<Target:32/?UN, Level:32/?SN, Internalformat:32/?UN, Width:32/?SN, Height:32/?SN, Border:32/?SN, ImageSize:32/?SN>>).
+%% Maybe NULL or offset sometimes
+ NewData =
+   if is_integer(Data) -> Data;
+      true ->
+        sdl:send_bin(Data, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glCompressedTexImage2D, [<<Target:32/?UN, Level:32/?SN, Internalformat:32/?UN, Width:32/?SN, Height:32/?SN, Border:32/?SN, ImageSize:32/?SN, NewData:32/?SN>>]).
 
 %% Func:    compressedTexImage1D 
 %% Args:    Target, Level, Internalformat, Width, Border, ImageSize, <<[Data]>>
 %% Returns: ok
 %% C-API func: void glCompressedTexImage1D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLint border, GLsizei imageSize,  const GLvoid * data)
 compressedTexImage1D(Target, Level, Internalformat, Width, Border, ImageSize, Data) -> 
- sdl:send_bin(Data, ?MODULE, ?LINE),
- cast(?glCompressedTexImage1D, <<Target:32/?UN, Level:32/?SN, Internalformat:32/?UN, Width:32/?SN, Border:32/?SN, ImageSize:32/?SN>>).
+%% Maybe NULL or offset sometimes
+ NewData =
+   if is_integer(Data) -> Data;
+      true ->
+        sdl:send_bin(Data, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glCompressedTexImage1D, [<<Target:32/?UN, Level:32/?SN, Internalformat:32/?UN, Width:32/?SN, Border:32/?SN, ImageSize:32/?SN, NewData:32/?SN>>]).
 
 %% Func:    compressedTexSubImage3D 
 %% Args:    Target, Level, Xoffset, Yoffset, Zoffset, Width, Height, Depth, Format, ImageSize, <<[Data]>>
 %% Returns: ok
 %% C-API func: void glCompressedTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize,  const GLvoid * data)
 compressedTexSubImage3D(Target, Level, Xoffset, Yoffset, Zoffset, Width, Height, Depth, Format, ImageSize, Data) -> 
- sdl:send_bin(Data, ?MODULE, ?LINE),
- cast(?glCompressedTexSubImage3D, <<Target:32/?UN, Level:32/?SN, Xoffset:32/?SN, Yoffset:32/?SN, Zoffset:32/?SN, Width:32/?SN, Height:32/?SN, Depth:32/?SN, Format:32/?UN, ImageSize:32/?SN>>).
+%% Maybe NULL or offset sometimes
+ NewData =
+   if is_integer(Data) -> Data;
+      true ->
+        sdl:send_bin(Data, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glCompressedTexSubImage3D, [<<Target:32/?UN, Level:32/?SN, Xoffset:32/?SN, Yoffset:32/?SN, Zoffset:32/?SN, Width:32/?SN, Height:32/?SN, Depth:32/?SN, Format:32/?UN, ImageSize:32/?SN, NewData:32/?SN>>]).
 
 %% Func:    compressedTexSubImage2D 
 %% Args:    Target, Level, Xoffset, Yoffset, Width, Height, Format, ImageSize, <<[Data]>>
 %% Returns: ok
 %% C-API func: void glCompressedTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize,  const GLvoid * data)
 compressedTexSubImage2D(Target, Level, Xoffset, Yoffset, Width, Height, Format, ImageSize, Data) -> 
- sdl:send_bin(Data, ?MODULE, ?LINE),
- cast(?glCompressedTexSubImage2D, <<Target:32/?UN, Level:32/?SN, Xoffset:32/?SN, Yoffset:32/?SN, Width:32/?SN, Height:32/?SN, Format:32/?UN, ImageSize:32/?SN>>).
+%% Maybe NULL or offset sometimes
+ NewData =
+   if is_integer(Data) -> Data;
+      true ->
+        sdl:send_bin(Data, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glCompressedTexSubImage2D, [<<Target:32/?UN, Level:32/?SN, Xoffset:32/?SN, Yoffset:32/?SN, Width:32/?SN, Height:32/?SN, Format:32/?UN, ImageSize:32/?SN, NewData:32/?SN>>]).
 
 %% Func:    compressedTexSubImage1D 
 %% Args:    Target, Level, Xoffset, Width, Format, ImageSize, <<[Data]>>
 %% Returns: ok
 %% C-API func: void glCompressedTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLsizei imageSize,  const GLvoid * data)
 compressedTexSubImage1D(Target, Level, Xoffset, Width, Format, ImageSize, Data) -> 
- sdl:send_bin(Data, ?MODULE, ?LINE),
- cast(?glCompressedTexSubImage1D, <<Target:32/?UN, Level:32/?SN, Xoffset:32/?SN, Width:32/?SN, Format:32/?UN, ImageSize:32/?SN>>).
+%% Maybe NULL or offset sometimes
+ NewData =
+   if is_integer(Data) -> Data;
+      true ->
+        sdl:send_bin(Data, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glCompressedTexSubImage1D, [<<Target:32/?UN, Level:32/?SN, Xoffset:32/?SN, Width:32/?SN, Format:32/?UN, ImageSize:32/?SN, NewData:32/?SN>>]).
 
 %% Func:    getCompressedTexImage 
 %% Args:    Target, Level, #sdlmem{} = Img
@@ -4060,8 +4144,14 @@ fogCoorddv(Coord) ->
 %% Returns: ok
 %% C-API func: void glFogCoordPointer(GLenum type, GLsizei stride,  const GLvoid * pointer)
 fogCoordPointer(Type, Stride, Pointer) -> 
- sdl:send_bin(Pointer, ?MODULE, ?LINE),
- cast(?glFogCoordPointer, <<Type:32/?UN, Stride:32/?SN>>).
+%% Maybe NULL or offset sometimes
+ NewPointer =
+   if is_integer(Pointer) -> Pointer;
+      true ->
+        sdl:send_bin(Pointer, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glFogCoordPointer, [<<Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
 %% Func:    multiDrawArrays 
 %% Args:    Mode, <<[First]>>, <<[Count]>>, Primcount
@@ -4235,8 +4325,14 @@ secondaryColor3usv({V1,V2,V3}) ->
 %% Returns: ok
 %% C-API func: void glSecondaryColorPointer(GLint size, GLenum type, GLsizei stride,  const GLvoid * pointer)
 secondaryColorPointer(Size, Type, Stride, Pointer) -> 
- sdl:send_bin(Pointer, ?MODULE, ?LINE),
- cast(?glSecondaryColorPointer, <<Size:32/?SN, Type:32/?UN, Stride:32/?SN>>).
+%% Maybe NULL or offset sometimes
+ NewPointer =
+   if is_integer(Pointer) -> Pointer;
+      true ->
+        sdl:send_bin(Pointer, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glSecondaryColorPointer, [<<Size:32/?SN, Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
 %% Func:    windowPos2d 
 %% Args:    X, Y
@@ -4484,16 +4580,28 @@ isBuffer(Buffer) ->
 %% Returns: ok
 %% C-API func: void glBufferData(GLenum target, GLsizeiptr size,  const GLvoid * data, GLenum usage)
 bufferData(Target, Size, Data, Usage) -> 
- sdl:send_bin(Data, ?MODULE, ?LINE),
- cast(?glBufferData, <<Target:32/?UN, Size:32/?UN, Usage:32/?UN>>).
+%% Maybe NULL or offset sometimes
+ NewData =
+   if is_integer(Data) -> Data;
+      true ->
+        sdl:send_bin(Data, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glBufferData, [<<Target:32/?UN, Size:32/?UN, NewData:32/?SN, Usage:32/?UN>>]).
 
 %% Func:    bufferSubData 
 %% Args:    Target, Offset, Size, <<[Data]>>
 %% Returns: ok
 %% C-API func: void glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size,  const GLvoid * data)
 bufferSubData(Target, Offset, Size, Data) -> 
- sdl:send_bin(Data, ?MODULE, ?LINE),
- cast(?glBufferSubData, <<Target:32/?UN, Offset:32/?UN, Size:32/?UN>>).
+%% Maybe NULL or offset sometimes
+ NewData =
+   if is_integer(Data) -> Data;
+      true ->
+        sdl:send_bin(Data, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glBufferSubData, [<<Target:32/?UN, Offset:32/?UN, Size:32/?UN, NewData:32/?SN>>]).
 
 %% Func:    getBufferSubData 
 %% Args:    Target, Offset, Size, #sdlmem{} = Data
@@ -4658,8 +4766,14 @@ weightuiv(Size, Weights) ->
 weightPointerARB(Size, Type, Stride, Pointer) -> 
  weightPointer(Size, Type, Stride, Pointer).
 weightPointer(Size, Type, Stride, Pointer) -> 
- sdl:send_bin(Pointer, ?MODULE, ?LINE),
- cast(?glWeightPointerARB, <<Size:32/?SN, Type:32/?UN, Stride:32/?SN>>).
+%% Maybe NULL or offset sometimes
+ NewPointer =
+   if is_integer(Pointer) -> Pointer;
+      true ->
+        sdl:send_bin(Pointer, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glWeightPointerARB, [<<Size:32/?SN, Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
 %% Func:    vertexBlendARB 
 %% Args:    Count
@@ -4728,8 +4842,14 @@ matrixIndexuiv(Size, Indices) ->
 matrixIndexPointerARB(Size, Type, Stride, Pointer) -> 
  matrixIndexPointer(Size, Type, Stride, Pointer).
 matrixIndexPointer(Size, Type, Stride, Pointer) -> 
- sdl:send_bin(Pointer, ?MODULE, ?LINE),
- cast(?glMatrixIndexPointerARB, <<Size:32/?SN, Type:32/?UN, Stride:32/?SN>>).
+%% Maybe NULL or offset sometimes
+ NewPointer =
+   if is_integer(Pointer) -> Pointer;
+      true ->
+        sdl:send_bin(Pointer, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glMatrixIndexPointerARB, [<<Size:32/?SN, Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
 %% Func:    vertexAttrib1dARB 
 %% Args:    Index, X
@@ -5177,8 +5297,14 @@ vertexAttrib4usv(Index, V) ->
 vertexAttribPointerARB(Index, Size, Type, Normalized, Stride, Pointer) -> 
  vertexAttribPointer(Index, Size, Type, Normalized, Stride, Pointer).
 vertexAttribPointer(Index, Size, Type, Normalized, Stride, Pointer) -> 
- sdl:send_bin(Pointer, ?MODULE, ?LINE),
- cast(?glVertexAttribPointerARB, <<Index:32/?UN, Size:32/?SN, Type:32/?UN, Normalized:8/unsigned, 0:24, Stride:32/?SN>>).
+%% Maybe NULL or offset sometimes
+ NewPointer =
+   if is_integer(Pointer) -> Pointer;
+      true ->
+        sdl:send_bin(Pointer, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glVertexAttribPointerARB, [<<Index:32/?UN, Size:32/?SN, Type:32/?UN, Normalized:8/unsigned, 0:24, Stride:32/?SN, NewPointer:32/?SN>>]).
 
 %% Func:    enableVertexAttribArrayARB 
 %% Args:    Index
@@ -5205,8 +5331,14 @@ disableVertexAttribArray(Index) ->
 programStringARB(Target, Format, Len, String) -> 
  programString(Target, Format, Len, String).
 programString(Target, Format, Len, String) -> 
- sdl:send_bin(String, ?MODULE, ?LINE),
- cast(?glProgramStringARB, <<Target:32/?UN, Format:32/?UN, Len:32/?SN>>).
+%% Maybe NULL or offset sometimes
+ NewString =
+   if is_integer(String) -> String;
+      true ->
+        sdl:send_bin(String, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glProgramStringARB, [<<Target:32/?UN, Format:32/?UN, Len:32/?SN, NewString:32/?SN>>]).
 
 %% Func:    bindProgramARB 
 %% Args:    Target, Program
