@@ -19,6 +19,12 @@ TAR = gtar
 SDL_DLL_DIR = priv
 endif
 
+-include vsn
+
+ifeq ($(ESDL_VSN), )
+ESDL_VSN = $(REL)
+endif
+
 target clean:
 	@for d in $(SUBDIRS); do         \
            if test ! -d $$d ; then \
@@ -37,7 +43,6 @@ release: target relsrc relwin
 ## Install needs to find the erlang directory
 ERL_DIR := $(shell echo 'io:format("~s~n",[code:root_dir()]),halt().' | erl | sed 's,^[0-9]*> *,,g' | tail +2)
 
--include vsn
 INSTALLDIR = $(ERL_DIR)/lib/$(ESDL_VSN)
 
 ## I assume that make install are only made on unixes... :-)
@@ -55,13 +60,18 @@ install:
 	mkdir $(INSTALLDIR)/doc
 	mkdir $(INSTALLDIR)/ebin
 	mkdir $(INSTALLDIR)/priv
-	cp vsn license.terms Readme* $(INSTALLDIR)
+	@if test ! -f vsn ; then  \
+		echo ESDL_VSN=$(ESDL_VER) > $(INSTALLDIR)/vsn ; \
+	else \
+		cp vsn $(INSTALLDIR) ; \
+	fi;
+	cp license.terms Readme* $(INSTALLDIR)
 	cp src/*.?rl $(INSTALLDIR)/src
 	cp c_src/*.[ch] $(INSTALLDIR)/c_src
 	cp include/*.hrl $(INSTALLDIR)/include
 	cp doc/*.html $(INSTALLDIR)/doc
 	cp ebin/*beam $(INSTALLDIR)/ebin
-	cp priv/* $(INSTALLDIR)/priv
+	cp priv/*.* $(INSTALLDIR)/priv
 
 
 ## This is used by me only for making a new release...
