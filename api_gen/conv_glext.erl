@@ -110,7 +110,43 @@ add() ->
      {"glGetProgramStringARB",  {[{"string", sdlmem}], []}},
      {"glGetVertexAttribdvARB", {[{"params", 4}], []}},  % {undefined, 4, "pname"} ?
      {"glGetVertexAttribfvARB", {[{"params", 4}], []}},  % {undefined, 4, "pname"} ?
-     {"glGetVertexAttribivARB", {[{"params", 4}], []}}   % {undefined, 4, "pname"} ?
+     {"glGetVertexAttribivARB", {[{"params", 4}], []}},   % {undefined, 4, "pname"} ?
+     %% 1.5 
+     {"glGenQueries", {[{"ids", "n"}], []}},
+     {"glDeleteQueries", {[{"ids", "n"}], []}},
+     {"glGetQueryiv", {[{"params", 1}], []}},
+     {"glGetQueryObjectiv", {[{"params", 1}], []}},
+     {"glGetQueryObjectuiv", {[{"params", 1}], []}},
+     {"glDeleteBuffers", {[{"buffers", "n"}], []}},
+     {"glGenBuffers", {[{"buffers", "n"}], []}},
+     {"glBufferData", {[{"data", pointer, "GL_UNSIGNED_BYTE"}], []}},
+     {"glBufferSubData", {[{"data", pointer, "GL_UNSIGNED_BYTE"}], []}},
+     {"glGetBufferSubData", {[{"data", sdlmem}], []}},
+     {"glGetBufferParameteriv", {[{"params", 1}], []}},
+     {"glShaderSourceARB", {[{"length", "count"}, {"string", "count"}], []}},
+     {"glUniform1fvARB", {[{"value", "count"}], []}},
+     {"glUniform2fvARB", {[{"value", "count*2"}], []}},
+     {"glUniform3fvARB", {[{"value", "count*3"}], []}},
+     {"glUniform4fvARB", {[{"value", "count*4"}], []}},
+     {"glUniform1ivARB", {[{"value", "count"}], []}},
+     {"glUniform2ivARB", {[{"value", "count*2"}], []}},
+     {"glUniform3ivARB", {[{"value", "count*3"}], []}},
+     {"glUniform4ivARB", {[{"value", "count*4"}], []}},
+     {"glUniformMatrix2fvARB", {[{"value", "count*4"}], []}},
+     {"glUniformMatrix3fvARB", {[{"value", "count*9"}], []}},
+     {"glUniformMatrix4fvARB", {[{"value", "count*16"}], []}},
+     {"glGetObjectParameterfvARB", {[{"params", 1}], []}},
+     {"glGetObjectParameterivARB", {[{"params", 1}], []}},
+     {"glGetInfoLogARB", {[{"length", 1}, {"infoLog", {"length", "maxLength"}}], []}},
+     {"glGetAttachedObjectsARB", {[{"count", 1}, {"obj", {"count", "maxCount"}}], []}},
+     {"glGetUniformLocationARB", {[{"name", pointer, string}], []}},
+     {"glGetActiveUniformARB", {[{"length", 1}, {"size", 1}, {"type", 1}, {"name", {"length", "maxLength"}}], []}},
+     {"glGetUniformfvARB", {[{"params", sdlmem}], []}},
+     {"glGetUniformivARB", {[{"params", sdlmem}], []}},
+     {"glGetShaderSourceARB", {[{"length", 1},{"source", {"length", "maxLength"}}], []}},
+     {"glBindAttribLocationARB", {[{"name", pointer, string}], []}},
+     {"glGetActiveAttribARB", {[{"length", 1},{"size", 1},{"type", 1},{"name", {"length", "maxLength"}}], []}}, 
+     {"glGetAttribLocationARB", {[{"name", pointer, string}], []}}
     ].
 
 init_erl(Fd) -> 

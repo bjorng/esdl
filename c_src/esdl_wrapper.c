@@ -11,6 +11,7 @@
 */
 
 #include <stdlib.h>
+#include <strings.h>
 
 #include "esdl.h"
 #include "esdl_gl.h"
@@ -108,17 +109,28 @@ void init_glexts(sdl_data* sd)
     already_done = 1;
     for (i = 0; (op = ext_fns[i].op) != 0; i++) {
       if (fun_tab[op] == undefined_extension) {
-	void* ext_ptr = SDL_GL_GetProcAddress(ext_fns[i].name);
-
-	str_tab[op] = ext_fns[i].name;
-	if (ext_ptr) {
-	  /* fprintf(stderr, "Success %s \r\n", code_fns[i].str);*/
-	  * (void **) (ext_fns[i].ext_fun) = ext_ptr;
-	  fun_tab[op] = ext_fns[i].fun;
-	} else {
-	  /* fprintf(stderr, "Failed %s \r\n", code_fns[i].str); */
-	  fun_tab[op] = undefined_extension;
-	}
+	 void* ext_ptr = SDL_GL_GetProcAddress(ext_fns[i].name);
+	 str_tab[op] = ext_fns[i].name;
+	 if (ext_ptr) {
+	    /* fprintf(stderr, "Success %s \r\n", code_fns[i].str);*/
+	    * (void **) (ext_fns[i].ext_fun) = ext_ptr;
+	    fun_tab[op] = ext_fns[i].fun;
+	 } else {
+	    char arbname[256];	   
+	    char* tmp;
+	    strcpy(arbname, ext_fns[i].name);
+	    tmp = arbname + strlen(arbname);
+	    strncpy(tmp, "ARB", 4);
+	    ext_ptr = SDL_GL_GetProcAddress(arbname);
+	    if (ext_ptr) {
+	       /* fprintf(stderr, "Success %s \r\n", code_fns[i].str);*/
+	       * (void **) (ext_fns[i].ext_fun) = ext_ptr;
+	       fun_tab[op] = ext_fns[i].fun;
+	    } else {	    	    
+	       /* fprintf(stderr, "Failed %s \r\n", code_fns[i].str); */
+	       fun_tab[op] = undefined_extension;
+	    }
+	 }
       } else {	 
 	fprintf(stderr, "Exiting FP EXTENSION array mismatch in initialization %d %d %s\r\n", 
 		i, ext_fns[i].op, ext_fns[i].name);

@@ -103,7 +103,6 @@ write_cpyr_c(Fd) ->
  *  See the file \"license.terms\" for information on usage and redistribution
  *  of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- *     $Id$
  *
  */
 ", []).
@@ -115,7 +114,6 @@ write_cpyr_erl(Fd) ->
 %%  See the file \"license.terms\" for information on usage and redistribution
 %%  of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 %% 
-%%     $Id$
 %%
 ", []).
 
@@ -176,6 +174,11 @@ generate(["#define", What, eol | R], Fd) ->
 generate(["#define", What, Value, eol | R], Fd) ->
     V = generate_value(Value),
     io:format(Fd#fs.hrl, "-define(~s, ~s).~n", [What, V]),
+    case arb(What) of
+	false -> ignore;
+	NoArb -> 
+	    io:format(Fd#fs.hrl, "-define(~s, ~s).~n", [NoArb, V])
+    end,
     generate(R, Fd);
 generate(["#ifndef", What, eol | R], Fd) ->
     case skip_extensions(What, R) of
@@ -231,7 +234,7 @@ generate([Func|R], Fd)
 	    generate(R2, Fd2)
     end;
 
-generate(["typedef", Type, lpar, "APIENTRY", pointer, Func, rpar|R], Fd) ->
+generate(["typedef", Type, lpar, "APIENTRYP", Func, rpar|R], Fd) ->
     NewF = gb_trees:get(Func, get(glext_proto)),
     generate(["GLAPI",Type, "APIENTRY",NewF|R], Fd);
 
@@ -299,6 +302,8 @@ generate_comments([W|R], Fd) ->
 
 generate_value([$0, $x | Rest]) ->
     "16#" ++ Rest;
+generate_value("GL_" ++ _ = Val) ->
+    "?" ++ Val;
 generate_value(Val) ->
     Val.
 
@@ -387,9 +392,15 @@ genf_erl(Type, FuncName, Args0, Last, Fd) ->
 		 true -> [Type, FuncName] end),
     write_args(FuncName, c, Args0, Fd),
     Cfunc = case skip(FuncName) of call_vector -> call_vector(FuncName); _ -> FuncName end,
-    ?W(")~n~s(", [EFN]),
-    write_args(FuncName, erl, Args1, Fd),
-    ?W(") -> ~n", []),
+    ?W(")~n~s(", [EFN]), write_args(FuncName, erl, Args1, Fd), ?W(") -> ~n", []),
+    case arb(EFN) of 
+	false ->
+	    ignore;
+	NoArb->
+	    ?W(" ~s(", [NoArb]), write_args(FuncName, erl, Args1, Fd), 
+	    ?W(").~n~s(", [NoArb]), write_args(FuncName, erl, Args1, Fd),
+	    ?W(") -> ~n", [])
+    end,
     %%    io:format(Fd, "exit(nyi),~n", []),
     NewArgs = maybe_build_erlbinaries(FuncName, Args, Fd),
     case {Type, Rets} of
@@ -506,6 +517,10 @@ genf_c(Type, FuncName, Args0, Last, Fd) ->
 				      ?W(" memcpy(bp, ~s, sizeof(~s)*~w);~n"
 					 " bp += sizeof(~s)*~w;~n",
 					 [V1,T1,N,T1,N]);
+				  {Val,_} when is_list(Val) ->
+				      ?W(" memcpy(bp, ~s, sizeof(~s)*(*~s));~n"
+					 " bp += sizeof(~s)*(*~s);~n",
+					 [V1,T1,Val,T1,Val]);
 				  Val when is_list(Val) ->
 				      ?W(" memcpy(bp, ~s, sizeof(~s)*(*~s));~n"
 					 " bp += sizeof(~s)*(*~s);~n",
@@ -521,11 +536,16 @@ genf_c(Type, FuncName, Args0, Last, Fd) ->
     end,
     ?W("}~n~n~n", []).
 
+free_mem([{T, const, pointer, pointer, V1}|Args], FuncName, Fd) 
+  when FuncName == "glShaderSourceARB" ->
+    ?W(" free(~s);~n", [V1]),
+    free_mem(Args, FuncName, Fd);
 free_mem([{T, const, pointer, V1}|Args], FuncName, Fd) ->
     case getdef(FuncName, V1) of
-	Str when list(Str), T == "GLdouble"->
+	Str when list(Str), 
+		 ((T == "GLdouble") or (T=="GLclampd")) ->
 	    ?W(" free(~s);~n", [V1]);
-	{undefined, Val,_} when T == "GLdouble", is_list(Val) ->
+	{undefined, Val,_} when ((T == "GLdouble") or (T == "GLclampd")), is_list(Val) ->
 	    ?W(" free(~s);~n", [V1]);
 	_  -> ignore
     end,
@@ -535,6 +555,8 @@ free_mem([{T, pointer, V1}|Args], FuncName, Fd) ->
 	_  when ?GLUTYPE(T) ->
 	    ignore;
 	Str when list(Str) ->
+	    ?W(" free(~s);~n", [V1]);
+	{Str,_} when list(Str) ->
 	    ?W(" free(~s);~n", [V1]);
 	_  -> ignore
     end,
@@ -563,6 +585,19 @@ maybe_build_erlbinaries(Func,[Arg={_,const,pointer,_}|R],Fd) ->
 	_ ->
 	    [Arg | maybe_build_erlbinaries(Func, R, Fd)]
     end;    
+maybe_build_erlbinaries(Func,[Arg={_,const,pointer,pointer,_}|R],Fd) ->
+    case is_vector(Func) of
+	false ->
+	    case build_erlbinaries(Func, Arg, R == [], Fd) of
+		already_sent -> 
+		    maybe_build_erlbinaries(Func, R, Fd);
+		New ->
+		    put({binary_arg, Func}, Arg),
+		    [New | maybe_build_erlbinaries(Func, R, Fd)]
+	    end;
+	_ ->
+	    [Arg | maybe_build_erlbinaries(Func, R, Fd)]
+    end;
 maybe_build_erlbinaries(Func, [V={T,pointer,Var}|R], Fd) ->
     case getdef(Func, Var) of
 	pointer -> 
@@ -579,6 +614,11 @@ maybe_build_erlbinaries(Func, [V|R], Fd) ->
 maybe_build_erlbinaries(F, [], Fd) ->
     [].
 
+build_erlbinaries(Func, {T, const, pointer, pointer,V}, IsLast, Fd) ->
+    ?W(" lists:foreach(fun(Values) -> sdl:send_bin(list_to_binary([Values,0]), ?MODULE, ?LINE) end, ~s),~n", 
+       [uppercase(V)]),
+    already_sent;
+
 build_erlbinaries(Func, {T, const, pointer,V}, IsLast, Fd) ->
     Var = uppercase(V),
     Type = case type_to_enum(T) of
@@ -593,6 +633,9 @@ build_erlbinaries(Func, {T, const, pointer,V}, IsLast, Fd) ->
 		   EnumType
 	   end,
     case getdef(Func, V) of
+	pointer when T == "GLcharARB" -> 
+	    ?W(" sdl:send_bin(list_to_binary([~s,0]), ?MODULE, ?LINE),~n", [Var]),
+	    already_sent;
 	pointer ->
 	    ?W(" sdl:send_bin(~s, ?MODULE, ?LINE),~n", [Var]),
 	    already_sent;
@@ -670,6 +713,9 @@ get_size(Func,"void", [{V,T}|R], First) ->
 		get_size(Func,"void", R, "+ ");
 	Val when is_list(Val) ->
 	    First ++ "sizeof(" ++ T ++ ") * (*" ++ Val ++ ")" ++ 
+		get_size(Func,"void", R, "+ ");
+	{Val,_} when is_list(Val) ->
+	    First ++ "sizeof(" ++ T ++ ") * (*" ++ Val ++ ")" ++ 
 		get_size(Func,"void", R, "+ ")
 % 	{undefined, Val, _} when is_list(Val)->
 % 	    First ++ "sizeof(" ++ T ++ ") * (*" ++ Val ++ ")" ++ 
@@ -726,19 +772,19 @@ write_arg(FuncName, Type, {T,V}, Fd, Prev0, IsLast, Align0) ->
 	    c ->
 		?W("~s~s ~s", [Cont, T, V]), 
 		no;
-	    cdef when T == "GLdouble" ->
+	    cdef when ((T == "GLdouble") or (T == "GLclampd")) ->
 		?W(" ~s ~s;~n", [T, V]),
 		no;
 	    cdef ->
 		?W(" ~s * ~s;~n", [T, V]),
 		no;
-	    binc when T == "GLdouble", IsLast ->
-		?W(" ~s = * (~s *) bp; ~n", [V, T]), 
+	    binc when ((T=="GLdouble") or (T=="GLclampd")), IsLast ->
+		?W(" memcpy(&~s, bp, sizeof(~s)); ~n", 
+ 		   [V, T]), 	       
 		no;
-	    binc when T == "GLdouble" ->
-		?W(" ~s = * (~s *) bp; bp += sizeof(~s); ~n", [V,T,T]), 
-% 		?W(" memcpy(&~s, bp, sizeof(~s)); bp += sizeof(~s); ~n", 
-% 		   [V, T, T]), 
+	    binc when ((T=="GLdouble") or (T=="GLclampd")) ->
+ 		?W(" memcpy(&~s, bp, sizeof(~s)); bp += sizeof(~s); ~n", 
+ 		   [V, T, T]), 
 		no;
 	    binc when IsLast ->
 		?W(" ~s = (~s *) bp; ~n", 
@@ -748,7 +794,7 @@ write_arg(FuncName, Type, {T,V}, Fd, Prev0, IsLast, Align0) ->
 		?W(" ~s = (~s *) bp; bp += sizeof(~s); ~n", 
 		   [V, T, T]), 
 		no;
-	    ccalls when T == "GLdouble" ->
+	    ccalls when ((T=="GLdouble") or (T=="GLclampd")) ->
 		?W("~s~s", [Cont, remCarray(V)]), 
 		no;
 	    ccalls ->
@@ -796,6 +842,8 @@ write_arg(FuncName, Type, {T,pointer, V}, Fd, Prev0, IsLast, Align0) ->
 			?W(" GLvoid * ~s = NULL;~n", [V]);
 		    Variable when list(Variable) ->
 			?W(" ~s * ~s = NULL;~n", [T,V]);
+		    {Variable,_Max} when list(Variable) ->
+			?W(" ~s * ~s = NULL;~n", [T,V]);
 		    Error ->
 			erlang:fault({?MODULE, ?LINE, Error})
 		end;
@@ -818,6 +866,10 @@ write_arg(FuncName, Type, {T,pointer, V}, Fd, Prev0, IsLast, Align0) ->
 		    Variable when list(Variable) ->
 			?W(" ~s = (~s*) malloc(sizeof(~s)*(*~s));~n",
 				  [V,T,T,Variable]);
+		    {Variable,Max} when list(Variable) ->
+			?W(" ~s = (~s*) malloc(sizeof(~s)*(*~s));~n",
+			   [V,T,T,Max]);
+
 		    Var when integer(Var) ->
 			skip;
 		    {undefined, Var, _} ->
@@ -883,11 +935,11 @@ write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
 		?W("~s const ~s * ~s", [Cont, T, V]);
 	    cdef ->
 		case getdef(FuncName, V) of
-		    Val when integer(Val), T == "GLdouble" ->  
+		    Val when integer(Val), ((T=="GLdouble") or (T=="GLclampd")) ->  
 			?W(" ~s ~s[~w];~n", [T, V, Val]);
 		    Val when integer(Val) ->  
 			?W(" ~s * ~s;~n", [T, V]);
-		    {undefined, Val,_} when T == "GLdouble" ->
+		    {undefined, Val,_} when ((T=="GLdouble") or (T=="GLclampd")) ->
 			if is_list(Val) -> 
 				?W(" ~s *~s;int * ~sLen;~n", [T,V,V]);
 			   true ->
@@ -895,7 +947,7 @@ write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
 			end;
 		    {undefined, Val,_}  ->
 			?W(" ~s * ~s;~n", [T,V]);
-		    pointer when T == "GLdouble" -> 
+		    pointer when ((T=="GLdouble") or (T=="GLclampd")) -> 
 			?W("{not_implemented, ~p}", [?LINE]),
 			?W(" int * ~sMemT = 0;~n", [V]),
 			?W(" int * ~sLen = 0;~n", [V]),
@@ -913,13 +965,13 @@ write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
 		end;
 	    binc ->
 		case getdef(FuncName, V) of
-		    Val when integer(Val), T == "GLdouble" ->
+		    Val when integer(Val),((T=="GLdouble") or (T=="GLclampd")) ->
 			?W(" memcpy(~s,bp,sizeof(~s)*~w); ~n", [V,T,Val]),
 			bump_buff(IsLast, T, Val, Fd);
 		    Val when integer(Val) ->
 			?W(" ~s = (~s *) bp;~n",[V,T]),
 			bump_buff(IsLast, T, Val, Fd);
-		    {undefined, Val,_} when T == "GLdouble" ->
+		    {undefined, Val,_} when ((T=="GLdouble") or (T=="GLclampd")) ->
 			?W(" ~sLen  = (int *) bp; bp += sizeof(int); ~n",
 			   [V]),
 			if is_list(Val) -> 
@@ -938,7 +990,7 @@ write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
 			?W(" bp += sizeof(int); ~n", []),
 			?W(" ~s = (~s *) bp; bp += sizeof(~s)*(*~s); ~n", 
 			   [V,T,T,Val]);
-		    pointer when T == "GLdouble" ->         		
+		    pointer when ((T=="GLdouble") or (T=="GLclampd")) ->         		
 			?W("{not_implemented, ~p}", [?LINE]);
 		    pointer -> 
 			Cnt = get(arg_cnt),
@@ -950,7 +1002,7 @@ write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
 			?W(" ~s = (~s *) egl_sd->bin[~w].base; ~n", [V,T,Cnt]),
 			put(free_args, true),
 			put(arg_cnt, Cnt+1);
-		    Str when list(Str), T == "GLdouble" ->
+		    Str when list(Str), ((T=="GLdouble") or (T=="GLclampd")) ->
 			?W(" ~s = (~s*) malloc(sizeof(~s)*(*~s));~n",
 			   [V,T,T,Str]),
 			?W(" memcpy(~s,bp,sizeof(~s)*(*~s));~n", [V,T,Str]),
@@ -997,7 +1049,7 @@ write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
     {Prev, Align};
 
 write_arg(FuncName, Type, {T, pointer, pointer, V}, Fd, First, _IsLast, Align) 
-  when T == "GLdouble" ->
+  when T == ((T=="GLdouble") or (T=="GLclampd")) ->
     erlang:fault({not_implemented, ?LINE});
 write_arg(FuncName, Type, {T, pointer, pointer, V}, Fd, First, IsLast, Align) ->
     Cont = case First of first -> ""; {first,_} -> ""; Else -> ", "  end,
@@ -1009,9 +1061,44 @@ write_arg(FuncName, Type, {T, pointer, pointer, V}, Fd, First, IsLast, Align) ->
 	binc ->
 	    ignore;
 	ccalls ->
-	    ?W("~s&~s", [Cont, remCarray(V)])
+	    ?W("~s&~s", [Cont, remCarray(V)]);
+	erlcom ->
+	    io:format("~p~p error", [?MODULE,?LINE]),
+	    exit(error)
     end,
     {no, Align};
+
+write_arg(FuncName, Type, {T, const, pointer, pointer, V}, Fd, First, IsLast, Align) 
+  when FuncName == "glShaderSourceARB" ->
+    Cont = case First of first -> ""; {first,_} -> ""; Else -> ", "  end,
+    case Type of
+	c ->
+	    ?W("~s const ~s* *~s", [Cont, T, V]);
+	cdef ->
+	    ?W(" ~s* *~s;~n", [T,V]),
+	    ?W(" int index;~n", []);
+	binc -> 
+	    case getdef(FuncName, V) of 
+		Variable when list(Variable) ->
+		    ?W(" ~s = (~s* *) malloc(sizeof(~s*)*(*~s));~n",
+		       [V,T,T,Variable]),
+		    Cnt = get(arg_cnt),
+		    ?W(" for(index=0; index < *~s; index++) ~n"
+		       "    ~s[index] = (~s *) egl_sd->bin[index+~w].base;~n",
+		       [Variable, V, T, Cnt]),
+		    put(free_args, true),
+		    put(arg_cnt, unusable)
+	    end;
+	ccalls ->
+	    ?W("~s~s", [Cont, remCarray(V)]);
+	erl ->
+	    ?W("~s~s", [Cont, element(1, erlVar(V))]);
+	_ ->
+	    ignore
+    end,
+    {no, Align};
+
+
 
 write_arg(FuncName, Type, {T, callback, V}, Fd, First, _, Align) ->
     io:format("Error Dont know how to generate callbacks~n", []),
@@ -1146,6 +1233,9 @@ write_ret(FuncName, {D,T}, Fd) ->
 	{undefined, Max, _} ->
 	    ?W("~s:~sLen/binary-unit:~s_SIZE,_:~sBump/binary-unit:~s_SIZE",
 	       [UD, UD, type_to_enum(T), UD, type_to_enum(T)]);
+	{Length,_Max} when list(Length) ->
+	    ?W("~s:~s/binary-unit:~s_SIZE", 
+	       [UD, uppercase(Length), type_to_enum(T)]);
 	Length when list(Length) ->
 	    ?W("~s:~s/binary-unit:~s_SIZE", 
 	       [UD, uppercase(Length), type_to_enum(T)]);
@@ -1166,6 +1256,9 @@ write_ret2(FuncName, {D,T}, Cont, Fd) ->
 	    ?W("~sbin2list(~sLen, ~s, ~s)", 
 	       [Cont,UD,type_to_enum(T),UD]);
 	Length when list(Length) -> 
+	    ?W("~sbin2list(~s, ~s, ~s)", 
+	       [Cont,uppercase(Length),type_to_enum(T),UD]);
+	{Length,_Max} when list(Length) -> 
 	    ?W("~sbin2list(~s, ~s, ~s)", 
 	       [Cont,uppercase(Length),type_to_enum(T),UD]);
 	Length when integer(Length) -> 
@@ -1283,6 +1376,15 @@ bintype("GLclampd") ->
     ":64/?FN";
 bintype("GLbitfield") ->
     ":32/?UN";
+bintype("GLchar" ++ _) ->
+    ":8/?UN";
+bintype("GLhandle" ++ _) ->
+    ":32/?UN";
+bintype("GLsizeiptr") ->
+    ":32/?UN";
+bintype("GLintptr") ->
+    ":32/?UN";
+
 %% GLU types
 bintype("GLUnurbs") ->  %%  a pointer
     ":32/?UN";
@@ -1310,6 +1412,8 @@ type_to_enum("GLint") ->
     "?GL_INT";
 type_to_enum("GLubyte") ->
     "?GL_UNSIGNED_BYTE";
+type_to_enum("GLcharARB") ->
+    "?GL_UNSIGNED_BYTE";
 type_to_enum("GLushort") ->
     "?GL_UNSIGNED_SHORT";
 type_to_enum("GLuint") ->
@@ -1328,6 +1432,14 @@ type_to_enum("GLbitfield") ->
     "?GL_INT";
 type_to_enum("GLenum") ->
     "?GL_INT";  %% hmm
+type_to_enum("GLhandleARB") ->
+    "?GL_UNSIGNED_INT";
+type_to_enum("GLsizeiptr") ->
+    "?GL_UNSIGNED_INT";  %% hmm
+type_to_enum("GLintptr") ->
+    "?GL_UNSIGNED_INT";  %% hmm
+    
+
 type_to_enum(What) ->
     "GeneraterUnknownType: " ++ What.
 
@@ -1354,6 +1466,10 @@ byteSz(TYPE) ->
 	"?GL_DOUBLE" ->         ?GL_DOUBLE_SIZE div 8;
 	"GLvoid" ->             ?GL_INT_SIZE div 8; % Pointer
 	"void"   ->             ?GL_INT_SIZE div 8; % Pointer
+	"GLintptr" ++ _ ->      ?GL_UNSIGNED_INT_SIZE div 8; % long ?
+	"GLsizeiptr" ++ _ ->    ?GL_UNSIGNED_INT_SIZE div 8; % long ?
+	"GLchar" ++ _ ->        ?GL_BYTE_SIZE div 8;
+	"GLhandle" ++ _ ->      ?GL_UNSIGNED_INT_SIZE div 8;
 	binary ->  4  %% Ignore binariers are always 32 aligned.
     end.            
 
@@ -1453,6 +1569,21 @@ skip_extensions("GL_ARB_matrix_palette",_R) ->  false;
 skip_extensions("GL_ARB_shadow_ambient",_R) ->  false;
 skip_extensions("GL_ARB_vertex_program",_R) ->  false;
 skip_extensions("GL_ARB_fragment_program",_R) ->  false;
+skip_extensions("GL_NV_depth_clamp",_R) ->  false;
+skip_extensions("GL_ARB_vertex_shader",_R) ->  false;
+skip_extensions("GL_ARB_fragment_shader", _R) ->  false;
+skip_extensions("GL_ARB_shading_language_100",_R) ->  false;
+skip_extensions("GL_ARB_texture_non_power_of_two",_R) ->  false;
+skip_extensions("GL_ARB_point_sprite",_R) ->  false;
+skip_extensions("GL_ARB_shadow_ambient",_R) ->  false;
+skip_extensions("GL_ARB_shader_objects",_R) ->  false;
+skip_extensions("GL_ABGR_EXT", _R) -> false;
+skip_extensions("GL_ATI_separate_stencil",_R) -> false;    
+%% skip_extensions("",_R) -> false;
+skip_extensions("GL_NV_float_buffer",_R) -> false;
+skip_extensions("GL_ATI_texture_float",_R) -> false;
+skip_extensions("GL_EXT_texture_mirror_clamp",_R) -> false;
+
 
 %% skip the rest.
 skip_extensions("GL_ARB_" ++ _, R) ->
@@ -1513,8 +1644,14 @@ skip_to_endif(R0, N) ->
 prototypes(Func) ->
     F = "PFN" ++ uppercase_all(Func) ++ "PROC".
 
-store_prototypes([Pre, _, "APIENTRY", Func|R0]) 
+store_prototypes([Pre, _Type|R0]) 
   when Pre == "WINGDIAPI"; Pre == "GLAPI"; Pre == "extern" ->
+    {Func,R1} = 
+	case R0 of
+	    ["APIENTRY", F|Rest] -> {F,Rest};
+	    [pointer, "APIENTRY", F|Rest] -> {F,Rest}
+	end,
+    
     Tree = case get(glext_proto) of
 	       undefined -> 
 		   gb_trees:empty();
@@ -1523,7 +1660,7 @@ store_prototypes([Pre, _, "APIENTRY", Func|R0])
 	   end,
     NT = gb_trees:insert(prototypes(Func), Func, Tree),
     put(glext_proto, NT),
-    [eol|R] = lists:dropwhile(fun(eol) -> false; (_) ->true end, R0),
+    [eol|R] = lists:dropwhile(fun(eol) -> false; (_) ->true end, R1),
     store_prototypes(R);
 store_prototypes(["#endif"| R0]) ->
     [eol|R] = lists:dropwhile(fun(eol) -> false; (_) ->true end, R0),
@@ -1543,6 +1680,15 @@ skip(Func) ->
 % 	    case remove_extension of
 
 	    has_vector(lists:reverse(Func))
+    end.
+
+arb(Func) ->
+    case lists:reverse(Func) of
+	"BRA_" ++ Define ->
+	    lists:reverse(Define);
+	"BRA" ++ Rfunc ->
+	    lists:reverse(Rfunc);
+	_ -> false
     end.
 
 call_vector(FuncName) ->

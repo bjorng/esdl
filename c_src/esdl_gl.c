@@ -196,10 +196,10 @@ void egl_clearColor(sdl_data *egl_sd, int egl_len, char *egl_buff)
 void egl_clearDepth(sdl_data *egl_sd, int egl_len, char *egl_buff) 
 {
  char * bp; 
- GLclampd * depth;
+ GLclampd depth;
  bp = egl_buff;
- depth = (GLclampd *) bp; 
- glClearDepth(*depth);
+ memcpy(&depth, bp, sizeof(GLclampd)); 
+ glClearDepth(depth);
 }
 
 
@@ -605,12 +605,12 @@ void egl_depthMask(sdl_data *egl_sd, int egl_len, char *egl_buff)
 void egl_depthRange(sdl_data *egl_sd, int egl_len, char *egl_buff) 
 {
  char * bp; 
- GLclampd * zNear;
- GLclampd * zFar;
+ GLclampd zNear;
+ GLclampd zFar;
  bp = egl_buff;
- zNear = (GLclampd *) bp; bp += sizeof(GLclampd); 
- zFar = (GLclampd *) bp; 
- glDepthRange(*zNear, *zFar);
+ memcpy(&zNear, bp, sizeof(GLclampd)); bp += sizeof(GLclampd); 
+ memcpy(&zFar, bp, sizeof(GLclampd)); 
+ glDepthRange(zNear, zFar);
 }
 
 
@@ -957,12 +957,12 @@ void egl_frustum(sdl_data *egl_sd, int egl_len, char *egl_buff)
  GLdouble zNear;
  GLdouble zFar;
  bp = egl_buff;
- left = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- right = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- bottom = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- top = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- zNear = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- zFar = * (GLdouble *) bp; 
+ memcpy(&left, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&right, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&bottom, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&top, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&zNear, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&zFar, bp, sizeof(GLdouble)); 
  glFrustum(left, right, bottom, top, zNear, zFar);
 }
 
@@ -1569,7 +1569,7 @@ void egl_indexd(sdl_data *egl_sd, int egl_len, char *egl_buff)
  char * bp; 
  GLdouble c;
  bp = egl_buff;
- c = * (GLdouble *) bp; 
+ memcpy(&c, bp, sizeof(GLdouble)); 
  glIndexd(c);
 }
 
@@ -1940,8 +1940,8 @@ void egl_map1d(sdl_data *egl_sd, int egl_len, char *egl_buff)
  GLdouble *points;int * pointsLen;
  bp = egl_buff;
  target = (GLenum *) bp; bp += sizeof(GLenum); 
- u1 = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- u2 = * (GLdouble *) bp; bp += sizeof(GLdouble); 
+ memcpy(&u1, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&u2, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
  stride = (GLint *) bp; bp += sizeof(GLint); 
  order = (GLint *) bp; bp += sizeof(GLint); 
  pointsLen  = (int *) bp; bp += sizeof(int); 
@@ -1989,12 +1989,12 @@ void egl_map2d(sdl_data *egl_sd, int egl_len, char *egl_buff)
  GLdouble *points;int * pointsLen;
  bp = egl_buff;
  target = (GLenum *) bp; bp += sizeof(GLenum); 
- u1 = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- u2 = * (GLdouble *) bp; bp += sizeof(GLdouble); 
+ memcpy(&u1, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&u2, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
  ustride = (GLint *) bp; bp += sizeof(GLint); 
  uorder = (GLint *) bp; bp += sizeof(GLint); 
- v1 = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- v2 = * (GLdouble *) bp; bp += sizeof(GLdouble); 
+ memcpy(&v1, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&v2, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
  vstride = (GLint *) bp; bp += sizeof(GLint); 
  vorder = (GLint *) bp; bp += sizeof(GLint); 
  pointsLen  = (int *) bp; bp += sizeof(int); 
@@ -2043,8 +2043,8 @@ void egl_mapGrid1d(sdl_data *egl_sd, int egl_len, char *egl_buff)
  GLdouble u2;
  bp = egl_buff;
  un = (GLint *) bp; bp += sizeof(GLint); 
- u1 = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- u2 = * (GLdouble *) bp; 
+ memcpy(&u1, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&u2, bp, sizeof(GLdouble)); 
  glMapGrid1d(*un, u1, u2);
 }
 
@@ -2074,11 +2074,11 @@ void egl_mapGrid2d(sdl_data *egl_sd, int egl_len, char *egl_buff)
  GLdouble v2;
  bp = egl_buff;
  un = (GLint *) bp; bp += sizeof(GLint); 
- u1 = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- u2 = * (GLdouble *) bp; bp += sizeof(GLdouble); 
+ memcpy(&u1, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&u2, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
  vn = (GLint *) bp; bp += sizeof(GLint); 
- v1 = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- v2 = * (GLdouble *) bp; 
+ memcpy(&v1, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&v2, bp, sizeof(GLdouble)); 
  glMapGrid2d(*un, u1, u2, *vn, v1, v2);
 }
 
@@ -2278,12 +2278,12 @@ void egl_ortho(sdl_data *egl_sd, int egl_len, char *egl_buff)
  GLdouble zNear;
  GLdouble zFar;
  bp = egl_buff;
- left = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- right = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- bottom = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- top = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- zNear = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- zFar = * (GLdouble *) bp; 
+ memcpy(&left, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&right, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&bottom, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&top, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&zNear, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&zFar, bp, sizeof(GLdouble)); 
  glOrtho(left, right, bottom, top, zNear, zFar);
 }
 
@@ -2690,10 +2690,10 @@ void egl_rectd(sdl_data *egl_sd, int egl_len, char *egl_buff)
  GLdouble x2;
  GLdouble y2;
  bp = egl_buff;
- x1 = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- y1 = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- x2 = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- y2 = * (GLdouble *) bp; 
+ memcpy(&x1, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&y1, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&x2, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&y2, bp, sizeof(GLdouble)); 
  glRectd(x1, y1, x2, y2);
 }
 
@@ -2824,10 +2824,10 @@ void egl_rotated(sdl_data *egl_sd, int egl_len, char *egl_buff)
  GLdouble y;
  GLdouble z;
  bp = egl_buff;
- angle = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- x = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- y = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- z = * (GLdouble *) bp; 
+ memcpy(&angle, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&x, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&y, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&z, bp, sizeof(GLdouble)); 
  glRotated(angle, x, y, z);
 }
 
@@ -2855,9 +2855,9 @@ void egl_scaled(sdl_data *egl_sd, int egl_len, char *egl_buff)
  GLdouble y;
  GLdouble z;
  bp = egl_buff;
- x = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- y = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- z = * (GLdouble *) bp; 
+ memcpy(&x, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&y, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&z, bp, sizeof(GLdouble)); 
  glScaled(x, y, z);
 }
 
@@ -3197,7 +3197,7 @@ void egl_texGend(sdl_data *egl_sd, int egl_len, char *egl_buff)
  bp = egl_buff;
  coord = (GLenum *) bp; bp += sizeof(GLenum); 
  pname = (GLenum *) bp; bp += sizeof(GLenum); 
- param = * (GLdouble *) bp; 
+ memcpy(&param, bp, sizeof(GLdouble)); 
  glTexGend(*coord, *pname, param);
 }
 
@@ -3439,9 +3439,9 @@ void egl_translated(sdl_data *egl_sd, int egl_len, char *egl_buff)
  GLdouble y;
  GLdouble z;
  bp = egl_buff;
- x = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- y = * (GLdouble *) bp; bp += sizeof(GLdouble); 
- z = * (GLdouble *) bp; 
+ memcpy(&x, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&y, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
+ memcpy(&z, bp, sizeof(GLdouble)); 
  glTranslated(x, y, z);
 }
 

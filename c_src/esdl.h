@@ -26,6 +26,20 @@
 #else
 #include <GL/gl.h>
 #endif
+       
+/* Some new GL types (eleminates the need for glext.h) */
+#ifndef GL_VERSION_1_5
+#include <stddef.h>
+/* GL types for handling large vertex buffer objects */
+typedef ptrdiff_t GLintptr;
+typedef ptrdiff_t GLsizeiptr;
+#endif
+#ifndef GL_ARB_shader_objects
+/* GL types for handling shader object handles and characters */
+typedef char GLcharARB;		     /* native character */
+typedef unsigned int GLhandleARB;    /* shader object handle */
+#endif
+
 
 #include "esdl_conv.h"
 

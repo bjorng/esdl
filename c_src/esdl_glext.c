@@ -1148,7 +1148,7 @@ void egl_getCompressedTexImage(sdl_data *egl_sd, int egl_len, char *egl_buff)
  bp = egl_buff;
  target = (GLenum *) bp; bp += sizeof(GLenum); 
  level = (GLint *) bp; bp += sizeof(GLint); 
- img = (void *) egl_sd->bin[0].base; 
+ img = (GLvoid *) egl_sd->bin[0].base; 
  esdl_glGetCompressedTexImage(*target, *level, img);
  sdl_free_binaries(egl_sd);
 }
@@ -1195,7 +1195,7 @@ void egl_fogCoordd(sdl_data *egl_sd, int egl_len, char *egl_buff)
  char * bp; 
  GLdouble coord;
  bp = egl_buff;
- coord = * (GLdouble *) bp; 
+ memcpy(&coord, bp, sizeof(GLdouble)); 
  esdl_glFogCoordd(coord);
 }
 
@@ -1464,6 +1464,304 @@ void egl_windowPos3sv(sdl_data *egl_sd, int egl_len, char *egl_buff)
  bp = egl_buff;
  v = (GLshort *) bp;
  esdl_glWindowPos3sv(v);
+}
+
+
+void egl_genQueries(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLsizei * n;
+ GLuint * ids = NULL;
+ bp = egl_buff;
+ n = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ ids = (GLuint*) malloc(sizeof(GLuint)*(*n));
+ esdl_glGenQueries(*n, ids);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLuint) * (*n));
+ memcpy(bp, ids, sizeof(GLuint)*(*n));
+ bp += sizeof(GLuint)*(*n);
+ free(ids);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_deleteQueries(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLsizei * n;
+ GLuint * ids = NULL; 
+ bp = egl_buff;
+ n = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ ids = (GLuint *) bp;
+ esdl_glDeleteQueries(*n, ids);
+}
+
+
+void egl_isQuery(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLboolean egl_res; 
+ GLuint * id;
+ bp = egl_buff;
+ id = (GLuint *) bp; 
+ egl_res =  esdl_glIsQuery(*id);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLboolean) );
+ * (GLboolean *) bp = egl_res;
+ bp += sizeof(GLboolean);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_beginQuery(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLenum * target;
+ GLuint * id;
+ bp = egl_buff;
+ target = (GLenum *) bp; bp += sizeof(GLenum); 
+ id = (GLuint *) bp; 
+ esdl_glBeginQuery(*target, *id);
+}
+
+
+void egl_endQuery(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLenum * target;
+ bp = egl_buff;
+ target = (GLenum *) bp; 
+ esdl_glEndQuery(*target);
+}
+
+
+void egl_getQueryiv(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLenum * target;
+ GLenum * pname;
+ GLint params[1]; 
+ bp = egl_buff;
+ target = (GLenum *) bp; bp += sizeof(GLenum); 
+ pname = (GLenum *) bp; bp += sizeof(GLenum); 
+ esdl_glGetQueryiv(*target, *pname, params);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLint) *1);
+ * (GLint *)bp = params[0]; bp += sizeof(GLint);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_getQueryObjectiv(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLuint * id;
+ GLenum * pname;
+ GLint params[1]; 
+ bp = egl_buff;
+ id = (GLuint *) bp; bp += sizeof(GLuint); 
+ pname = (GLenum *) bp; bp += sizeof(GLenum); 
+ esdl_glGetQueryObjectiv(*id, *pname, params);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLint) *1);
+ * (GLint *)bp = params[0]; bp += sizeof(GLint);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_getQueryObjectuiv(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLuint * id;
+ GLenum * pname;
+ GLuint params[1]; 
+ bp = egl_buff;
+ id = (GLuint *) bp; bp += sizeof(GLuint); 
+ pname = (GLenum *) bp; bp += sizeof(GLenum); 
+ esdl_glGetQueryObjectuiv(*id, *pname, params);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLuint) *1);
+ * (GLuint *)bp = params[0]; bp += sizeof(GLuint);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_bindBuffer(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLenum * target;
+ GLuint * buffer;
+ bp = egl_buff;
+ target = (GLenum *) bp; bp += sizeof(GLenum); 
+ buffer = (GLuint *) bp; 
+ esdl_glBindBuffer(*target, *buffer);
+}
+
+
+void egl_deleteBuffers(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLsizei * n;
+ GLuint * buffers = NULL; 
+ bp = egl_buff;
+ n = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ buffers = (GLuint *) bp;
+ esdl_glDeleteBuffers(*n, buffers);
+}
+
+
+void egl_genBuffers(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLsizei * n;
+ GLuint * buffers = NULL;
+ bp = egl_buff;
+ n = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ buffers = (GLuint*) malloc(sizeof(GLuint)*(*n));
+ esdl_glGenBuffers(*n, buffers);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLuint) * (*n));
+ memcpy(bp, buffers, sizeof(GLuint)*(*n));
+ bp += sizeof(GLuint)*(*n);
+ free(buffers);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_isBuffer(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLboolean egl_res; 
+ GLuint * buffer;
+ bp = egl_buff;
+ buffer = (GLuint *) bp; 
+ egl_res =  esdl_glIsBuffer(*buffer);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLboolean) );
+ * (GLboolean *) bp = egl_res;
+ bp += sizeof(GLboolean);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_bufferData(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLenum * target;
+ GLsizeiptr * size;
+ GLvoid * data = NULL;
+ GLenum * usage;
+ bp = egl_buff;
+ target = (GLenum *) bp; bp += sizeof(GLenum); 
+ size = (GLsizeiptr *) bp; bp += sizeof(GLsizeiptr); 
+ data = (GLvoid *) egl_sd->bin[0].base; 
+ usage = (GLenum *) bp; 
+ esdl_glBufferData(*target, *size, data, *usage);
+ sdl_free_binaries(egl_sd);
+}
+
+
+void egl_bufferSubData(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLenum * target;
+ GLintptr * offset;
+ GLsizeiptr * size;
+ GLvoid * data = NULL;
+ bp = egl_buff;
+ target = (GLenum *) bp; bp += sizeof(GLenum); 
+ offset = (GLintptr *) bp; bp += sizeof(GLintptr); 
+ size = (GLsizeiptr *) bp; bp += sizeof(GLsizeiptr); 
+ data = (GLvoid *) egl_sd->bin[0].base; 
+ esdl_glBufferSubData(*target, *offset, *size, data);
+ sdl_free_binaries(egl_sd);
+}
+
+
+void egl_getBufferSubData(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLenum * target;
+ GLintptr * offset;
+ GLsizeiptr * size;
+ GLvoid * data = NULL;
+ bp = egl_buff;
+ target = (GLenum *) bp; bp += sizeof(GLenum); 
+ offset = (GLintptr *) bp; bp += sizeof(GLintptr); 
+ size = (GLsizeiptr *) bp; bp += sizeof(GLsizeiptr); 
+ data = (GLvoid *) egl_sd->bin[0].base; 
+ esdl_glGetBufferSubData(*target, *offset, *size, data);
+ sdl_free_binaries(egl_sd);
+}
+
+
+void egl_unmapBuffer(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLboolean egl_res; 
+ GLenum * target;
+ bp = egl_buff;
+ target = (GLenum *) bp; 
+ egl_res =  esdl_glUnmapBuffer(*target);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLboolean) );
+ * (GLboolean *) bp = egl_res;
+ bp += sizeof(GLboolean);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_getBufferParameteriv(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLenum * target;
+ GLenum * pname;
+ GLint params[1]; 
+ bp = egl_buff;
+ target = (GLenum *) bp; bp += sizeof(GLenum); 
+ pname = (GLenum *) bp; bp += sizeof(GLenum); 
+ esdl_glGetBufferParameteriv(*target, *pname, params);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLint) *1);
+ * (GLint *)bp = params[0]; bp += sizeof(GLint);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_getBufferPointerv(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLenum * target;
+ GLenum * pname;
+ GLvoid *params = NULL;
+ bp = egl_buff;
+ target = (GLenum *) bp; bp += sizeof(GLenum); 
+ pname = (GLenum *) bp; bp += sizeof(GLenum); 
+ esdl_glGetBufferPointerv(*target, *pname, &params);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLvoid*));
+ putPointer(bp, params);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
 }
 
 
@@ -2316,6 +2614,605 @@ void egl_isProgramARB(sdl_data *egl_sd, int egl_len, char *egl_buff)
  bp += sizeof(GLboolean);
  egl_sendlen = bp - egl_start;
  sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_deleteObjectARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLhandleARB * obj;
+ bp = egl_buff;
+ obj = (GLhandleARB *) bp; 
+ esdl_glDeleteObjectARB(*obj);
+}
+
+
+void egl_getHandleARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLhandleARB egl_res; 
+ GLenum * pname;
+ bp = egl_buff;
+ pname = (GLenum *) bp; 
+ egl_res =  esdl_glGetHandleARB(*pname);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLhandleARB) );
+ * (GLhandleARB *) bp = egl_res;
+ bp += sizeof(GLhandleARB);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_detachObjectARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLhandleARB * containerObj;
+ GLhandleARB * attachedObj;
+ bp = egl_buff;
+ containerObj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
+ attachedObj = (GLhandleARB *) bp; 
+ esdl_glDetachObjectARB(*containerObj, *attachedObj);
+}
+
+
+void egl_createShaderObjectARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLhandleARB egl_res; 
+ GLenum * shaderType;
+ bp = egl_buff;
+ shaderType = (GLenum *) bp; 
+ egl_res =  esdl_glCreateShaderObjectARB(*shaderType);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLhandleARB) );
+ * (GLhandleARB *) bp = egl_res;
+ bp += sizeof(GLhandleARB);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_shaderSourceARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLhandleARB * shaderObj;
+ GLsizei * count;
+ GLcharARB* *string;
+ int index;
+ GLint * length = NULL; 
+ bp = egl_buff;
+ shaderObj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
+ count = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ string = (GLcharARB** ) malloc(sizeof(GLcharARB*)*(*count));
+ for(index=0; index < *count; index++) 
+    string[index] = (GLcharARB *) egl_sd->bin[index+0].base;
+ length = (GLint *) bp;
+ esdl_glShaderSourceARB(*shaderObj, *count, string, NULL);
+ free(string); 
+ sdl_free_binaries(egl_sd);
+}
+
+
+void egl_compileShaderARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLhandleARB * shaderObj;
+ bp = egl_buff;
+ shaderObj = (GLhandleARB *) bp; 
+ esdl_glCompileShaderARB(*shaderObj);
+}
+
+
+void egl_createProgramObjectARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLhandleARB egl_res; 
+ bp = egl_buff;
+ egl_res =  esdl_glCreateProgramObjectARB();
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLhandleARB) );
+ * (GLhandleARB *) bp = egl_res;
+ bp += sizeof(GLhandleARB);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_attachObjectARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLhandleARB * containerObj;
+ GLhandleARB * obj;
+ bp = egl_buff;
+ containerObj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
+ obj = (GLhandleARB *) bp; 
+ esdl_glAttachObjectARB(*containerObj, *obj);
+}
+
+
+void egl_linkProgramARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLhandleARB * programObj;
+ bp = egl_buff;
+ programObj = (GLhandleARB *) bp; 
+ esdl_glLinkProgramARB(*programObj);
+}
+
+
+void egl_useProgramObjectARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLhandleARB * programObj;
+ bp = egl_buff;
+ programObj = (GLhandleARB *) bp; 
+ esdl_glUseProgramObjectARB(*programObj);
+}
+
+
+void egl_validateProgramARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLhandleARB * programObj;
+ bp = egl_buff;
+ programObj = (GLhandleARB *) bp; 
+ esdl_glValidateProgramARB(*programObj);
+}
+
+
+void egl_uniform1fvARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLint * location;
+ GLsizei * count;
+ GLfloat * value = NULL; 
+ bp = egl_buff;
+ location = (GLint *) bp; bp += sizeof(GLint); 
+ count = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ value = (GLfloat *) bp;
+ esdl_glUniform1fvARB(*location, *count, value);
+}
+
+
+void egl_uniform2fvARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLint * location;
+ GLsizei * count;
+ GLfloat * value = NULL; 
+ bp = egl_buff;
+ location = (GLint *) bp; bp += sizeof(GLint); 
+ count = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ value = (GLfloat *) bp;
+ esdl_glUniform2fvARB(*location, *count, value);
+}
+
+
+void egl_uniform3fvARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLint * location;
+ GLsizei * count;
+ GLfloat * value = NULL; 
+ bp = egl_buff;
+ location = (GLint *) bp; bp += sizeof(GLint); 
+ count = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ value = (GLfloat *) bp;
+ esdl_glUniform3fvARB(*location, *count, value);
+}
+
+
+void egl_uniform4fvARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLint * location;
+ GLsizei * count;
+ GLfloat * value = NULL; 
+ bp = egl_buff;
+ location = (GLint *) bp; bp += sizeof(GLint); 
+ count = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ value = (GLfloat *) bp;
+ esdl_glUniform4fvARB(*location, *count, value);
+}
+
+
+void egl_uniform1ivARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLint * location;
+ GLsizei * count;
+ GLint * value = NULL; 
+ bp = egl_buff;
+ location = (GLint *) bp; bp += sizeof(GLint); 
+ count = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ value = (GLint *) bp;
+ esdl_glUniform1ivARB(*location, *count, value);
+}
+
+
+void egl_uniform2ivARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLint * location;
+ GLsizei * count;
+ GLint * value = NULL; 
+ bp = egl_buff;
+ location = (GLint *) bp; bp += sizeof(GLint); 
+ count = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ value = (GLint *) bp;
+ esdl_glUniform2ivARB(*location, *count, value);
+}
+
+
+void egl_uniform3ivARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLint * location;
+ GLsizei * count;
+ GLint * value = NULL; 
+ bp = egl_buff;
+ location = (GLint *) bp; bp += sizeof(GLint); 
+ count = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ value = (GLint *) bp;
+ esdl_glUniform3ivARB(*location, *count, value);
+}
+
+
+void egl_uniform4ivARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLint * location;
+ GLsizei * count;
+ GLint * value = NULL; 
+ bp = egl_buff;
+ location = (GLint *) bp; bp += sizeof(GLint); 
+ count = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ value = (GLint *) bp;
+ esdl_glUniform4ivARB(*location, *count, value);
+}
+
+
+void egl_uniformMatrix2fvARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLint * location;
+ GLsizei * count;
+ GLboolean * transpose;
+ GLfloat * value = NULL; 
+ bp = egl_buff;
+ location = (GLint *) bp; bp += sizeof(GLint); 
+ count = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ transpose = (GLboolean *) bp; bp += sizeof(GLboolean); 
+ bp += 3;
+ value = (GLfloat *) bp;
+ esdl_glUniformMatrix2fvARB(*location, *count, *transpose, value);
+}
+
+
+void egl_uniformMatrix3fvARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLint * location;
+ GLsizei * count;
+ GLboolean * transpose;
+ GLfloat * value = NULL; 
+ bp = egl_buff;
+ location = (GLint *) bp; bp += sizeof(GLint); 
+ count = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ transpose = (GLboolean *) bp; bp += sizeof(GLboolean); 
+ bp += 3;
+ value = (GLfloat *) bp;
+ esdl_glUniformMatrix3fvARB(*location, *count, *transpose, value);
+}
+
+
+void egl_uniformMatrix4fvARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLint * location;
+ GLsizei * count;
+ GLboolean * transpose;
+ GLfloat * value = NULL; 
+ bp = egl_buff;
+ location = (GLint *) bp; bp += sizeof(GLint); 
+ count = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ transpose = (GLboolean *) bp; bp += sizeof(GLboolean); 
+ bp += 3;
+ value = (GLfloat *) bp;
+ esdl_glUniformMatrix4fvARB(*location, *count, *transpose, value);
+}
+
+
+void egl_getObjectParameterfvARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLhandleARB * obj;
+ GLenum * pname;
+ GLfloat params[1]; 
+ bp = egl_buff;
+ obj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
+ pname = (GLenum *) bp; bp += sizeof(GLenum); 
+ esdl_glGetObjectParameterfvARB(*obj, *pname, params);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLfloat) *1);
+ * (GLfloat *)bp = params[0]; bp += sizeof(GLfloat);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_getObjectParameterivARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLhandleARB * obj;
+ GLenum * pname;
+ GLint params[1]; 
+ bp = egl_buff;
+ obj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
+ pname = (GLenum *) bp; bp += sizeof(GLenum); 
+ esdl_glGetObjectParameterivARB(*obj, *pname, params);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLint) *1);
+ * (GLint *)bp = params[0]; bp += sizeof(GLint);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_getInfoLogARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLhandleARB * obj;
+ GLsizei * maxLength;
+ GLsizei length[1]; 
+ GLcharARB * infoLog = NULL;
+ bp = egl_buff;
+ obj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
+ maxLength = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ infoLog = (GLcharARB*) malloc(sizeof(GLcharARB)*(*maxLength));
+ esdl_glGetInfoLogARB(*obj, *maxLength, length, infoLog);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLsizei) *1+ sizeof(GLcharARB) * (*length));
+ * (GLsizei *)bp = length[0]; bp += sizeof(GLsizei);
+ memcpy(bp, infoLog, sizeof(GLcharARB)*(*length));
+ bp += sizeof(GLcharARB)*(*length);
+ free(infoLog);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_getAttachedObjectsARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLhandleARB * containerObj;
+ GLsizei * maxCount;
+ GLsizei count[1]; 
+ GLhandleARB * obj = NULL;
+ bp = egl_buff;
+ containerObj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
+ maxCount = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ obj = (GLhandleARB*) malloc(sizeof(GLhandleARB)*(*maxCount));
+ esdl_glGetAttachedObjectsARB(*containerObj, *maxCount, count, obj);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLsizei) *1+ sizeof(GLhandleARB) * (*count));
+ * (GLsizei *)bp = count[0]; bp += sizeof(GLsizei);
+ memcpy(bp, obj, sizeof(GLhandleARB)*(*count));
+ bp += sizeof(GLhandleARB)*(*count);
+ free(obj);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_getUniformLocationARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLint egl_res; 
+ GLhandleARB * programObj;
+ GLcharARB * name = NULL;
+ bp = egl_buff;
+ programObj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
+ name = (GLcharARB *) egl_sd->bin[0].base; 
+ egl_res =  esdl_glGetUniformLocationARB(*programObj, name);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLint) );
+ * (GLint *) bp = egl_res;
+ bp += sizeof(GLint);
+ sdl_free_binaries(egl_sd);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_getActiveUniformARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLhandleARB * programObj;
+ GLuint * index;
+ GLsizei * maxLength;
+ GLsizei length[1]; 
+ GLint size[1]; 
+ GLenum type[1]; 
+ GLcharARB * name = NULL;
+ bp = egl_buff;
+ programObj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
+ index = (GLuint *) bp; bp += sizeof(GLuint); 
+ maxLength = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ name = (GLcharARB*) malloc(sizeof(GLcharARB)*(*maxLength));
+ esdl_glGetActiveUniformARB(*programObj, *index, *maxLength, length, size, type, name);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLsizei) *1+ sizeof(GLint) *1+ sizeof(GLenum) *1+ sizeof(GLcharARB) * (*length));
+ * (GLsizei *)bp = length[0]; bp += sizeof(GLsizei);
+ * (GLint *)bp = size[0]; bp += sizeof(GLint);
+ * (GLenum *)bp = type[0]; bp += sizeof(GLenum);
+ memcpy(bp, name, sizeof(GLcharARB)*(*length));
+ bp += sizeof(GLcharARB)*(*length);
+ free(name);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_getUniformfvARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLhandleARB * programObj;
+ GLint * location;
+ GLvoid * params = NULL;
+ bp = egl_buff;
+ programObj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
+ location = (GLint *) bp; bp += sizeof(GLint); 
+ params = (GLfloat *) egl_sd->bin[0].base; 
+ esdl_glGetUniformfvARB(*programObj, *location, params);
+ sdl_free_binaries(egl_sd);
+}
+
+
+void egl_getUniformivARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLhandleARB * programObj;
+ GLint * location;
+ GLvoid * params = NULL;
+ bp = egl_buff;
+ programObj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
+ location = (GLint *) bp; bp += sizeof(GLint); 
+ params = (GLint *) egl_sd->bin[0].base; 
+ esdl_glGetUniformivARB(*programObj, *location, params);
+ sdl_free_binaries(egl_sd);
+}
+
+
+void egl_getShaderSourceARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLhandleARB * obj;
+ GLsizei * maxLength;
+ GLsizei length[1]; 
+ GLcharARB * source = NULL;
+ bp = egl_buff;
+ obj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
+ maxLength = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ source = (GLcharARB*) malloc(sizeof(GLcharARB)*(*maxLength));
+ esdl_glGetShaderSourceARB(*obj, *maxLength, length, source);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLsizei) *1+ sizeof(GLcharARB) * (*length));
+ * (GLsizei *)bp = length[0]; bp += sizeof(GLsizei);
+ memcpy(bp, source, sizeof(GLcharARB)*(*length));
+ bp += sizeof(GLcharARB)*(*length);
+ free(source);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_bindAttribLocationARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLhandleARB * programObj;
+ GLuint * index;
+ GLcharARB * name = NULL;
+ bp = egl_buff;
+ programObj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
+ index = (GLuint *) bp; bp += sizeof(GLuint); 
+ name = (GLcharARB *) egl_sd->bin[0].base; 
+ esdl_glBindAttribLocationARB(*programObj, *index, name);
+ sdl_free_binaries(egl_sd);
+}
+
+
+void egl_getActiveAttribARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLhandleARB * programObj;
+ GLuint * index;
+ GLsizei * maxLength;
+ GLsizei length[1]; 
+ GLint size[1]; 
+ GLenum type[1]; 
+ GLcharARB * name = NULL;
+ bp = egl_buff;
+ programObj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
+ index = (GLuint *) bp; bp += sizeof(GLuint); 
+ maxLength = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ name = (GLcharARB*) malloc(sizeof(GLcharARB)*(*maxLength));
+ esdl_glGetActiveAttribARB(*programObj, *index, *maxLength, length, size, type, name);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLsizei) *1+ sizeof(GLint) *1+ sizeof(GLenum) *1+ sizeof(GLcharARB) * (*length));
+ * (GLsizei *)bp = length[0]; bp += sizeof(GLsizei);
+ * (GLint *)bp = size[0]; bp += sizeof(GLint);
+ * (GLenum *)bp = type[0]; bp += sizeof(GLenum);
+ memcpy(bp, name, sizeof(GLcharARB)*(*length));
+ bp += sizeof(GLcharARB)*(*length);
+ free(name);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_getAttribLocationARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLint egl_res; 
+ GLhandleARB * programObj;
+ GLcharARB * name = NULL;
+ bp = egl_buff;
+ programObj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
+ name = (GLcharARB *) egl_sd->bin[0].base; 
+ egl_res =  esdl_glGetAttribLocationARB(*programObj, name);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLint) );
+ * (GLint *) bp = egl_res;
+ bp += sizeof(GLint);
+ sdl_free_binaries(egl_sd);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_stencilOpSeparateATI(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLenum * face;
+ GLenum * sfail;
+ GLenum * dpfail;
+ GLenum * dppass;
+ bp = egl_buff;
+ face = (GLenum *) bp; bp += sizeof(GLenum); 
+ sfail = (GLenum *) bp; bp += sizeof(GLenum); 
+ dpfail = (GLenum *) bp; bp += sizeof(GLenum); 
+ dppass = (GLenum *) bp; 
+ esdl_glStencilOpSeparateATI(*face, *sfail, *dpfail, *dppass);
+}
+
+
+void egl_stencilFuncSeparateATI(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLenum * frontfunc;
+ GLenum * backfunc;
+ GLint * ref;
+ GLuint * mask;
+ bp = egl_buff;
+ frontfunc = (GLenum *) bp; bp += sizeof(GLenum); 
+ backfunc = (GLenum *) bp; bp += sizeof(GLenum); 
+ ref = (GLint *) bp; bp += sizeof(GLint); 
+ mask = (GLuint *) bp; 
+ esdl_glStencilFuncSeparateATI(*frontfunc, *backfunc, *ref, *mask);
 }
 
 
