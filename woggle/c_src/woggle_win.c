@@ -594,6 +594,7 @@ LRESULT CALLBACK wog_process_events(HWND window, UINT message,
 	wem->mouse_wheel.modifiers = check_keystate(0);
 	wog_post_event_message(NULL,wem);
 	return 0;
+    case WM_SYSKEYDOWN:
     case WM_KEYDOWN:
 	if (!(twd->event_mask[WogListenKeyDown]))
 	    return DefWindowProc(window, message, wp, lp);
@@ -603,10 +604,15 @@ LRESULT CALLBACK wog_process_events(HWND window, UINT message,
 	wem->key_up_down.repeat = (int) GETBITS(0,15,lp);
 	wem->key_up_down.code = (unsigned char) wp;
 	wem->key_up_down.scancode = (int) GETBITS(16,23,lp);
-	ret = DefWindowProc(window, message, wp, lp);
+	if ((message == WM_SYSKEYDOWN) && (wp == VK_MENU)) { 
+	    ret = 0; /* To avoid ALT making window lose focus */
+	} else {
+	    ret = DefWindowProc(window, message, wp, lp);
+	}
 	wem->key_up_down.modifiers = check_keystate(0);
 	wog_merge_key(NULL,wem);
 	return ret;
+    case WM_SYSKEYUP:
     case WM_KEYUP:
 	if (!(twd->event_mask[WogListenKeyUp]))
 	    return DefWindowProc(window, message, wp, lp);
