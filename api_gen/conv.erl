@@ -637,8 +637,13 @@ build_erlbinaries(Func, {T, const, pointer,V}, IsLast, Fd) ->
 	    ?W(" sdl:send_bin(list_to_binary([~s,0]), ?MODULE, ?LINE),~n", [Var]),
 	    already_sent;
 	pointer ->
-	    ?W(" sdl:send_bin(~s, ?MODULE, ?LINE),~n", [Var]),
-	    already_sent;
+%%	    ?W(" sdl:send_bin(~s, ?MODULE, ?LINE),", [Var]),
+	    ?W("%% Maybe NULL or offset sometimes~n",[]), 
+	    ?W(" New~s =~n   if is_integer(~s) -> ~s;~n"
+	       "      true ->~n",[Var,Var,Var]), 
+	    ?W("        sdl:send_bin(~s, ?MODULE, ?LINE),~n",[Var]),
+	    ?W("       0~n   end,~n", []),
+	    {"GLint", "new" ++ Var};
 	sdlmem ->
 	    ?W(" sdl:send_bin(~s, ?MODULE, ?LINE),~n", [Var]),
 	    already_sent;
@@ -990,11 +995,16 @@ write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
 			?W(" bp += sizeof(int); ~n", []),
 			?W(" ~s = (~s *) bp; bp += sizeof(~s)*(*~s); ~n", 
 			   [V,T,T,Val]);
-		    pointer when ((T=="GLdouble") or (T=="GLclampd")) ->         		
+		    pointer when ((T=="GLdouble") or (T=="GLclampd")) ->
 			?W("{not_implemented, ~p}", [?LINE]);
 		    pointer -> 
 			Cnt = get(arg_cnt),
-			?W(" ~s = (~s *) egl_sd->bin[~w].base; ~n", [V,T,Cnt]),
+%%%%			?W(" ~s = (~s *) egl_sd->bin[~w].base; ~n", [V,T,Cnt]),
+			?W(" if(egl_sd->next_bin == ~p) {~n  ~s = (~s *) *(GLint *)bp;~n",
+			   [Cnt,V,T]),
+			?W(" } else {~n  ~s = (~s *) egl_sd->bin[~w].base;~n };~n",
+			   [V,T,Cnt]),
+			?W(" bp += sizeof(GLint);~n", []),
 			put(free_args, true),
 			put(arg_cnt, Cnt+1);
 		    sdlmem -> 
@@ -1577,6 +1587,7 @@ skip_extensions("GL_ARB_texture_non_power_of_two",_R) ->  false;
 skip_extensions("GL_ARB_point_sprite",_R) ->  false;
 skip_extensions("GL_ARB_shadow_ambient",_R) ->  false;
 skip_extensions("GL_ARB_shader_objects",_R) ->  false;
+skip_extensions("GL_ARB_draw_buffers",_R) ->  false;
 skip_extensions("GL_ABGR_EXT", _R) -> false;
 skip_extensions("GL_ATI_separate_stencil",_R) -> false;    
 %% skip_extensions("",_R) -> false;
@@ -1703,6 +1714,8 @@ has_vector("v" ++ _) ->
 has_vector([_,_|"paMlg"]) ->  %% glMap1d
     false;
 has_vector([_,_|"dirGpaMlg"]) -> %% glMapGrid1d
+    false;
+has_vector([_,_|"mrofinUlg"]) -> %% glMapGrid1d
     false;
 has_vector([$b, N|_]) when N > 47, N < 58 ->
     call_vector;

@@ -35,7 +35,7 @@ else
   SOEXT = so
 
 ## The driver part needs erlang includes
-  ERL_DIR := $(shell echo 'io:format("~s~n",[code:root_dir()]),halt().' | erl | sed 's,^[0-9]*> *,,g' | tail +2)
+  ERL_DIR := $(shell echo 'io:format("~s~n",[code:root_dir()]),halt().' | erl | grep '1>' | sed 's,^[0-9]*> *,,g')
   ERL_INCS = -I$(ERL_DIR)/usr/include
 
   CC = gcc

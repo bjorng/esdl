@@ -114,7 +114,12 @@ void egl_bitmap(sdl_data *egl_sd, int egl_len, char *egl_buff)
  yorig = (GLfloat *) bp; bp += sizeof(GLfloat); 
  xmove = (GLfloat *) bp; bp += sizeof(GLfloat); 
  ymove = (GLfloat *) bp; bp += sizeof(GLfloat); 
- bitmap = (GLubyte *) egl_sd->bin[0].base; 
+ if(egl_sd->next_bin == 0) {
+  bitmap = (GLubyte *) *(GLint *)bp;
+ } else {
+  bitmap = (GLubyte *) egl_sd->bin[0].base;
+ };
+ bp += sizeof(GLint);
  glBitmap(*width, *height, *xorig, *yorig, *xmove, *ymove, bitmap);
  sdl_free_binaries(egl_sd);
 }
@@ -439,7 +444,12 @@ void egl_colorPointer(sdl_data *egl_sd, int egl_len, char *egl_buff)
  size = (GLint *) bp; bp += sizeof(GLint); 
  type = (GLenum *) bp; bp += sizeof(GLenum); 
  stride = (GLsizei *) bp; bp += sizeof(GLsizei); 
- pointer = (GLvoid *) egl_sd->bin[0].base; 
+ if(egl_sd->next_bin == 0) {
+  pointer = (GLvoid *) *(GLint *)bp;
+ } else {
+  pointer = (GLvoid *) egl_sd->bin[0].base;
+ };
+ bp += sizeof(GLint);
  glColorPointer(*size, *type, *stride, pointer);
  sdl_free_binaries(egl_sd);
 }
@@ -692,7 +702,12 @@ void egl_drawPixels(sdl_data *egl_sd, int egl_len, char *egl_buff)
  height = (GLsizei *) bp; bp += sizeof(GLsizei); 
  format = (GLenum *) bp; bp += sizeof(GLenum); 
  type = (GLenum *) bp; bp += sizeof(GLenum); 
- pixels = (GLvoid *) egl_sd->bin[0].base; 
+ if(egl_sd->next_bin == 0) {
+  pixels = (GLvoid *) *(GLint *)bp;
+ } else {
+  pixels = (GLvoid *) egl_sd->bin[0].base;
+ };
+ bp += sizeof(GLint);
  glDrawPixels(*width, *height, *format, *type, pixels);
  sdl_free_binaries(egl_sd);
 }
@@ -715,7 +730,12 @@ void egl_edgeFlagPointer(sdl_data *egl_sd, int egl_len, char *egl_buff)
  GLboolean * pointer = NULL;
  bp = egl_buff;
  stride = (GLsizei *) bp; bp += sizeof(GLsizei); 
- pointer = (GLboolean *) egl_sd->bin[0].base; 
+ if(egl_sd->next_bin == 0) {
+  pointer = (GLboolean *) *(GLint *)bp;
+ } else {
+  pointer = (GLboolean *) egl_sd->bin[0].base;
+ };
+ bp += sizeof(GLint);
  glEdgeFlagPointer(*stride, pointer);
  sdl_free_binaries(egl_sd);
 }
@@ -1563,7 +1583,12 @@ void egl_indexPointer(sdl_data *egl_sd, int egl_len, char *egl_buff)
  bp = egl_buff;
  type = (GLenum *) bp; bp += sizeof(GLenum); 
  stride = (GLsizei *) bp; bp += sizeof(GLsizei); 
- pointer = (GLvoid *) egl_sd->bin[0].base; 
+ if(egl_sd->next_bin == 0) {
+  pointer = (GLvoid *) *(GLint *)bp;
+ } else {
+  pointer = (GLvoid *) egl_sd->bin[0].base;
+ };
+ bp += sizeof(GLint);
  glIndexPointer(*type, *stride, pointer);
  sdl_free_binaries(egl_sd);
 }
@@ -1686,7 +1711,12 @@ void egl_interleavedArrays(sdl_data *egl_sd, int egl_len, char *egl_buff)
  bp = egl_buff;
  format = (GLenum *) bp; bp += sizeof(GLenum); 
  stride = (GLsizei *) bp; bp += sizeof(GLsizei); 
- pointer = (GLvoid *) egl_sd->bin[0].base; 
+ if(egl_sd->next_bin == 0) {
+  pointer = (GLvoid *) *(GLint *)bp;
+ } else {
+  pointer = (GLvoid *) egl_sd->bin[0].base;
+ };
+ bp += sizeof(GLint);
  glInterleavedArrays(*format, *stride, pointer);
  sdl_free_binaries(egl_sd);
 }
@@ -2267,7 +2297,12 @@ void egl_normalPointer(sdl_data *egl_sd, int egl_len, char *egl_buff)
  bp = egl_buff;
  type = (GLenum *) bp; bp += sizeof(GLenum); 
  stride = (GLsizei *) bp; bp += sizeof(GLsizei); 
- pointer = (GLvoid *) egl_sd->bin[0].base; 
+ if(egl_sd->next_bin == 0) {
+  pointer = (GLvoid *) *(GLint *)bp;
+ } else {
+  pointer = (GLvoid *) egl_sd->bin[0].base;
+ };
+ bp += sizeof(GLint);
  glNormalPointer(*type, *stride, pointer);
  sdl_free_binaries(egl_sd);
 }
@@ -3129,7 +3164,12 @@ void egl_texCoordPointer(sdl_data *egl_sd, int egl_len, char *egl_buff)
  size = (GLint *) bp; bp += sizeof(GLint); 
  type = (GLenum *) bp; bp += sizeof(GLenum); 
  stride = (GLsizei *) bp; bp += sizeof(GLsizei); 
- pointer = (GLvoid *) egl_sd->bin[0].base; 
+ if(egl_sd->next_bin == 0) {
+  pointer = (GLvoid *) *(GLint *)bp;
+ } else {
+  pointer = (GLvoid *) egl_sd->bin[0].base;
+ };
+ bp += sizeof(GLint);
  glTexCoordPointer(*size, *type, *stride, pointer);
  sdl_free_binaries(egl_sd);
 }
@@ -3296,7 +3336,12 @@ void egl_texImage1D(sdl_data *egl_sd, int egl_len, char *egl_buff)
  border = (GLint *) bp; bp += sizeof(GLint); 
  format = (GLenum *) bp; bp += sizeof(GLenum); 
  type = (GLenum *) bp; bp += sizeof(GLenum); 
- pixels = (GLvoid *) egl_sd->bin[0].base; 
+ if(egl_sd->next_bin == 0) {
+  pixels = (GLvoid *) *(GLint *)bp;
+ } else {
+  pixels = (GLvoid *) egl_sd->bin[0].base;
+ };
+ bp += sizeof(GLint);
  glTexImage1D(*target, *level, *internalformat, *width, *border, *format, *type, pixels);
  sdl_free_binaries(egl_sd);
 }
@@ -3323,7 +3368,12 @@ void egl_texImage2D(sdl_data *egl_sd, int egl_len, char *egl_buff)
  border = (GLint *) bp; bp += sizeof(GLint); 
  format = (GLenum *) bp; bp += sizeof(GLenum); 
  type = (GLenum *) bp; bp += sizeof(GLenum); 
- pixels = (GLvoid *) egl_sd->bin[0].base; 
+ if(egl_sd->next_bin == 0) {
+  pixels = (GLvoid *) *(GLint *)bp;
+ } else {
+  pixels = (GLvoid *) egl_sd->bin[0].base;
+ };
+ bp += sizeof(GLint);
  glTexImage2D(*target, *level, *internalformat, *width, *height, *border, *format, *type, pixels);
  sdl_free_binaries(egl_sd);
 }
@@ -3404,7 +3454,12 @@ void egl_texSubImage1D(sdl_data *egl_sd, int egl_len, char *egl_buff)
  width = (GLsizei *) bp; bp += sizeof(GLsizei); 
  format = (GLenum *) bp; bp += sizeof(GLenum); 
  type = (GLenum *) bp; bp += sizeof(GLenum); 
- pixels = (GLvoid *) egl_sd->bin[0].base; 
+ if(egl_sd->next_bin == 0) {
+  pixels = (GLvoid *) *(GLint *)bp;
+ } else {
+  pixels = (GLvoid *) egl_sd->bin[0].base;
+ };
+ bp += sizeof(GLint);
  glTexSubImage1D(*target, *level, *xoffset, *width, *format, *type, pixels);
  sdl_free_binaries(egl_sd);
 }
@@ -3431,7 +3486,12 @@ void egl_texSubImage2D(sdl_data *egl_sd, int egl_len, char *egl_buff)
  height = (GLsizei *) bp; bp += sizeof(GLsizei); 
  format = (GLenum *) bp; bp += sizeof(GLenum); 
  type = (GLenum *) bp; bp += sizeof(GLenum); 
- pixels = (GLvoid *) egl_sd->bin[0].base; 
+ if(egl_sd->next_bin == 0) {
+  pixels = (GLvoid *) *(GLint *)bp;
+ } else {
+  pixels = (GLvoid *) egl_sd->bin[0].base;
+ };
+ bp += sizeof(GLint);
  glTexSubImage2D(*target, *level, *xoffset, *yoffset, *width, *height, *format, *type, pixels);
  sdl_free_binaries(egl_sd);
 }
@@ -3596,7 +3656,12 @@ void egl_vertexPointer(sdl_data *egl_sd, int egl_len, char *egl_buff)
  size = (GLint *) bp; bp += sizeof(GLint); 
  type = (GLenum *) bp; bp += sizeof(GLenum); 
  stride = (GLsizei *) bp; bp += sizeof(GLsizei); 
- pointer = (GLvoid *) egl_sd->bin[0].base; 
+ if(egl_sd->next_bin == 0) {
+  pointer = (GLvoid *) *(GLint *)bp;
+ } else {
+  pointer = (GLvoid *) egl_sd->bin[0].base;
+ };
+ bp += sizeof(GLint);
  glVertexPointer(*size, *type, *stride, pointer);
  sdl_free_binaries(egl_sd);
 }

@@ -98,21 +98,17 @@ void init_fps(sdl_data* sd)
 /* Must be done after creating a rendering context */
 void init_glexts(sdl_data* sd)
 {
-  static int already_done = 0;
+   int i;
+   int op;
+   sdl_fun* fun_tab = sd->fun_tab;
+   char** str_tab = sd->str_tab;
 
-  if (already_done == 0) {
-    int i;
-    int op;
-    sdl_fun* fun_tab = sd->fun_tab;
-    char** str_tab = sd->str_tab;
-
-    already_done = 1;
-    for (i = 0; (op = ext_fns[i].op) != 0; i++) {
+   for (i = 0; (op = ext_fns[i].op) != 0; i++) {
       if (fun_tab[op] == undefined_extension) {
 	 void* ext_ptr = SDL_GL_GetProcAddress(ext_fns[i].name);
 	 str_tab[op] = ext_fns[i].name;
 	 if (ext_ptr) {
-	    /* fprintf(stderr, "Success %s \r\n", code_fns[i].str);*/
+	    /* fprintf(stderr, "Success %s \r\n", ext_fns[i].name);*/ 
 	    * (void **) (ext_fns[i].ext_fun) = ext_ptr;
 	    fun_tab[op] = ext_fns[i].fun;
 	 } else {
@@ -123,18 +119,17 @@ void init_glexts(sdl_data* sd)
 	    strncpy(tmp, "ARB", 4);
 	    ext_ptr = SDL_GL_GetProcAddress(arbname);
 	    if (ext_ptr) {
-	       /* fprintf(stderr, "Success %s \r\n", code_fns[i].str);*/
+	       /* fprintf(stderr, "Success %s \r\n", ext_fns[i].name); */
 	       * (void **) (ext_fns[i].ext_fun) = ext_ptr;
 	       fun_tab[op] = ext_fns[i].fun;
 	    } else {	    	    
-	       /* fprintf(stderr, "Failed %s \r\n", code_fns[i].str); */
+	       /*	       fprintf(stderr, "Failed %s \r\n", ext_fns[i].name); */
 	       fun_tab[op] = undefined_extension;
 	    }
 	 }
       } else {	 
-	fprintf(stderr, "Exiting FP EXTENSION array mismatch in initialization %d %d %s\r\n", 
-		i, ext_fns[i].op, ext_fns[i].name);
+	 fprintf(stderr, "Exiting FP EXTENSION array mismatch in initialization %d %d %s\r\n", 
+		 i, ext_fns[i].op, ext_fns[i].name);
       }
-    }
-  }
+   }
 }

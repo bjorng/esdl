@@ -146,7 +146,8 @@ add() ->
      {"glGetShaderSourceARB", {[{"length", 1},{"source", {"length", "maxLength"}}], []}},
      {"glBindAttribLocationARB", {[{"name", pointer, string}], []}},
      {"glGetActiveAttribARB", {[{"length", 1},{"size", 1},{"type", 1},{"name", {"length", "maxLength"}}], []}}, 
-     {"glGetAttribLocationARB", {[{"name", pointer, string}], []}}
+     {"glGetAttribLocationARB", {[{"name", pointer, string}], []}},
+     {"glDrawBuffersARB", {[{"bufs", "n"}], []}}
     ].
 
 init_erl(Fd) -> 

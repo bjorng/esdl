@@ -426,8 +426,14 @@ bindTexture(Target, Texture) ->
 %% Returns: ok
 %% C-API func: void glBitmap(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig, GLfloat xmove, GLfloat ymove,  const GLubyte * bitmap)
 bitmap(Width, Height, Xorig, Yorig, Xmove, Ymove, Bitmap) -> 
- sdl:send_bin(Bitmap, ?MODULE, ?LINE),
- cast(?glBitmap, <<Width:32/?SN, Height:32/?SN, Xorig:32/?FN, Yorig:32/?FN, Xmove:32/?FN, Ymove:32/?FN>>).
+%% Maybe NULL or offset sometimes
+ NewBitmap =
+   if is_integer(Bitmap) -> Bitmap;
+      true ->
+        sdl:send_bin(Bitmap, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glBitmap, [<<Width:32/?SN, Height:32/?SN, Xorig:32/?FN, Yorig:32/?FN, Xmove:32/?FN, Ymove:32/?FN, NewBitmap:32/?SN>>]).
 
 %% Func:    blendFunc 
 %% Args:    Sfactor, Dfactor
@@ -752,8 +758,14 @@ colorMaterial(Face, Mode) ->
 %% Returns: ok
 %% C-API func: void glColorPointer(GLint size, GLenum type, GLsizei stride,  const GLvoid * pointer)
 colorPointer(Size, Type, Stride, Pointer) -> 
- sdl:send_bin(Pointer, ?MODULE, ?LINE),
- cast(?glColorPointer, <<Size:32/?SN, Type:32/?UN, Stride:32/?SN>>).
+%% Maybe NULL or offset sometimes
+ NewPointer =
+   if is_integer(Pointer) -> Pointer;
+      true ->
+        sdl:send_bin(Pointer, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glColorPointer, [<<Size:32/?SN, Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
 %% Func:    copyPixels 
 %% Args:    X, Y, Width, Height, Type
@@ -882,8 +894,14 @@ drawElements(Mode, Count, Type, Indices) ->
 %% Returns: ok
 %% C-API func: void glDrawPixels(GLsizei width, GLsizei height, GLenum format, GLenum type,  const GLvoid * pixels)
 drawPixels(Width, Height, Format, Type, Pixels) -> 
- sdl:send_bin(Pixels, ?MODULE, ?LINE),
- cast(?glDrawPixels, <<Width:32/?SN, Height:32/?SN, Format:32/?UN, Type:32/?UN>>).
+%% Maybe NULL or offset sometimes
+ NewPixels =
+   if is_integer(Pixels) -> Pixels;
+      true ->
+        sdl:send_bin(Pixels, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glDrawPixels, [<<Width:32/?SN, Height:32/?SN, Format:32/?UN, Type:32/?UN, NewPixels:32/?SN>>]).
 
 %% Func:    edgeFlag 
 %% Args:    Flag
@@ -897,8 +915,14 @@ edgeFlag(Flag) ->
 %% Returns: ok
 %% C-API func: void glEdgeFlagPointer(GLsizei stride,  const GLboolean * pointer)
 edgeFlagPointer(Stride, Pointer) -> 
- sdl:send_bin(Pointer, ?MODULE, ?LINE),
- cast(?glEdgeFlagPointer, <<Stride:32/?SN>>).
+%% Maybe NULL or offset sometimes
+ NewPointer =
+   if is_integer(Pointer) -> Pointer;
+      true ->
+        sdl:send_bin(Pointer, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glEdgeFlagPointer, [<<Stride:32/?SN, NewPointer:32/?SN>>]).
 
 %% Func:    edgeFlagv 
 %% Args:    <<[Flag]>>
@@ -1496,8 +1520,14 @@ indexMask(Mask) ->
 %% Returns: ok
 %% C-API func: void glIndexPointer(GLenum type, GLsizei stride,  const GLvoid * pointer)
 indexPointer(Type, Stride, Pointer) -> 
- sdl:send_bin(Pointer, ?MODULE, ?LINE),
- cast(?glIndexPointer, <<Type:32/?UN, Stride:32/?SN>>).
+%% Maybe NULL or offset sometimes
+ NewPointer =
+   if is_integer(Pointer) -> Pointer;
+      true ->
+        sdl:send_bin(Pointer, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glIndexPointer, [<<Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
 %% Func:    indexd 
 %% Args:    C
@@ -1606,8 +1636,14 @@ initNames() ->
 %% Returns: ok
 %% C-API func: void glInterleavedArrays(GLenum format, GLsizei stride,  const GLvoid * pointer)
 interleavedArrays(Format, Stride, Pointer) -> 
- sdl:send_bin(Pointer, ?MODULE, ?LINE),
- cast(?glInterleavedArrays, <<Format:32/?UN, Stride:32/?SN>>).
+%% Maybe NULL or offset sometimes
+ NewPointer =
+   if is_integer(Pointer) -> Pointer;
+      true ->
+        sdl:send_bin(Pointer, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glInterleavedArrays, [<<Format:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
 %% Func:    isEnabled 
 %% Args:    Cap
@@ -2044,8 +2080,14 @@ normal3sv({V1,V2,V3}) ->
 %% Returns: ok
 %% C-API func: void glNormalPointer(GLenum type, GLsizei stride,  const GLvoid * pointer)
 normalPointer(Type, Stride, Pointer) -> 
- sdl:send_bin(Pointer, ?MODULE, ?LINE),
- cast(?glNormalPointer, <<Type:32/?UN, Stride:32/?SN>>).
+%% Maybe NULL or offset sometimes
+ NewPointer =
+   if is_integer(Pointer) -> Pointer;
+      true ->
+        sdl:send_bin(Pointer, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glNormalPointer, [<<Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
 %% Func:    ortho 
 %% Args:    Left, Right, Bottom, Top, ZNear, ZFar
@@ -2829,8 +2871,14 @@ texCoord4sv({V1,V2,V3,V4}) ->
 %% Returns: ok
 %% C-API func: void glTexCoordPointer(GLint size, GLenum type, GLsizei stride,  const GLvoid * pointer)
 texCoordPointer(Size, Type, Stride, Pointer) -> 
- sdl:send_bin(Pointer, ?MODULE, ?LINE),
- cast(?glTexCoordPointer, <<Size:32/?SN, Type:32/?UN, Stride:32/?SN>>).
+%% Maybe NULL or offset sometimes
+ NewPointer =
+   if is_integer(Pointer) -> Pointer;
+      true ->
+        sdl:send_bin(Pointer, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glTexCoordPointer, [<<Size:32/?SN, Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
 %% Func:    texEnvf 
 %% Args:    Target, Pname, Param
@@ -2938,16 +2986,28 @@ texGeniv(Coord, Pname, Params) ->
 %% Returns: ok
 %% C-API func: void glTexImage1D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLint border, GLenum format, GLenum type,  const GLvoid * pixels)
 texImage1D(Target, Level, Internalformat, Width, Border, Format, Type, Pixels) -> 
- sdl:send_bin(Pixels, ?MODULE, ?LINE),
- cast(?glTexImage1D, <<Target:32/?UN, Level:32/?SN, Internalformat:32/?SN, Width:32/?SN, Border:32/?SN, Format:32/?UN, Type:32/?UN>>).
+%% Maybe NULL or offset sometimes
+ NewPixels =
+   if is_integer(Pixels) -> Pixels;
+      true ->
+        sdl:send_bin(Pixels, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glTexImage1D, [<<Target:32/?UN, Level:32/?SN, Internalformat:32/?SN, Width:32/?SN, Border:32/?SN, Format:32/?UN, Type:32/?UN, NewPixels:32/?SN>>]).
 
 %% Func:    texImage2D 
 %% Args:    Target, Level, Internalformat, Width, Height, Border, Format, Type, <<[Pixels]>>
 %% Returns: ok
 %% C-API func: void glTexImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type,  const GLvoid * pixels)
 texImage2D(Target, Level, Internalformat, Width, Height, Border, Format, Type, Pixels) -> 
- sdl:send_bin(Pixels, ?MODULE, ?LINE),
- cast(?glTexImage2D, <<Target:32/?UN, Level:32/?SN, Internalformat:32/?SN, Width:32/?SN, Height:32/?SN, Border:32/?SN, Format:32/?UN, Type:32/?UN>>).
+%% Maybe NULL or offset sometimes
+ NewPixels =
+   if is_integer(Pixels) -> Pixels;
+      true ->
+        sdl:send_bin(Pixels, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glTexImage2D, [<<Target:32/?UN, Level:32/?SN, Internalformat:32/?SN, Width:32/?SN, Height:32/?SN, Border:32/?SN, Format:32/?UN, Type:32/?UN, NewPixels:32/?SN>>]).
 
 %% Func:    texParameterf 
 %% Args:    Target, Pname, Param
@@ -2998,16 +3058,28 @@ texParameteriv(Target, Pname, Params) ->
 %% Returns: ok
 %% C-API func: void glTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type,  const GLvoid * pixels)
 texSubImage1D(Target, Level, Xoffset, Width, Format, Type, Pixels) -> 
- sdl:send_bin(Pixels, ?MODULE, ?LINE),
- cast(?glTexSubImage1D, <<Target:32/?UN, Level:32/?SN, Xoffset:32/?SN, Width:32/?SN, Format:32/?UN, Type:32/?UN>>).
+%% Maybe NULL or offset sometimes
+ NewPixels =
+   if is_integer(Pixels) -> Pixels;
+      true ->
+        sdl:send_bin(Pixels, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glTexSubImage1D, [<<Target:32/?UN, Level:32/?SN, Xoffset:32/?SN, Width:32/?SN, Format:32/?UN, Type:32/?UN, NewPixels:32/?SN>>]).
 
 %% Func:    texSubImage2D 
 %% Args:    Target, Level, Xoffset, Yoffset, Width, Height, Format, Type, <<[Pixels]>>
 %% Returns: ok
 %% C-API func: void glTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type,  const GLvoid * pixels)
 texSubImage2D(Target, Level, Xoffset, Yoffset, Width, Height, Format, Type, Pixels) -> 
- sdl:send_bin(Pixels, ?MODULE, ?LINE),
- cast(?glTexSubImage2D, <<Target:32/?UN, Level:32/?SN, Xoffset:32/?SN, Yoffset:32/?SN, Width:32/?SN, Height:32/?SN, Format:32/?UN, Type:32/?UN>>).
+%% Maybe NULL or offset sometimes
+ NewPixels =
+   if is_integer(Pixels) -> Pixels;
+      true ->
+        sdl:send_bin(Pixels, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glTexSubImage2D, [<<Target:32/?UN, Level:32/?SN, Xoffset:32/?SN, Yoffset:32/?SN, Width:32/?SN, Height:32/?SN, Format:32/?UN, Type:32/?UN, NewPixels:32/?SN>>]).
 
 %% Func:    translated 
 %% Args:    X, Y, Z
@@ -3196,8 +3268,14 @@ vertex4sv({V1,V2,V3,V4}) ->
 %% Returns: ok
 %% C-API func: void glVertexPointer(GLint size, GLenum type, GLsizei stride,  const GLvoid * pointer)
 vertexPointer(Size, Type, Stride, Pointer) -> 
- sdl:send_bin(Pointer, ?MODULE, ?LINE),
- cast(?glVertexPointer, <<Size:32/?SN, Type:32/?UN, Stride:32/?SN>>).
+%% Maybe NULL or offset sometimes
+ NewPointer =
+   if is_integer(Pointer) -> Pointer;
+      true ->
+        sdl:send_bin(Pointer, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glVertexPointer, [<<Size:32/?SN, Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
 %% Func:    viewport 
 %% Args:    X, Y, Width, Height
@@ -5536,7 +5614,7 @@ validateProgram(ProgramObj) ->
 uniform1fARB(Location, V0) -> 
  uniform1f(Location, V0).
 uniform1f(Location, V0) -> 
- cast(?glUniform1fvARB, <<Location:32/?SN, V0:32/?FN>>).
+ cast(?glUniform1fARB, <<Location:32/?SN, V0:32/?FN>>).
 
 %% Func:    uniform2fARB 
 %% Args:    Location, V0, V1
@@ -5545,7 +5623,7 @@ uniform1f(Location, V0) ->
 uniform2fARB(Location, V0, V1) -> 
  uniform2f(Location, V0, V1).
 uniform2f(Location, V0, V1) -> 
- cast(?glUniform2fvARB, <<Location:32/?SN, V0:32/?FN, V1:32/?FN>>).
+ cast(?glUniform2fARB, <<Location:32/?SN, V0:32/?FN, V1:32/?FN>>).
 
 %% Func:    uniform3fARB 
 %% Args:    Location, V0, V1, V2
@@ -5554,7 +5632,7 @@ uniform2f(Location, V0, V1) ->
 uniform3fARB(Location, V0, V1, V2) -> 
  uniform3f(Location, V0, V1, V2).
 uniform3f(Location, V0, V1, V2) -> 
- cast(?glUniform3fvARB, <<Location:32/?SN, V0:32/?FN, V1:32/?FN, V2:32/?FN>>).
+ cast(?glUniform3fARB, <<Location:32/?SN, V0:32/?FN, V1:32/?FN, V2:32/?FN>>).
 
 %% Func:    uniform4fARB 
 %% Args:    Location, V0, V1, V2, V3
@@ -5563,7 +5641,7 @@ uniform3f(Location, V0, V1, V2) ->
 uniform4fARB(Location, V0, V1, V2, V3) -> 
  uniform4f(Location, V0, V1, V2, V3).
 uniform4f(Location, V0, V1, V2, V3) -> 
- cast(?glUniform4fvARB, <<Location:32/?SN, V0:32/?FN, V1:32/?FN, V2:32/?FN, V3:32/?FN>>).
+ cast(?glUniform4fARB, <<Location:32/?SN, V0:32/?FN, V1:32/?FN, V2:32/?FN, V3:32/?FN>>).
 
 %% Func:    uniform1iARB 
 %% Args:    Location, V0
@@ -5572,7 +5650,7 @@ uniform4f(Location, V0, V1, V2, V3) ->
 uniform1iARB(Location, V0) -> 
  uniform1i(Location, V0).
 uniform1i(Location, V0) -> 
- cast(?glUniform1ivARB, <<Location:32/?SN, V0:32/?SN>>).
+ cast(?glUniform1iARB, <<Location:32/?SN, V0:32/?SN>>).
 
 %% Func:    uniform2iARB 
 %% Args:    Location, V0, V1
@@ -5581,7 +5659,7 @@ uniform1i(Location, V0) ->
 uniform2iARB(Location, V0, V1) -> 
  uniform2i(Location, V0, V1).
 uniform2i(Location, V0, V1) -> 
- cast(?glUniform2ivARB, <<Location:32/?SN, V0:32/?SN, V1:32/?SN>>).
+ cast(?glUniform2iARB, <<Location:32/?SN, V0:32/?SN, V1:32/?SN>>).
 
 %% Func:    uniform3iARB 
 %% Args:    Location, V0, V1, V2
@@ -5590,7 +5668,7 @@ uniform2i(Location, V0, V1) ->
 uniform3iARB(Location, V0, V1, V2) -> 
  uniform3i(Location, V0, V1, V2).
 uniform3i(Location, V0, V1, V2) -> 
- cast(?glUniform3ivARB, <<Location:32/?SN, V0:32/?SN, V1:32/?SN, V2:32/?SN>>).
+ cast(?glUniform3iARB, <<Location:32/?SN, V0:32/?SN, V1:32/?SN, V2:32/?SN>>).
 
 %% Func:    uniform4iARB 
 %% Args:    Location, V0, V1, V2, V3
@@ -5599,7 +5677,7 @@ uniform3i(Location, V0, V1, V2) ->
 uniform4iARB(Location, V0, V1, V2, V3) -> 
  uniform4i(Location, V0, V1, V2, V3).
 uniform4i(Location, V0, V1, V2, V3) -> 
- cast(?glUniform4ivARB, <<Location:32/?SN, V0:32/?SN, V1:32/?SN, V2:32/?SN, V3:32/?SN>>).
+ cast(?glUniform4iARB, <<Location:32/?SN, V0:32/?SN, V1:32/?SN, V2:32/?SN, V3:32/?SN>>).
 
 %% Func:    uniform1fvARB 
 %% Args:    Location, Count, <<[Value]>>
@@ -5912,6 +5990,20 @@ getAttribLocation(ProgramObj, Name) ->
    Ret;
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
+
+%% Func:    drawBuffersARB 
+%% Args:    N, <<[Bufs]>>
+%% Returns: ok
+%% C-API func: void glDrawBuffersARB(GLsizei n,  const GLenum * bufs)
+drawBuffersARB(N, Bufs) -> 
+ drawBuffers(N, Bufs).
+drawBuffers(N, Bufs) -> 
+ NewBufs = if
+	is_list(Bufs) ; is_tuple(Bufs) -> term2bin(Bufs, N, ?GL_INT);
+	is_binary(Bufs) -> Bufs;
+	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Bufs})
+ end, 
+ cast(?glDrawBuffersARB, [<<N:32/?SN>>,NewBufs]).
 
 %% Func:    stencilOpSeparateATI 
 %% Args:    Face, Sfail, Dpfail, Dppass
