@@ -1,0 +1,26 @@
+What's this?
+
+This is only an embryo. It's going to be a lightweight version
+of ESDL for applications only demanding windowed mode OpenGL.
+
+* Woggle has a different event model than SDL's.
+* Woggle is SDL derived work although it does not use the SDL libraries.
+* Woggle depends on ESDL, but the ESDL driver or SDL itself is not needed 
+  in runtime. No real SDL interfaces are used. ESDL sources are needed
+  at compile time to keep compatibility with the ESDDL opcodes.  
+* The erlang modules from ESDL are reused for woggle, which means you
+  can use woggle and ESDL in the same erlang installation without
+  clashes.
+* I'm starting with windows, convinced that if I only get that working, 
+  X-windows and MacOSX Aqua will be a breeze. 
+
+The name Woggle is an abbreviation of Wings3d OpenGL Engine, 
+where the extra g is there to avoid questions about pronunciation.
+
+A Woggle is also some sort of ring that boyscouts wear around their
+scarves.  The connection between that and an Erlang-OpenGL-interface
+still remains to be invented.
+
+More info when I get more things working.
+
+/Patrik
