@@ -98,38 +98,44 @@ void init_fps(sdl_data* sd)
 /* Must be done after creating a rendering context */
 void init_glexts(sdl_data* sd)
 {
-   int i;
-   int op;
-   sdl_fun* fun_tab = sd->fun_tab;
-   char** str_tab = sd->str_tab;
+   static int already_done = 0;
+      
+   if(already_done == 0) {
+      int i;
+      int op;
+      sdl_fun* fun_tab = sd->fun_tab;
+      char** str_tab = sd->str_tab;
 
-   for (i = 0; (op = ext_fns[i].op) != 0; i++) {
-      if (fun_tab[op] == undefined_extension) {
-	 void* ext_ptr = SDL_GL_GetProcAddress(ext_fns[i].name);
-	 str_tab[op] = ext_fns[i].name;
-	 if (ext_ptr) {
-	    /* fprintf(stderr, "Success %s \r\n", ext_fns[i].name);*/ 
-	    * (void **) (ext_fns[i].ext_fun) = ext_ptr;
-	    fun_tab[op] = ext_fns[i].fun;
-	 } else {
-	    char arbname[256];	   
-	    char* tmp;
-	    strcpy(arbname, ext_fns[i].name);
-	    tmp = arbname + strlen(arbname);
-	    strncpy(tmp, "ARB", 4);
-	    ext_ptr = SDL_GL_GetProcAddress(arbname);
+      already_done = 1;
+
+      for (i = 0; (op = ext_fns[i].op) != 0; i++) {
+	 if (fun_tab[op] == undefined_extension) {
+	    void* ext_ptr = SDL_GL_GetProcAddress(ext_fns[i].name);
+	    str_tab[op] = ext_fns[i].name;
 	    if (ext_ptr) {
-	       /* fprintf(stderr, "Success %s \r\n", ext_fns[i].name); */
+	       /* fprintf(stderr, "Success %s \r\n", ext_fns[i].name);*/ 
 	       * (void **) (ext_fns[i].ext_fun) = ext_ptr;
 	       fun_tab[op] = ext_fns[i].fun;
-	    } else {	    	    
-	       /*	       fprintf(stderr, "Failed %s \r\n", ext_fns[i].name); */
-	       fun_tab[op] = undefined_extension;
+	    } else {
+	       char arbname[256];	   
+	       char* tmp;
+	       strcpy(arbname, ext_fns[i].name);
+	       tmp = arbname + strlen(arbname);
+	       strncpy(tmp, "ARB", 4);
+	       ext_ptr = SDL_GL_GetProcAddress(arbname);
+	       if (ext_ptr) {
+		  /* fprintf(stderr, "Success %s \r\n", ext_fns[i].name); */
+		  * (void **) (ext_fns[i].ext_fun) = ext_ptr;
+		  fun_tab[op] = ext_fns[i].fun;
+	       } else {	    	    
+		  /*	       fprintf(stderr, "Failed %s \r\n", ext_fns[i].name); */
+		  fun_tab[op] = undefined_extension;
+	       }
 	    }
+	 } else {	 
+	    fprintf(stderr, "Exiting FP EXTENSION array mismatch in initialization %d %d %s\r\n", 
+		    i, ext_fns[i].op, ext_fns[i].name);
 	 }
-      } else {	 
-	 fprintf(stderr, "Exiting FP EXTENSION array mismatch in initialization %d %d %s\r\n", 
-		 i, ext_fns[i].op, ext_fns[i].name);
       }
    }
 }
