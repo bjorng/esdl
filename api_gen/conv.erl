@@ -414,7 +414,7 @@ genf_erl(Type, FuncName, Args0, _Last, Fd) ->
 	    ignore;
 	{{test,ReNamed},_} ->
 	    ?W(" try ~s(", [ReNamed]), write_args(FuncName, erl, Args1, Fd), 
-	    ?W(")~n catch error:undef -> ~s_fallback(", [FuncName]), 
+	    ?W(")~n catch error:_ -> ~s_fallback(", [FuncName]), 
 	    write_args(FuncName, erl, Args1, Fd),
 	    ?W(") end.~n",[]),
 	    ?W("~s_fallback(", [FuncName]), write_args(FuncName, erl, Args1, Fd),

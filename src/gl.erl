@@ -5862,7 +5862,7 @@ getProgramString(Target, Pname, #sdlmem{bin=String}) ->
 %% C-API func: void glDeleteObjectARB(GLhandleARB obj)
 deleteObjectARB(Obj) -> 
  try deleteProgram(Obj)
- catch error:undef -> glDeleteObjectARB_fallback(Obj) end.
+ catch error:_ -> glDeleteObjectARB_fallback(Obj) end.
 glDeleteObjectARB_fallback(Obj) -> 
  cast(?glDeleteObjectARB, <<Obj:32/?UN>>).
 
@@ -5886,7 +5886,7 @@ getHandle(Pname) ->
 %% C-API func: void glDetachObjectARB(GLhandleARB containerObj, GLhandleARB attachedObj)
 detachObjectARB(ContainerObj, AttachedObj) -> 
  try detachShader(ContainerObj, AttachedObj)
- catch error:undef -> glDetachObjectARB_fallback(ContainerObj, AttachedObj) end.
+ catch error:_ -> glDetachObjectARB_fallback(ContainerObj, AttachedObj) end.
 glDetachObjectARB_fallback(ContainerObj, AttachedObj) -> 
  cast(?glDetachObjectARB, <<ContainerObj:32/?UN, AttachedObj:32/?UN>>).
 
@@ -5896,7 +5896,7 @@ glDetachObjectARB_fallback(ContainerObj, AttachedObj) ->
 %% C-API func: GLhandleARB glCreateShaderObjectARB(GLenum shaderType)
 createShaderObjectARB(ShaderType) -> 
  try createShader(ShaderType)
- catch error:undef -> glCreateShaderObjectARB_fallback(ShaderType) end.
+ catch error:_ -> glCreateShaderObjectARB_fallback(ShaderType) end.
 glCreateShaderObjectARB_fallback(ShaderType) -> 
  Bin = call(?glCreateShaderObjectARB, <<ShaderType:32/?UN>>), 
  case Bin of 
@@ -5911,7 +5911,7 @@ glCreateShaderObjectARB_fallback(ShaderType) ->
 %% C-API func: GLhandleARB glCreateProgramObjectARB()
 createProgramObjectARB() -> 
  try createProgram()
- catch error:undef -> glCreateProgramObjectARB_fallback() end.
+ catch error:_ -> glCreateProgramObjectARB_fallback() end.
 glCreateProgramObjectARB_fallback() -> 
  Bin = call(?glCreateProgramObjectARB, []), 
  case Bin of 
@@ -5926,7 +5926,7 @@ glCreateProgramObjectARB_fallback() ->
 %% C-API func: void glAttachObjectARB(GLhandleARB containerObj, GLhandleARB obj)
 attachObjectARB(ContainerObj, Obj) -> 
  try attachShader(ContainerObj, Obj)
- catch error:undef -> glAttachObjectARB_fallback(ContainerObj, Obj) end.
+ catch error:_ -> glAttachObjectARB_fallback(ContainerObj, Obj) end.
 glAttachObjectARB_fallback(ContainerObj, Obj) -> 
  cast(?glAttachObjectARB, <<ContainerObj:32/?UN, Obj:32/?UN>>).
 
@@ -5936,7 +5936,7 @@ glAttachObjectARB_fallback(ContainerObj, Obj) ->
 %% C-API func: void glUseProgramObjectARB(GLhandleARB programObj)
 useProgramObjectARB(ProgramObj) -> 
  try useProgram(ProgramObj)
- catch error:undef -> glUseProgramObjectARB_fallback(ProgramObj) end.
+ catch error:_ -> glUseProgramObjectARB_fallback(ProgramObj) end.
 glUseProgramObjectARB_fallback(ProgramObj) -> 
  cast(?glUseProgramObjectARB, <<ProgramObj:32/?UN>>).
 
@@ -5988,7 +5988,7 @@ getInfoLog(Obj, MaxLength) ->
 %% C-API func: void glGetAttachedObjectsARB(GLhandleARB containerObj, GLsizei maxCount, GLsizei * count, GLhandleARB * obj)
 getAttachedObjectsARB(ContainerObj, MaxCount) -> 
  try getAttachedShaders(ContainerObj, MaxCount)
- catch error:undef -> glGetAttachedObjectsARB_fallback(ContainerObj, MaxCount) end.
+ catch error:_ -> glGetAttachedObjectsARB_fallback(ContainerObj, MaxCount) end.
 glGetAttachedObjectsARB_fallback(ContainerObj, MaxCount) -> 
  Bin = call(?glGetAttachedObjectsARB, <<ContainerObj:32/?UN, MaxCount:32/?SN>>), 
  case Bin of 
