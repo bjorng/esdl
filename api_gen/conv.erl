@@ -681,7 +681,7 @@ build_erlbinaries(Func, {T, const, pointer,V}, IsLast, Fd) ->
 	       "\t  [<<~sLen:32/native>>, term2bin(~s, ~sLen, ~s)];~n",
 	       [Var, Var, Var, Var, Var, Type]),	    
 	    ?W("\tis_binary(~s) -> "
-	       "[<<(size(~s) div ~s):32/native>>,~s/binary];~n", 
+	       "[<<(size(~s) div ~s):32/native>>,~s];~n", 
 	       [Var, Var, gl_type_size(Type), Var]),
 	    ?W("\ttrue -> erlang:fault({?MODULE, ?LINE, unsupported_type, ~s})~n", 
 	       [Var]),
@@ -1585,7 +1585,6 @@ skip_extensions("GL_ARB_fragment_shader", _R) ->  false;
 skip_extensions("GL_ARB_shading_language_100",_R) ->  false;
 skip_extensions("GL_ARB_texture_non_power_of_two",_R) ->  false;
 skip_extensions("GL_ARB_point_sprite",_R) ->  false;
-skip_extensions("GL_ARB_shadow_ambient",_R) ->  false;
 skip_extensions("GL_ARB_shader_objects",_R) ->  false;
 skip_extensions("GL_ARB_draw_buffers",_R) ->  false;
 skip_extensions("GL_ABGR_EXT", _R) -> false;

@@ -385,7 +385,7 @@ flip(S) when record(S, sdl_surface) ->
 setColors(S, Colors, FirstColor, Ncolors) when record(S, sdl_surface) ->
     setColors(S#sdl_surface.self, Colors, FirstColor, Ncolors);
 setColors({surfacep, Ref}, Colors, FirstColor, Ncolors) when list(Colors) ->
-    BinC = mkbin_colors(Colors, Ncolors),
+    BinC = list_to_binary(mkbin_colors(Colors, Ncolors)),
     Length = size(BinC) div 3,
     <<Res:8>> = call(?SDL_SetColors, <<Ref:32, FirstColor:32, Length:32, BinC/binary>>),
     Res == 1.

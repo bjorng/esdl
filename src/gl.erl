@@ -1087,7 +1087,7 @@ fogfv(Pname, Params) ->
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_FLOAT)];
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_FLOAT)];
-	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params/binary];
+	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glFogfv, [<<Pname:32/?UN>>,NewParams]).
@@ -1109,7 +1109,7 @@ fogiv(Pname, Params) ->
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_INT)];
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_INT)];
-	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params/binary];
+	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glFogiv, [<<Pname:32/?UN>>,NewParams]).
@@ -1698,7 +1698,7 @@ lightModelfv(Pname, Params) ->
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_FLOAT)];
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_FLOAT)];
-	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params/binary];
+	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glLightModelfv, [<<Pname:32/?UN>>,NewParams]).
@@ -1720,7 +1720,7 @@ lightModeliv(Pname, Params) ->
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_INT)];
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_INT)];
-	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params/binary];
+	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glLightModeliv, [<<Pname:32/?UN>>,NewParams]).
@@ -1742,7 +1742,7 @@ lightfv(Light, Pname, Params) ->
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_FLOAT)];
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_FLOAT)];
-	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params/binary];
+	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glLightfv, [<<Light:32/?UN, Pname:32/?UN>>,NewParams]).
@@ -1764,7 +1764,7 @@ lightiv(Light, Pname, Params) ->
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_INT)];
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_INT)];
-	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params/binary];
+	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glLightiv, [<<Light:32/?UN, Pname:32/?UN>>,NewParams]).
@@ -1845,7 +1845,7 @@ map1d(Target, U1, U2, Stride, Order, Points) ->
 	  [<<PointsLen:32/native>>, term2bin(Points, PointsLen, ?GL_DOUBLE)];
 	is_tuple(Points) ->  PointsLen = size(Points), 
 	  [<<PointsLen:32/native>>, term2bin(Points, PointsLen, ?GL_DOUBLE)];
-	is_binary(Points) -> [<<(size(Points) div 8):32/native>>,Points/binary];
+	is_binary(Points) -> [<<(size(Points) div 8):32/native>>,Points];
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Points})
  end, 
  cast(?glMap1d, [<<Target:32/?UN, U1:64/?FN, U2:64/?FN, Stride:32/?SN, Order:32/?SN>>,NewPoints]).
@@ -1860,7 +1860,7 @@ map1f(Target, U1, U2, Stride, Order, Points) ->
 	  [<<PointsLen:32/native>>, term2bin(Points, PointsLen, ?GL_FLOAT)];
 	is_tuple(Points) ->  PointsLen = size(Points), 
 	  [<<PointsLen:32/native>>, term2bin(Points, PointsLen, ?GL_FLOAT)];
-	is_binary(Points) -> [<<(size(Points) div 4):32/native>>,Points/binary];
+	is_binary(Points) -> [<<(size(Points) div 4):32/native>>,Points];
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Points})
  end, 
  cast(?glMap1f, [<<Target:32/?UN, U1:32/?FN, U2:32/?FN, Stride:32/?SN, Order:32/?SN>>,NewPoints]).
@@ -1875,7 +1875,7 @@ map2d(Target, U1, U2, Ustride, Uorder, V1, V2, Vstride, Vorder, Points) ->
 	  [<<PointsLen:32/native>>, term2bin(Points, PointsLen, ?GL_DOUBLE)];
 	is_tuple(Points) ->  PointsLen = size(Points), 
 	  [<<PointsLen:32/native>>, term2bin(Points, PointsLen, ?GL_DOUBLE)];
-	is_binary(Points) -> [<<(size(Points) div 8):32/native>>,Points/binary];
+	is_binary(Points) -> [<<(size(Points) div 8):32/native>>,Points];
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Points})
  end, 
  cast(?glMap2d, [<<Target:32/?UN, U1:64/?FN, U2:64/?FN, Ustride:32/?SN, Uorder:32/?SN, V1:64/?FN, V2:64/?FN, Vstride:32/?SN, Vorder:32/?SN>>,NewPoints]).
@@ -1890,7 +1890,7 @@ map2f(Target, U1, U2, Ustride, Uorder, V1, V2, Vstride, Vorder, Points) ->
 	  [<<PointsLen:32/native>>, term2bin(Points, PointsLen, ?GL_FLOAT)];
 	is_tuple(Points) ->  PointsLen = size(Points), 
 	  [<<PointsLen:32/native>>, term2bin(Points, PointsLen, ?GL_FLOAT)];
-	is_binary(Points) -> [<<(size(Points) div 4):32/native>>,Points/binary];
+	is_binary(Points) -> [<<(size(Points) div 4):32/native>>,Points];
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Points})
  end, 
  cast(?glMap2f, [<<Target:32/?UN, U1:32/?FN, U2:32/?FN, Ustride:32/?SN, Uorder:32/?SN, V1:32/?FN, V2:32/?FN, Vstride:32/?SN, Vorder:32/?SN>>,NewPoints]).
@@ -1940,7 +1940,7 @@ materialfv(Face, Pname, Params) ->
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_FLOAT)];
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_FLOAT)];
-	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params/binary];
+	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glMaterialfv, [<<Face:32/?UN, Pname:32/?UN>>,NewParams]).
@@ -1962,7 +1962,7 @@ materialiv(Face, Pname, Params) ->
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_INT)];
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_INT)];
-	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params/binary];
+	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glMaterialiv, [<<Face:32/?UN, Pname:32/?UN>>,NewParams]).
@@ -2897,7 +2897,7 @@ texEnvfv(Target, Pname, Params) ->
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_FLOAT)];
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_FLOAT)];
-	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params/binary];
+	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glTexEnvfv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
@@ -2919,7 +2919,7 @@ texEnviv(Target, Pname, Params) ->
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_INT)];
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_INT)];
-	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params/binary];
+	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glTexEnviv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
@@ -3026,7 +3026,7 @@ texParameterfv(Target, Pname, Params) ->
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_FLOAT)];
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_FLOAT)];
-	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params/binary];
+	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glTexParameterfv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
@@ -3048,7 +3048,7 @@ texParameteriv(Target, Pname, Params) ->
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_INT)];
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_INT)];
-	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params/binary];
+	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glTexParameteriv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
@@ -3474,7 +3474,7 @@ convolutionParameterfv(Target, Pname, Params) ->
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_FLOAT)];
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_FLOAT)];
-	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params/binary];
+	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glConvolutionParameterfv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
@@ -3496,7 +3496,7 @@ convolutionParameteriv(Target, Pname, Params) ->
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_INT)];
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_INT)];
-	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params/binary];
+	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glConvolutionParameteriv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
