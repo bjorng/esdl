@@ -1,0 +1,98 @@
+Instructions for building windows version of ESDL.
+Not for the faint of heart, there are binaries to download.
+
+1. Intro
+2. Needed tools
+3. Configuring
+4. Building
+5. Testing
+
+Intro
+-----
+
+The windows version of ESDL has until now been built using Micro$ofts
+visual C++ tools. This is no longer the case and if you find any
+Makefile.win32 files sloshing around they are most probably
+obsolete. Esdl on windows in now built using a combination of cygwin
+and MinGW, cygwin beeing the basic build environment, emulating a
+unixish environment well enough for most purpouses. MinGW is the GCC
+port for windows which produces native windows binaries etc. Maybe the
+cygwin gcc could be used instead, but cygwin works fine and is free,
+so why bother... 
+
+A special little configure script is used to setup the environment for
+building the windows version. You need to run that to get the C-code
+to compile. A little shell script to aid your making is also created
+by the pseudo-configure. ESDL should have a real autoconf-configure of
+course, but time is a limited resource...
+
+For all tools, directories and paths the following hold:
+The less spaces in pathnames, the better. If you have somthing
+installed in i.e. "Program Files" set the path so that "Program Files"
+is replaced by the short DOS-name (which for most installations is PROGRA~1).
+
+Needed tools
+------------
+
+*) Cygwin, full installation with development tools etc.
+   http://www.cygwin.com
+
+*) MinGW, you can use the self installing EXE package. 
+   Add to your cygwin path properly.
+   http://www.mingw.org
+
+*) SDL, You need the development libraries, either for VC++ or mingw,
+   it doesn't matter really, the configure script handles both.
+   Add the SDL libdir (where SDL.dll resides) to your PATH. SDL.dll is
+   needed in runtime as well as compile time.
+   http://www.libsdl.org
+
+*) Erlang, currently 5.3 (R9C-0) or later is required. Note the thing
+   about PATH's and spaces above. Erlang does not add itself to your
+   path upon installation, add the appropriate path to your .bashrc.
+   http://www.erlang.org
+
+All tools are available as binary releases for windows.
+
+
+Configuring
+-----------
+
+In the same directory as this file resides, you should find a shell
+script named Configure-cygwin-mingw.sh. Run it from within the cygwin
+bash shell. cd to the directory where it resides before running.
+
+If it fails, try to correct what seems to be wrong and run again. When
+successful, you should have everything you need to compile.
+
+
+Building
+---------
+
+Run the generated script mingw_build.sh which should reside in the
+same directory as the configure script. Everything should build more
+or less without warnings, the exception beeing some HTML generation
+which warns about some C API Ref's. Ignore those warnings.
+
+
+Testing
+-------
+
+Run some of the tests in the ./test directory like this (make sure
+SDL.dll is in your path):
+
+$ cd tests
+$ erl -pa ../ebin
+Eshell V5.3  (abort with ^G)
+1> testgl:go().
+
+etc. You should get a spinning cube by running testgl:go(), a spinning
+erlang logo by running erldemo:go(). After each test you need to
+restart erlang, exit with q(). and run erl -pa ../ebin again. Erlang
+may crash if you press Ctrl-C to exit, it's not Erlangs fault. ESDL
+is a linked in driver and SDL is also in Erlangs memory space, that
+makes signal handling barf... Just ignore.
+
+Happy hacking.
+
+/Patrik

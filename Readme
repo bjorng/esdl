@@ -1,0 +1,120 @@
+ESDL by Dan Gudmundsson 
+Currently located at http://esdl.sourceforge.net
+
+What is it?
+===========
+Esdl is library for accessing SDL and Opengl through erlang.
+
+SDL (Simple DirectMedia Layer) is as said on the web page (www.libsdl.org):
+Simple DirectMedia Layer is a cross-platform multimedia library
+designed to provide fast access to the graphics framebuffer and audio
+device. It also do event handling from mouse, keyboards and joysticks.
+
+OpenGL is a cross-platform standard for 3D rendering and
+3D hardware acceleration. 
+More information can be found at www.opengl.org
+
+Compilation and Installation
+=============================
+
+You need erlang (www.erlang.org) version R9B.
+You need libsdl (www.libsdl.org) (the development package) version > 1.2.5
+You need opengl (with glu-1.2 (full version) libraries from your 
+	        hardware manufacturer or a software version from www.mesa3d.org.
+
+Precompiled versions are available for windows. 
+
+For unix like systems 
+Untar the esdl-VERSION.src.tar.gz and type 'make; make install'
+or put it anywhere and add the path in your ~/.erlang (C:/windows/.erlang) file
+
+You might need to modify the c_src/Makefile to point out the correct paths 
+to header files and libraries. 
+
+To sucessfully build esdl you need complete GLU version 1.2 or later,
+many linux system has a mesa-glu which don't have the correct tesselation
+routines, download the prebuilt sgi-version from www.mesa3d.org and click 
+on SGI-GLU link to find a rpm.
+
+Install sdl so that the os can find the dynamic libraries:
+On windows: put the .dll's somewhere in your path or in $ESDL_PATH/priv
+            (in the precompiled version (maybe old) SDL.dll is included)
+On unix:    put the .so libs somewhere in your LD_LIBRARY_PATH
+
+Testing esdl can be done by building the tests in the test directory and 
+running the test programs, example:
+cd test
+erl -pa ../ebin   (werl on windows)
+Erlang (BEAM) emulator version 5.1.1 [threads:0]
+Eshell V5.1.1  (abort with ^G)
+1> testsprite:go().    %% Escape quits
+2> testgl:go().  
+3> erldemo:go().
+4> testaudio:go(). 
+5> testjoy:go().
+
+Note: Using esdl on nvidia cards and their drivers requires that erlang
+was built with threads. 
+i.e. when building erlang do ./configure -enable-threads
+otherwise erlang will crash with segfault
+
+Performance & Quality?
+====================== 
+Is not as fast as in 'C' obviously, but the opengl part is pretty 
+fast if you have an opengl accelerated 3d card.
+
+The sdl_video performance is not that fast mainly due to that most
+of the sdl functions is synchronous (i.e. has return values which 
+erlang must wait for).
+
+This code is almost untested, i.e it contains a lot of bugs.
+
+What is done and what are the main differences with the 'C' libraries?
+======================================================================
+In general I have tried to follow the libraries as much as possible,
+usually the only changes are the return values, in 'C' you use arguments
+to do multiple returns which erlang won't allow instead a tuple is returned
+containing the values.
+
+The SDL functions have been split into several erlang modules 
+(with corresponding header files). 
+General SDL functions, such as SDL_Init, are in the sdl.erl module. 
+Most of the video related functions are in the sdl_video.erl module.
+The event functions are sliced into the following modules: 
+sdl_event.erl, sdl_active.erl, sdl_keyboard.erl, sdl_mouse.erl. 
+
+sdl_audio.erl handles some of the audio functions, the audio part needs
+more work.
+The cdrom, threads and time functions are not implemented.
+
+Opengl is defined in the gl.erl module, everything in opengl-1.4 is
+implemented, note that it depends on the dirvers which functions are
+available.  Most of glu functions are implemented except most of the
+functions that require a function pointer.
+
+Extra functions:
+================
+Most of the SDL_video functions requires a pointer to a 
+video_surface structure, to be able to handle these structures 
+the following functions has been added:
+sdl_video:getSurface/1, sdl_video:getPixelFormat/1, 
+sdl_video:getPalette/1, sdl_video:getPixels/2 
+
+Some of the Opengl functions also requires pointers to memory 
+areas, the sdl_util module contains functions to handle these.
+sdl_util:malloc/2, sdl_util:free/1, sdl_util:read/2, sdl_util:readBin/2, 
+sdl_util:write/2.
+
+What's need to be done and what do I want you to do?
+====================================================
+
+Someone with some experience with audio programming can take a look at the 
+audio part which needs some work.
+
+The other sdl packages such as sdl_image, sdl_mixer and sdl_mpeg.
+
+If you make something funny or good looking applications, it would be fun
+if you let me know and gave me some credit.
+
+Regards 
+/Dan (d g u d @ e r i x. e r i c s s o n. s e)

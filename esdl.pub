@@ -1,0 +1,11 @@
+{name, "esdl"}.
+{vsn, {0,9}}.
+{summary, "A 2D & 3D (Opengl) graphics package"}.
+{author, "Dan Gudmundsson", "dgud@erix.ericsson.se", "001201"}.
+{keywords, ["sdl", "opengl", "graphic"]}.
+{needs, [{"sdl (C-lib)",{1,5}}, {"Opengl (c-lib)",{1,1}}]}.
+{abstract, 
+	"Provides access to 2d and 3d graphics through Opengl and SDL."
+	"More information and a prebuilt Windows release"
+	"can be found on http://www.ericsson.se/cslab/~dgud/esdl/"}.
+
