@@ -71,9 +71,11 @@ if [ -z "$SDLDLL" ]; then
 fi
 
 echo $SDLDLL
-echo -n "checking some more on SDL..."
-
 SDLROOT=`echo $SDLDLL | sed 's,/lib/SDL.dll$,,g'`
+SDLROOT=`echo $SDLROOT | sed 's,/bin/SDL.dll$,,g'`
+
+echo SDLROOT is $SDLROOT
+echo -n "checking some more on SDL..."
 
 if [ -z "$SDLROOT" ]; then
     echo "failed."
@@ -84,6 +86,7 @@ if [ -z "$SDLROOT" ]; then
     echo "the *development libraries* before any other SDL.dll." >&2
     exit 1
 fi
+
 WSDLROOT=`cygpath -m $SDLROOT`
 SDLLIB=$SDLROOT/lib
 if [ -f $SDLLIB/SDL.lib ]; then
