@@ -9,7 +9,11 @@
 
 #include <stdlib.h>
 #include <string.h>
+#ifdef FLAVOUR_WOGGLE
+#include <woggle_driver.h>
+#else
 #include "esdl.h"
+#endif
 #ifndef APIENTRY
 #define APIENTRY
 #endif

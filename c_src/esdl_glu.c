@@ -14,7 +14,11 @@
 #include <stdlib.h>  /* malloc */
 #include <string.h>  /* malloc */
 #include <math.h>  /* malloc */
+#ifdef FLAVOUR_WOGGLE
+#include <woggle_driver.h>
+#else
 #include "esdl.h"
+#endif
 #ifdef _OSX_COCOA
 #include <OpenGL/glu.h>
 #else

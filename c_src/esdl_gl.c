@@ -9,7 +9,12 @@
 
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef FLAVOUR_WOGGLE
+#include <woggle_driver.h>
+#else
 #include "esdl.h"
+#endif
 void egl_accum(sdl_data *egl_sd, int egl_len, char *egl_buff) 
 {
  char * bp; 

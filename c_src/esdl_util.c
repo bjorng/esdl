@@ -15,7 +15,11 @@
 
 #include <string.h>
 #include <stdlib.h>  /* malloc */
+#ifdef FLAVOUR_WOGGLE
+#include <woggle_driver.h>
+#else
 #include "esdl.h"
+#endif
 
 void mygl_alloc(sdl_data *sd, int len, char *bp)
 {
@@ -36,7 +40,7 @@ void mygl_write(sdl_data *sd, int len, char *bp)
   }
   sdl_free_binaries(sd);
 }
-
+#ifndef FLAVOUR_WOGGLE
 void copySdlImage2GLArray(sdl_data *sd, int len, char * buff)
 {
   Uint8 *rowhi, *rowlo, type;
@@ -105,3 +109,4 @@ void copySdlImage2GLArray(sdl_data *sd, int len, char * buff)
     sdl_free_binaries(sd);
   }
 }
+#endif

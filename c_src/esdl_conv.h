@@ -20,10 +20,12 @@
 #ifndef BYTECONV_H
 #define BYTECONV_H
 
+#ifndef FLAVOUR_WOGGLE
 #ifdef WIN32
 #include <SDL_byteorder.h>
 #else 
 #include <SDL/SDL_byteorder.h>
+#endif
 #endif
 
 #define put8(s,n) do { \
