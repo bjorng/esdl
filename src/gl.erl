@@ -174,9 +174,12 @@ glGetBooleanvLen(Type) ->
 	?GL_MAP_COLOR            -> 1;
 	?GL_MAP_STENCIL          -> 1;
 	?GL_MATRIX_MODE          -> 1;
+	?GL_MAX_3D_TEXTURE_SIZE  -> 1;
 	?GL_MAX_CLIENT_ATTRIB_STACK_DEPTH -> 1;
 	?GL_MAX_ATTRIB_STACK_DEPTH -> 1;
 	?GL_MAX_CLIP_PLANES      -> 1;
+	?GL_MAX_ELEMENTS_INDICES  -> 1;
+	?GL_MAX_ELEMENTS_VERTICES -> 1;
 	?GL_MAX_EVAL_ORDER       -> 1;
 	?GL_MAX_LIGHTS           -> 1;
 	?GL_MAX_LIST_NESTING     -> 1;
@@ -186,7 +189,8 @@ glGetBooleanvLen(Type) ->
 	?GL_MAX_PROJECTION_STACK_DEPTH -> 1;
 	?GL_MAX_TEXTURE_SIZE     -> 1;
 	?GL_MAX_TEXTURE_STACK_DEPTH -> 1;
-	?GL_MAX_VIEWPORT_DIMS    -> 2;
+	?GL_MAX_VERTEX_UNITS_ARB -> 1;
+ 	?GL_MAX_VIEWPORT_DIMS    -> 2;
 	?GL_MODELVIEW_MATRIX     -> 16;
 %%	?GL_MINMAX_EXT           -> 1;
 	?GL_MODELVIEW_STACK_DEPTH -> 1;
@@ -195,6 +199,7 @@ glGetBooleanvLen(Type) ->
 	?GL_NORMAL_ARRAY_STRIDE  -> 1;
 	?GL_NORMAL_ARRAY_TYPE    -> 1;
 	?GL_NORMALIZE            -> 1;
+	?GL_NUM_COMPRESSED_TEXTURE_FORMATS -> 1;
 	?GL_PACK_ALIGNMENT       -> 1;
 	?GL_PACK_LSB_FIRST       -> 1;
 	?GL_PACK_ROW_LENGTH      -> 1;
