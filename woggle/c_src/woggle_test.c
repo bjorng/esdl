@@ -1,6 +1,9 @@
-#include "woggle_win.h"
-#include <gl/gl.h>
+#include "woggle.h"
+#include <GL/gl.h>
 #include <stdio.h>
+
+
+#if 0 && defined(WIN32)
 #include <fcntl.h>
 
 static void debugf(char *format, ...)
@@ -19,6 +22,7 @@ static void debugf(char *format, ...)
 
     va_end(ap);
 }
+
 
 void inigl2(void)
 {
@@ -52,6 +56,7 @@ void inigl(void)
     glDepthFunc(GL_LESS);
     debugf("%s\n",glGetString(GL_VENDOR));
 }
+
 
 static void glpaint(HDC hDC, float theta) { 	
     float cube[][3] ={{0.5f,0.5f,-0.5f},
@@ -134,7 +139,6 @@ static void glpaint(HDC hDC, float theta) {
     SwapBuffers(hDC);
 }
 
-#if 1
 #define MSGDEBUG
 
 /* Test */
@@ -327,11 +331,21 @@ int APIENTRY WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR command_
     wog_close_window(&wd2);
     return 0;
 }
+
 #else
+
+#if WIN32
 int APIENTRY WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR command_line,
 	int cmd_show)
+#else
+/* UNIX */
+#include <unistd.h>
+#define Sleep       usleep
+#define instance    0
+int main( int argc, char** argv )
+#endif
 {
-    HANDLE qh;
+    WOG_WIN_HANDLE wh;
     /*WogEventMessage *msg;
       WogCommandMessage *cmd;*/
     WogWindowData wd;
@@ -352,89 +366,103 @@ int APIENTRY WinMain(HINSTANCE instance, HINSTANCE prev_instance, LPSTR command_
 			{ 1.0f,  1.0f,  1.0f},
 			{ 1.0f,  0.0f,  1.0f},
 			{ 0.0f,  0.0f,  1.0f}};
-		    
+
     wog_init_instance(instance);
-    qh  = wog_create_window("Testnisse",640,480, &wd);
-    glViewport(0,0,640,480);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(-2.0,2.0,-2.0,2.0,-20.0,20.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-    glClearColor(0.0,0.0,0.0,1.0);
-    printf("%s\n",glGetString(GL_VENDOR));
-    for(i=0;i<1000;++i) {
-	glClearColor(0.0,0.0,0.0,1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glBegin(GL_QUADS);
-	glColor3fv(colors[0]);
-	glVertex3fv(cube[0]);
-	glColor3fv(colors[1]);
-	glVertex3fv(cube[1]);
-	glColor3fv(colors[2]);
-	glVertex3fv(cube[2]);
-	glColor3fv(colors[3]);
-	glVertex3fv(cube[3]);
-    
-	glColor3fv(colors[3]);
-	glVertex3fv(cube[3]);
-	glColor3fv(colors[4]);
-	glVertex3fv(cube[4]);
-	glColor3fv(colors[7]);
-	glVertex3fv(cube[7]);
-	glColor3fv(colors[2]);
-	glVertex3fv(cube[2]);
-	
-	glColor3fv(colors[0]);
-	glVertex3fv(cube[0]);
-	glColor3fv(colors[5]);
-	glVertex3fv(cube[5]);
-	glColor3fv(colors[6]);
-	glVertex3fv(cube[6]);
-	glColor3fv(colors[1]);
-	glVertex3fv(cube[1]);
+
+    wh = wog_create_window((WogWindowToken) 0, "Testnisse", 640,480, 32, &wd);
+    if( wh )
+    {
+        glViewport(0,0,640,480);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(-2.0,2.0,-2.0,2.0,-20.0,20.0);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
+        glClearColor(0.0,0.0,0.0,1.0);
+        printf("%s\n",glGetString(GL_VENDOR));
+
+        for(i=0;i<1000;++i)
+        {
+            glClearColor(0.0,0.0,0.0,1.0);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            glBegin(GL_QUADS);
+            glColor3fv(colors[0]);
+            glVertex3fv(cube[0]);
+            glColor3fv(colors[1]);
+            glVertex3fv(cube[1]);
+            glColor3fv(colors[2]);
+            glVertex3fv(cube[2]);
+            glColor3fv(colors[3]);
+            glVertex3fv(cube[3]);
+            
+            glColor3fv(colors[3]);
+            glVertex3fv(cube[3]);
+            glColor3fv(colors[4]);
+            glVertex3fv(cube[4]);
+            glColor3fv(colors[7]);
+            glVertex3fv(cube[7]);
+            glColor3fv(colors[2]);
+            glVertex3fv(cube[2]);
+            
+            glColor3fv(colors[0]);
+            glVertex3fv(cube[0]);
+            glColor3fv(colors[5]);
+            glVertex3fv(cube[5]);
+            glColor3fv(colors[6]);
+            glVertex3fv(cube[6]);
+            glColor3fv(colors[1]);
+            glVertex3fv(cube[1]);
 #define element(N,B) B[N-1]
-	glColor3fv(element(6, colors));
-	glVertex3fv(element(6, cube));
-	glColor3fv(element(5, colors));
-	glVertex3fv(element(5, cube));
-	glColor3fv(element(8, colors));
-	glVertex3fv(element(8, cube));
-	glColor3fv(element(7, colors));
-	glVertex3fv(element(7, cube));
-	
-	glColor3fv(element(6, colors));
-	glVertex3fv(element(6, cube));
-	glColor3fv(element(1, colors));
-	glVertex3fv(element(1, cube));
-	glColor3fv(element(4, colors));
-	glVertex3fv(element(4, cube));
-	glColor3fv(element(5, colors));
-	glVertex3fv(element(5, cube));
-	
-	glColor3fv(element(7, colors));
-	glVertex3fv(element(7, cube));
-	glColor3fv(element(2, colors));
-	glVertex3fv(element(2, cube));
-	glColor3fv(element(3, colors));
-	glVertex3fv(element(3, cube));
-	glColor3fv(element(8, colors));
-	glVertex3fv(element(8, cube));
-	glEnd();
-	glMatrixMode(GL_MODELVIEW);
-	glRotatef(5.0f,1.0f,1.0f,1.0f);
-	SwapBuffers(wd.hdc);
-	Sleep(10);
+            glColor3fv(element(6, colors));
+            glVertex3fv(element(6, cube));
+            glColor3fv(element(5, colors));
+            glVertex3fv(element(5, cube));
+            glColor3fv(element(8, colors));
+            glVertex3fv(element(8, cube));
+            glColor3fv(element(7, colors));
+            glVertex3fv(element(7, cube));
+            
+            glColor3fv(element(6, colors));
+            glVertex3fv(element(6, cube));
+            glColor3fv(element(1, colors));
+            glVertex3fv(element(1, cube));
+            glColor3fv(element(4, colors));
+            glVertex3fv(element(4, cube));
+            glColor3fv(element(5, colors));
+            glVertex3fv(element(5, cube));
+            
+            glColor3fv(element(7, colors));
+            glVertex3fv(element(7, cube));
+            glColor3fv(element(2, colors));
+            glVertex3fv(element(2, cube));
+            glColor3fv(element(3, colors));
+            glVertex3fv(element(3, cube));
+            glColor3fv(element(8, colors));
+            glVertex3fv(element(8, cube));
+            glEnd();
+
+            glMatrixMode(GL_MODELVIEW);
+            glRotatef(5.0f,1.0f,1.0f,1.0f);
+
+            wog_swap_buffers(&wd);
+            Sleep(10);
+        }
+        wog_close_window(&wd);
     }
-    wog_close_window(&wd);
-    qh  = wog_create_window("Testnisse",100,100, &wd);
-    glViewport(0,0,640,480);
-    wog_close_window(&wd);
+
+#if 0
+    wh = wog_create_window((WogWindowToken) 0, "Testnisse", 100,100, 32, &wd);
+    if( wh )
+    {
+        glViewport(0,0,640,480);
+        wog_close_window(&wd);
+    }
+#endif
+
     return 0;
-
 }
-
 
 #endif

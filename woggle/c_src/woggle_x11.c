@@ -1,8 +1,12 @@
-#include "woggle_win.h"
-#include <gl/gl.h>
-#include <process.h>
+#include "woggle.h"
+#include <GL/gl.h>
+#include <string.h>
+#include <stdio.h>
 
+
+#if 0
 #define HWIN_TITLE_MAX 256
+
 
 typedef struct {
     HINSTANCE instance;
@@ -14,6 +18,7 @@ typedef struct {
     WogEventQue *ackq;
 } WTParam;
 
+
 typedef struct {
     int event_mask[WogListenAll];
     int delta_mouse;
@@ -22,22 +27,19 @@ typedef struct {
     WogCommandQue *comq;
     WogEventQue *ackq;
 } WogThreadWindowData;
+#endif
 
-static DWORD thread_data_index = 0; 
 
-static WogEventQue wog_evq;
+//static DWORD thread_data_index = 0; 
 
 WogEventQue *wog_global_event_que;
 
-static HANDLE wog_instance_handle = NULL;
-
-static CRITICAL_SECTION message_pool_event_crit;
-static CRITICAL_SECTION message_pool_command_crit;
-
+static WogEventQue wog_evq;
 static WogEventItem *event_item_pool;
 static WogCommandItem *command_item_pool;
 
 
+#if 0
 #ifdef HARDDEBUG
 static void debugf(char *format, ...)
 {
@@ -57,6 +59,7 @@ static void debugf(char *format, ...)
 }
 #endif
 
+
 WogEventMessage *wog_alloc_event_message(void)
 {
     WogEventMessage *msg;
@@ -73,6 +76,7 @@ WogEventMessage *wog_alloc_event_message(void)
     return msg;
 }
 
+
 WogCommandMessage *wog_alloc_command_message(void)
 {
     WogCommandMessage *msg;
@@ -88,6 +92,7 @@ WogCommandMessage *wog_alloc_command_message(void)
     return msg;
 }
 
+
 void wog_free_event_message(WogEventMessage *msg)
 {
     WogEventItem *item = (WogEventItem *) msg;
@@ -97,6 +102,7 @@ void wog_free_event_message(WogEventMessage *msg)
     LeaveCriticalSection(&message_pool_event_crit);
 }
 
+
 void wog_free_command_message(WogCommandMessage *msg)
 {
     WogCommandItem *item = (WogCommandItem *) msg;
@@ -105,6 +111,7 @@ void wog_free_command_message(WogCommandMessage *msg)
     command_item_pool = item;
     LeaveCriticalSection(&message_pool_command_crit);
 }
+
 
 void wog_post_event_message(WogEventQue *eq, WogEventMessage *msg)
 {
@@ -122,6 +129,7 @@ void wog_post_event_message(WogEventQue *eq, WogEventMessage *msg)
     }
     LeaveCriticalSection(&(q->event_crit));
 }
+
 
 void wog_merge_key(WogEventQue *eq, WogEventMessage *msg)
 {
@@ -233,6 +241,7 @@ void wog_merge_mousemove(WogEventQue *eq, WogEventMessage *msg)
     }
 }
 
+
 void wog_merge_mousedelta(WogEventQue *eq, WogEventMessage *msg)
 {
     WogEventItem *item = (WogEventItem *) msg;
@@ -268,7 +277,8 @@ void wog_merge_mousedelta(WogEventQue *eq, WogEventMessage *msg)
     }
 }
 
-WogEventMessage *wog_get_event_message(WogEventQue *eq)
+
+WogEventMessage* wog_get_event_message(WogEventQue *eq)
 {
     WogEventItem *item;
     WogEventQue *q;
@@ -291,22 +301,25 @@ WogEventMessage *wog_get_event_message(WogEventQue *eq)
     return (WogEventMessage *) item;
 }
 
+
 void wog_post_command_message(WogCommandQue *cq, WogCommandMessage *msg)
 {
     WogCommandItem *item = (WogCommandItem *)msg;
     EnterCriticalSection(&(cq->command_crit));
     item->next = NULL;
-    if (cq->command_que_first) {
-	cq->command_que_last->next = item;
-	cq->command_que_last = item;
+    if (cq->command_que_first)
+    {
+        cq->command_que_last->next = item;
+        cq->command_que_last = item;
     } else {
-	cq->command_que_first = cq->command_que_last = item;
-	SetEvent(cq->message_in_command_que);
+        cq->command_que_first = cq->command_que_last = item;
+        SetEvent(cq->message_in_command_que);
     }
     LeaveCriticalSection(&(cq->command_crit));
 }
 
-WogCommandMessage *get_command_message(WogCommandQue *cq)
+
+WogCommandMessage* get_command_message(WogCommandQue *cq)
 {
     WogCommandItem *item;
     EnterCriticalSection(&(cq->command_crit));
@@ -325,23 +338,28 @@ WogCommandMessage *get_command_message(WogCommandQue *cq)
     LeaveCriticalSection(&(cq->command_crit));
     return (WogCommandMessage *) item;
 }
+#endif
+
 
 static void wog_init_event_que(WogEventQue *eq) 
 {
     memset(eq,0,sizeof(WogEventQue));
-    InitializeCriticalSection(&(eq->event_crit));
-    eq->message_in_event_que = CreateEvent(NULL,TRUE,FALSE,NULL);
+    //InitializeCriticalSection(&(eq->event_crit));
+    //eq->message_in_event_que = CreateEvent(NULL,TRUE,FALSE,NULL);
     eq->event_que_first = eq->event_que_last = NULL;
 }
+
 
 static void wog_init_command_que(WogCommandQue *cq) 
 {
     memset(cq,0,sizeof(WogCommandQue));
-    InitializeCriticalSection(&(cq->command_crit));
-    cq->message_in_command_que = CreateEvent(NULL,TRUE,FALSE,NULL);
+    //InitializeCriticalSection(&(cq->command_crit));
+    //cq->message_in_command_que = CreateEvent(NULL,TRUE,FALSE,NULL);
     cq->command_que_first = cq->command_que_last = NULL;
 }
 
+
+#if 0
 static void wog_destroy_event_que(WogEventQue *eq)
 {
     WogEventItem *ei;
@@ -351,11 +369,13 @@ static void wog_destroy_event_que(WogEventQue *eq)
 
     CloseHandle(eq->message_in_event_que);
     
-    for(ei = eq->event_que_first; ei != NULL; ei = life) {
-	life = ei->next;
-	free(ei);
+    for(ei = eq->event_que_first; ei != NULL; ei = life)
+    {
+        life = ei->next;
+        free(ei);
     }
 }
+
 
 static void wog_destroy_command_que(WogCommandQue *cq)
 {
@@ -427,22 +447,23 @@ static WogModifiers check_keystate(WPARAM mousedata)
 #endif
     
     if (PRESSED(CONTROL)) 
-	m |= WOG_MODIFIER_CTRL;
+        m |= WOG_MODIFIER_CTRL;
     if (PRESSED(SHIFT))
-	m |= WOG_MODIFIER_SHIFT;
+        m |= WOG_MODIFIER_SHIFT;
     if (PRESSED(MENU))
-	m |= WOG_MODIFIER_ALT;
+        m |= WOG_MODIFIER_ALT;
 
     if (mousedata & MK_LBUTTON)
-	m |= WOG_MODIFIER_MOUSE_LEFT;
+        m |= WOG_MODIFIER_MOUSE_LEFT;
     if (mousedata & MK_RBUTTON)
-	m |= WOG_MODIFIER_MOUSE_RIGHT;
+        m |= WOG_MODIFIER_MOUSE_RIGHT;
     if (mousedata & MK_MBUTTON)
-	m |= WOG_MODIFIER_MOUSE_MIDDLE;
+        m |= WOG_MODIFIER_MOUSE_MIDDLE;
 
     return m;
 #undef PRESSED
 }
+
 
 #define MASK(N) (~(0xFFFFFFFFUL << (N)))
 
@@ -789,174 +810,365 @@ unsigned WINAPI wog_window_thread(void *params)
     free(params);
     return 0;
 }
+#endif
 
-void wog_close_window(WogWindowData *wd)
-{
-    WogCommandMessage *cmd;
-    
-    if (wd->hWindow == NULL) {
-	return;
-    }
-    disable_opengl(wd->hWindow, wd->hdc, wd->hrc);
-    cmd = wog_alloc_command_message();
-    cmd->tag = WogCloseWindow;
-    wog_post_command_message(wd->comq,cmd);
-    if (WaitForSingleObject(wd->hThrd,INFINITE) != WAIT_OBJECT_0) {
-	MessageBox(NULL,"Now what? cannot wait for thread!",
-		   "Woggle warning",MB_OK);
-    }
-    wog_destroy_command_que(wd->comq);
-    free(wd->comq);
-    wog_destroy_event_que(wd->ackq);
-    free(wd->ackq);
-    CloseHandle(wd->hWindow);
-    CloseHandle(wd->hThrd);
-}
 
-void wog_init_instance(HANDLE instance)
-/*
+/**
  * Only to be called when statically linked.
  */
+void wog_init_instance(WOG_WIN_HANDLE instance)
 {
-    InitializeCriticalSection(&message_pool_event_crit);
-    InitializeCriticalSection(&message_pool_command_crit);
+    //InitializeCriticalSection(&message_pool_event_crit);
+    //InitializeCriticalSection(&message_pool_command_crit);
     event_item_pool = NULL;  
     command_item_pool = NULL;
-    thread_data_index = TlsAlloc();
+    //thread_data_index = TlsAlloc();
     wog_init_event_que(&wog_evq); /* Global event que */
     wog_global_event_que = &wog_evq;
-    wog_instance_handle = instance;
 }
 
-HANDLE wog_create_window(WogWindowToken token, const char *title, 
+
+/*--------------------------------------------------------------------------*/
+
+
+#define GLV_ATTRIB_DOUBLEBUFFER     1
+#define GLV_ATTRIB_STENCIL          2
+#define GLV_ATTRIB_MULTISAMPLE      4
+
+
+static XVisualInfo* chooseVisual( Display* disp, int screen, int flags )
+{
+    int* end;
+    int attrib[] = {
+        GLX_RGBA,
+        GLX_RED_SIZE,   1,
+        GLX_GREEN_SIZE, 1,
+        GLX_BLUE_SIZE,  1,
+        GLX_DEPTH_SIZE, 1,
+        GLX_DOUBLEBUFFER,
+        GLX_STENCIL_SIZE, 1,
+        0, 1, 0, 16,
+        None
+    };
+
+
+    end = attrib + 9;
+
+    if( flags & GLV_ATTRIB_DOUBLEBUFFER )
+    {
+        *end++ = GLX_DOUBLEBUFFER;
+    }
+
+    if( flags & GLV_ATTRIB_STENCIL )
+    {
+        *end++ = GLX_STENCIL_SIZE;
+        *end++ = 1;
+    }
+
+    if( flags &  GLV_ATTRIB_MULTISAMPLE )
+    {
+#ifdef GL_ARB_multisample
+        XVisualInfo* vis;
+        int samples;
+
+
+        *end++ = GLX_SAMPLE_BUFFERS_ARB;
+        *end++ = 1;
+        *end++ = GLX_SAMPLES_ARB;
+        *end++ = 16;
+        *end   = None;
+
+        --end;
+
+        for( samples = 16; samples > 1; --samples )
+        {
+            *end = samples;
+
+            vis = glXChooseVisual( disp, screen, attrib );
+            if( vis )
+                return vis;
+        }
+#endif
+        return 0;
+    }
+
+    *end = None;
+    return glXChooseVisual( disp, screen, attrib );
+}
+
+
+/*
+  Sets flags to valid attributes.
+*/
+static XVisualInfo* bestVisual( Display* disp, int screen, int* flags )
+{
+    XVisualInfo* vi = chooseVisual( disp, screen, *flags );
+    if( ! vi )
+    {
+        int valid = 0;
+        int bit = GLV_ATTRIB_MULTISAMPLE;
+
+        // Test each requested attribute separately.
+        while( bit )
+        {
+            if( *flags & bit )
+            {
+                vi = chooseVisual( disp, screen, bit );
+                if( vi )
+                {
+                    XFree( vi );
+                    valid |= bit;
+                }
+            }
+            bit >>= 1;
+        }
+
+        *flags = valid;
+        vi = chooseVisual( disp, screen, valid );
+    }
+    return vi;
+}
+
+
+/*--------------------------------------------------------------------------*/
+
+
+#define DEFAULT_INPUT   (KeyPressMask | KeyReleaseMask | \
+                         ButtonPressMask | ButtonReleaseMask | \
+                         PointerMotionMask | \
+                         ExposureMask | StructureNotifyMask)
+
+/**
+  Returns wd or zero if creation not successful.
+*/
+WOG_WIN_HANDLE wog_create_window(WogWindowToken token, const char *title, 
 			 int width, int height, int depth,
 			 WogWindowData *wd)
 {
-    WogEventMessage *msg;
-    WTParam *params = malloc(sizeof(WTParam));
+    Display* disp;
+    XVisualInfo* vinfo;
+    int screen;
+    int attributes = GLV_ATTRIB_DOUBLEBUFFER;
 
-    if (wog_instance_handle == NULL) {
-	MessageBox(NULL, "Instance handle not set when creating window!", 
-		   "Woggle error", MB_OK);
-	exit(1);
+    disp = XOpenDisplay( 0 );
+    if( ! disp )
+    {
+        fprintf( stderr, "XOpenDisplay failed!\n" );
+        return( 0 );
     }
-    params->instance = wog_instance_handle; /*GetModuleHandle(NULL); 
-					      does not work when we're a DLL!*/
-    strncpy(params->title, title, HWIN_TITLE_MAX);
-    params->title[HWIN_TITLE_MAX-1] = '\0';
-    params->width = width;
-    params->height = height;
-    params->token = token;
-    params->comq = malloc(sizeof(WogCommandQue));
-    params->ackq = malloc(sizeof(WogEventQue));
-    wog_init_command_que(params->comq);
-    wog_init_event_que(params->ackq);
-    wd->token = params->token;
-    wd->comq = params->comq;
-    wd->ackq = params->ackq;
-    if (!(wd->hThrd = (HANDLE) _beginthreadex(NULL,0,&wog_window_thread,
-					      params, 0, &(wd->thrdid)))){
-	MessageBox(NULL,"Thread create failed!","Woggle error",MB_OK);
-	exit(1);
+
+    if( glXQueryExtension( disp, 0, 0 ) == 0 )
+    {
+        fprintf( stderr, "GLX Extension not available!\n" );
+        XCloseDisplay( disp );
+        return( 0 );
     }
-    WaitForSingleObject(WOG_ACK_HANDLE(wd),INFINITE);
-    msg = wog_get_event_message(WOG_ACK_QUE(wd));
-    if (msg->any.tag != WogWindowCreated || msg->any.token != token) {
-	MessageBox(NULL,"Window created not first message!",
-		   "Woggle error",MB_OK);
-	exit(1);
+
+    screen = DefaultScreen( disp );
+
+    vinfo = bestVisual( disp, screen, &attributes );
+    if( ! vinfo )
+    {
+        fprintf( stderr, "glXChooseVisual failed!\n" );
+        XCloseDisplay( disp );
+        return( 0 );
     }
-    wd->hWindow = msg->window_created.window;
-    enable_opengl(msg->window_created.window, &(wd->hdc), &(wd->hrc), depth);
-    return WOG_GLOBAL_EVENT_HANDLE();
+    if( ! (attributes & GLV_ATTRIB_DOUBLEBUFFER) )
+    {
+        fprintf( stderr, "No visual with GLX_DOUBLEBUFFER!\n" );
+        XCloseDisplay( disp );
+        return( 0 );
+    }
+
+    wd->display = disp;
+    wd->screen  = screen;
+    wd->vinfo   = vinfo;
+
+    wd->ctx = glXCreateContext( disp, vinfo, NULL, True );
+
+    {
+        XSetWindowAttributes attr;
+
+        /* GLX requires a colormap (see the glXIntro man page). */
+
+        attr.event_mask   = DEFAULT_INPUT;
+        attr.border_pixel = BlackPixel( disp, vinfo->screen );
+        attr.colormap = XCreateColormap( disp,
+                                         RootWindow( disp, vinfo->screen ),
+                                         vinfo->visual, AllocNone );
+
+        wd->window = XCreateWindow( disp, RootWindow( disp, vinfo->screen ),
+                                  0, 0, width, height,
+                                  0, vinfo->depth, InputOutput, vinfo->visual,
+                                  CWEventMask | CWBorderPixel | CWColormap,
+                                  &attr );
+    }
+
+
+    /* Enable the delete window protocol. */
+    wd->deleteAtom = XInternAtom( disp, "WM_DELETE_WINDOW", False );
+    XSetWMProtocols( disp, wd->window, &wd->deleteAtom, 1 );
+
+
+    /* Set window title and icon name */
+    XStoreName( disp, wd->window, title );
+    XSetIconName( disp, wd->window, title );
+
+
+    XMapRaised( disp, wd->window );
+
+    glXMakeCurrent( disp, wd->window, wd->ctx );
+
+    return wd;
 }
+
+
+void wog_close_window(WogWindowData *wd)
+{
+    if( wd && wd->display )
+    {
+        Display* disp = wd->display;
+
+        if( wd->window )
+        {
+            /*
+            if( wd->nullCursor != (Cursor) -1 )
+            {
+                XFreeCursor( disp, wd->nullCursor );
+                wd->nullCursor = -1;
+            }
+            */
+
+            XDestroyWindow( disp, wd->window );
+            wd->window = 0;
+        }
+
+        if( wd->ctx )
+        {
+            glXDestroyContext( disp, wd->ctx );
+            wd->ctx = 0;
+        }
+
+        if( wd->vinfo )
+        {
+            XFree( wd->vinfo );
+            wd->vinfo = 0;
+        }
+
+        XCloseDisplay( wd->display );
+        wd->display = 0;
+    }
+}
+
 
 void wog_swap_buffers(WogWindowData *wd)
 {
-    SwapBuffers(wd->hdc);
+    glXSwapBuffers( wd->display, wd->window );
 }
 
+
+void wog_set_current_window(WogWindowData *wd)
+{
+    glXMakeCurrent( wd->display, wd->window, wd->ctx );
+}
+
+
+#if 0
 unsigned wog_get_tick(void)
 {
     return (unsigned) GetTickCount();
 }
 
-void wog_set_current_window(WogWindowData *wd)
-{
-    wglMakeCurrent( wd->hdc, wd->hrc );
-}
 
-int wog_list_modes(WogRes **res) {
+int wog_list_modes(WogRes **res)
+{
     static WogRes *buffer = NULL;
     static int buffer_size = 0;
     static DWORD i;
     DEVMODE dm;
     
-    if (!buffer_size) {
-	buffer = malloc ((buffer_size = 10) * sizeof(WogRes));
-	i = 0;
-	for (;;) {
-	    memset(&dm,0,sizeof(DEVMODE));
-	    dm.dmSize = sizeof(DEVMODE);
-	    dm.dmDriverExtra = 0;
-	    if (!EnumDisplaySettings(NULL,
-				     (i) ? (i-1) : ENUM_CURRENT_SETTINGS,&dm))
-		break;
-	    if (i >= buffer_size) {
-		buffer = realloc(buffer,
-				 (buffer_size += 10) * sizeof(WogRes)); 
-	    }
-	    buffer[i].cdepth = dm.dmBitsPerPel;
-	    buffer[i].freq = dm.dmDisplayFrequency;
-	    buffer[i].w = dm.dmPelsWidth;
-	    buffer[i].h = dm.dmPelsHeight;
-	    ++i;
-	}
+    if (!buffer_size)
+    {
+        buffer = malloc ((buffer_size = 10) * sizeof(WogRes));
+        i = 0;
+        for (;;)
+        {
+            memset(&dm,0,sizeof(DEVMODE));
+            dm.dmSize = sizeof(DEVMODE);
+            dm.dmDriverExtra = 0;
+            if (!EnumDisplaySettings(NULL,
+                         (i) ? (i-1) : ENUM_CURRENT_SETTINGS,&dm))
+            break;
+            if (i >= buffer_size) {
+                buffer = realloc(buffer,
+                         (buffer_size += 10) * sizeof(WogRes)); 
+            }
+            buffer[i].cdepth = dm.dmBitsPerPel;
+            buffer[i].freq = dm.dmDisplayFrequency;
+            buffer[i].w = dm.dmPelsWidth;
+            buffer[i].h = dm.dmPelsHeight;
+            ++i;
+        }
     }
     *res = buffer;
     return i;
 }
+
+
 int wog_get_attr(const WogWindowData *wd, int item)
 {
     PIXELFORMATDESCRIPTOR  pfd;
     int i;
 
-    if (!(i = GetPixelFormat(wd->hdc))) {
-	return -1;
-    }
-    if (!DescribePixelFormat(wd->hdc, i, sizeof(pfd), &pfd)) {
-	return -1;
-    }
-    switch (item) {
-    case WOG_ATTR_RED_SIZE:
-	return (int) (pfd.cRedBits);
-    case WOG_ATTR_GREEN_SIZE:
-	return (int) (pfd.cGreenBits);
-    case WOG_ATTR_BLUE_SIZE:
-	return (int) (pfd.cBlueBits);
-    case WOG_ATTR_ALPHA_SIZE: /* Not supported on windows I think... */
-	return (int) (pfd.cAlphaBits);
-    case WOG_ATTR_DEPTH_SIZE:
-	return (int) (pfd.cDepthBits); /* Z buffer depth */
-    case WOG_ATTR_BUFFER_SIZE:
-	return (int) (pfd.cColorBits); /* color depth */
-    /* I actually provide no interface to change this, 
-       it should always be true */
-    case WOG_ATTR_DOUBLEBUFFER:
-	return (int) (!!(pfd.dwFlags & PFD_DOUBLEBUFFER));
-    default:
-	return -1;
+    if (!(i = GetPixelFormat(wd->hdc)))
+        return -1;
+
+    if (!DescribePixelFormat(wd->hdc, i, sizeof(pfd), &pfd))
+        return -1;
+
+    switch (item)
+    {
+        case WOG_ATTR_RED_SIZE:
+            return (int) (pfd.cRedBits);
+
+        case WOG_ATTR_GREEN_SIZE:
+            return (int) (pfd.cGreenBits);
+
+        case WOG_ATTR_BLUE_SIZE:
+            return (int) (pfd.cBlueBits);
+
+        case WOG_ATTR_ALPHA_SIZE: /* Not supported on windows I think... */
+            return (int) (pfd.cAlphaBits);
+
+        case WOG_ATTR_DEPTH_SIZE:
+            return (int) (pfd.cDepthBits); /* Z buffer depth */
+
+        case WOG_ATTR_BUFFER_SIZE:
+            return (int) (pfd.cColorBits); /* color depth */
+            /* I actually provide no interface to change this, 
+               it should always be true */
+
+        case WOG_ATTR_DOUBLEBUFFER:
+            return (int) (!!(pfd.dwFlags & PFD_DOUBLEBUFFER));
+
+        default:
+            return -1;
     }
 }
+
+
 int wog_get_wmattr(const WogWindowData *wd, int item)
 {
-    switch (item) {
-    case WOG_WMATTR_MAXIMIZED:
-	return (int) IsZoomed(wd->hWindow);
-    default:
-	return -1;
+    switch (item)
+    {
+        case WOG_WMATTR_MAXIMIZED:
+            return (int) IsZoomed(wd->hWindow);
+
+        default:
+            return -1;
     }
 }
+
 
 int wog_listen(const WogWindowData *wd, WogCommandTag tag, int onoff)
 {
@@ -967,46 +1179,7 @@ int wog_listen(const WogWindowData *wd, WogCommandTag tag, int onoff)
     wog_post_command_message(WOG_COMMAND_QUE(wd),cmd);
     return 0;
 }
-
-BOOL APIENTRY DllMain(HANDLE hModule, 
-                      DWORD  ul_reason_for_call, 
-                      LPVOID lpReserved)
-{
-    switch( ul_reason_for_call ) {
-    case DLL_PROCESS_ATTACH:
-	InitializeCriticalSection(&message_pool_event_crit);
-	InitializeCriticalSection(&message_pool_command_crit);
-	event_item_pool = NULL;  
-	command_item_pool = NULL;
-	wog_instance_handle=hModule;
-	thread_data_index = TlsAlloc();
-	wog_init_event_que(&wog_evq); /* Global event que */
-	wog_global_event_que = &wog_evq;
-#ifdef DLL_EVENT_DEBUG
-	sprintf(dbuff,"DLL_PROCESS_ATTACH:0x%08X",(unsigned) hModule);
-	MessageBox(NULL,dbuff,"DllMain",MB_OK);
 #endif
-	break;
-    case DLL_THREAD_ATTACH:
-#ifdef DLL_EVENT_DEBUG
-	MessageBox(NULL,"DLL_THREAD_ATTACH","DllMain",MB_OK);
-#endif
-	break;
-    case DLL_THREAD_DETACH:
-#ifdef DLL_EVENT_DEBUG
-	MessageBox(NULL,"DLL_THREAD_DETACH","DllMain",MB_OK);
-#endif
-	break;
-    case DLL_PROCESS_DETACH:
-	TlsFree(thread_data_index);
-	wog_destroy_event_que(&wog_evq); /* Global event que */
-#ifdef DLL_EVENT_DEBUG
-	MessageBox(NULL,"DLL_PROCESS_DETACH","DllMain",MB_OK);
-#endif
-	break;
-    }
-    return TRUE;
-}
 
 
-
+/*EOF*/
