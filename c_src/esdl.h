@@ -39,6 +39,11 @@ typedef ptrdiff_t GLsizeiptr;
 typedef char GLcharARB;		     /* native character */
 typedef unsigned int GLhandleARB;    /* shader object handle */
 #endif
+#ifndef GL_VERSION_2_0
+/* GL type for program/shader text */
+typedef char GLchar;			/* native character */
+#endif
+
 
 
 #include "esdl_conv.h"

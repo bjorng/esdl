@@ -1,4 +1,4 @@
-%%  Copyright (c) 2001 Dan Gudmundsson
+%%  Copyright (c) 2005 Dan Gudmundsson
 %%
 %%  See the file "license.terms" for information on usage and redistribution
 %%  of this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -4647,6 +4647,800 @@ getBufferPointerv(Target, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
+%% Func:    blendEquationSeparate 
+%% Args:    ModeRGB, ModeAlpha
+%% Returns: ok
+%% C-API func: void glBlendEquationSeparate(GLenum modeRGB, GLenum modeAlpha)
+blendEquationSeparate(ModeRGB, ModeAlpha) -> 
+ cast(?glBlendEquationSeparate, <<ModeRGB:32/?UN, ModeAlpha:32/?UN>>).
+
+%% Func:    drawBuffers 
+%% Args:    N, <<[Bufs]>>
+%% Returns: ok
+%% C-API func: void glDrawBuffers(GLsizei n,  const GLenum * bufs)
+drawBuffers(N, Bufs) -> 
+ NewBufs = if
+	is_list(Bufs) ; is_tuple(Bufs) -> term2bin(Bufs, N, ?GL_INT);
+	is_binary(Bufs) -> Bufs;
+	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Bufs})
+ end, 
+ cast(?glDrawBuffers, [<<N:32/?SN>>,NewBufs]).
+
+%% Func:    stencilOpSeparate 
+%% Args:    Face, Sfail, Dpfail, Dppass
+%% Returns: ok
+%% C-API func: void glStencilOpSeparate(GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass)
+stencilOpSeparate(Face, Sfail, Dpfail, Dppass) -> 
+ cast(?glStencilOpSeparate, <<Face:32/?UN, Sfail:32/?UN, Dpfail:32/?UN, Dppass:32/?UN>>).
+
+%% Func:    stencilFuncSeparate 
+%% Args:    Frontfunc, Backfunc, Ref, Mask
+%% Returns: ok
+%% C-API func: void glStencilFuncSeparate(GLenum frontfunc, GLenum backfunc, GLint ref, GLuint mask)
+stencilFuncSeparate(Frontfunc, Backfunc, Ref, Mask) -> 
+ cast(?glStencilFuncSeparate, <<Frontfunc:32/?UN, Backfunc:32/?UN, Ref:32/?SN, Mask:32/?UN>>).
+
+%% Func:    stencilMaskSeparate 
+%% Args:    Face, Mask
+%% Returns: ok
+%% C-API func: void glStencilMaskSeparate(GLenum face, GLuint mask)
+stencilMaskSeparate(Face, Mask) -> 
+ cast(?glStencilMaskSeparate, <<Face:32/?UN, Mask:32/?UN>>).
+
+%% Func:    attachShader 
+%% Args:    Program, Shader
+%% Returns: ok
+%% C-API func: void glAttachShader(GLuint program, GLuint shader)
+attachShader(Program, Shader) -> 
+ cast(?glAttachShader, <<Program:32/?UN, Shader:32/?UN>>).
+
+%% Func:    bindAttribLocation 
+%% Args:    Program, Index, <<[Name]>>
+%% Returns: ok
+%% C-API func: void glBindAttribLocation(GLuint program, GLuint index,  const GLchar * name)
+bindAttribLocation(Program, Index, Name) -> 
+ sdl:send_bin(list_to_binary([Name,0]), ?MODULE, ?LINE),
+ cast(?glBindAttribLocation, <<Program:32/?UN, Index:32/?UN>>).
+
+%% Func:    compileShader 
+%% Args:    Shader
+%% Returns: ok
+%% C-API func: void glCompileShader(GLuint shader)
+compileShader(Shader) -> 
+ cast(?glCompileShader, <<Shader:32/?UN>>).
+
+%% Func:    createProgram 
+%% Args:    
+%% Returns: ?GL_UNSIGNED_INT
+%% C-API func: GLuint glCreateProgram()
+createProgram() -> 
+ Bin = call(?glCreateProgram, []), 
+ case Bin of 
+	<<Ret:32/?UN>> -> 
+   Ret;
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    createShader 
+%% Args:    Type
+%% Returns: ?GL_UNSIGNED_INT
+%% C-API func: GLuint glCreateShader(GLenum type)
+createShader(Type) -> 
+ Bin = call(?glCreateShader, <<Type:32/?UN>>), 
+ case Bin of 
+	<<Ret:32/?UN>> -> 
+   Ret;
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    deleteProgram 
+%% Args:    Program
+%% Returns: ok
+%% C-API func: void glDeleteProgram(GLuint program)
+deleteProgram(Program) -> 
+ cast(?glDeleteProgram, <<Program:32/?UN>>).
+
+%% Func:    deleteShader 
+%% Args:    Shader
+%% Returns: ok
+%% C-API func: void glDeleteShader(GLuint shader)
+deleteShader(Shader) -> 
+ cast(?glDeleteShader, <<Shader:32/?UN>>).
+
+%% Func:    detachShader 
+%% Args:    Program, Shader
+%% Returns: ok
+%% C-API func: void glDetachShader(GLuint program, GLuint shader)
+detachShader(Program, Shader) -> 
+ cast(?glDetachShader, <<Program:32/?UN, Shader:32/?UN>>).
+
+%% Func:    disableVertexAttribArray 
+%% Args:    Index
+%% Returns: ok
+%% C-API func: void glDisableVertexAttribArray(GLuint index)
+disableVertexAttribArray(Index) -> 
+ cast(?glDisableVertexAttribArray, <<Index:32/?UN>>).
+
+%% Func:    enableVertexAttribArray 
+%% Args:    Index
+%% Returns: ok
+%% C-API func: void glEnableVertexAttribArray(GLuint index)
+enableVertexAttribArray(Index) -> 
+ cast(?glEnableVertexAttribArray, <<Index:32/?UN>>).
+
+%% Func:    getActiveAttrib 
+%% Args:    Program, Index, BufSize
+%% Returns: {[Length], [Size], [Type], [Name]}
+%% C-API func: void glGetActiveAttrib(GLuint program, GLuint index, GLsizei bufSize, GLsizei * length, GLint * size, GLenum * type, GLchar * name)
+getActiveAttrib(Program, Index, BufSize) -> 
+ Bin = call(?glGetActiveAttrib, <<Program:32/?UN, Index:32/?UN, BufSize:32/?SN>>), 
+ case Bin of 
+	<<Length:32/?SN, Size:32/?SN, Type:32/?UN, Name:Length/binary-unit:?GL_UNSIGNED_BYTE_SIZE>> -> 
+	 {Length, Size, Type, bin2list(Length, ?GL_UNSIGNED_BYTE, Name)};
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    getActiveUniform 
+%% Args:    Program, Index, BufSize
+%% Returns: {[Length], [Size], [Type], [Name]}
+%% C-API func: void glGetActiveUniform(GLuint program, GLuint index, GLsizei bufSize, GLsizei * length, GLint * size, GLenum * type, GLchar * name)
+getActiveUniform(Program, Index, BufSize) -> 
+ Bin = call(?glGetActiveUniform, <<Program:32/?UN, Index:32/?UN, BufSize:32/?SN>>), 
+ case Bin of 
+	<<Length:32/?SN, Size:32/?SN, Type:32/?UN, Name:Length/binary-unit:?GL_UNSIGNED_BYTE_SIZE>> -> 
+	 {Length, Size, Type, bin2list(Length, ?GL_UNSIGNED_BYTE, Name)};
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    getAttachedShaders 
+%% Args:    Program, MaxCount
+%% Returns: {[Count], [Obj]}
+%% C-API func: void glGetAttachedShaders(GLuint program, GLsizei maxCount, GLsizei * count, GLuint * obj)
+getAttachedShaders(Program, MaxCount) -> 
+ Bin = call(?glGetAttachedShaders, <<Program:32/?UN, MaxCount:32/?SN>>), 
+ case Bin of 
+	<<Count:32/?SN, Obj:Count/binary-unit:?GL_UNSIGNED_INT_SIZE>> -> 
+	 {Count, bin2list(Count, ?GL_UNSIGNED_INT, Obj)};
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    getAttribLocation 
+%% Args:    Program, <<[Name]>>
+%% Returns: ?GL_INT
+%% C-API func: GLint glGetAttribLocation(GLuint program,  const GLchar * name)
+getAttribLocation(Program, Name) -> 
+ sdl:send_bin(list_to_binary([Name,0]), ?MODULE, ?LINE),
+ Bin = call(?glGetAttribLocation, <<Program:32/?UN>>), 
+ case Bin of 
+	<<Ret:32/?SN>> -> 
+   Ret;
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    getProgramiv 
+%% Args:    Program, Pname
+%% Returns: [Params]
+%% C-API func: void glGetProgramiv(GLuint program, GLenum pname, GLint * params)
+getProgramiv(Program, Pname) -> 
+ Bin = call(?glGetProgramiv, <<Program:32/?UN, Pname:32/?UN>>), 
+ case Bin of 
+	<<Params:32/?SN>> -> 
+	 Params;
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    getProgramInfoLog 
+%% Args:    Program, BufSize
+%% Returns: {[Length], [InfoLog]}
+%% C-API func: void glGetProgramInfoLog(GLuint program, GLsizei bufSize, GLsizei * length, GLchar * infoLog)
+getProgramInfoLog(Program, BufSize) -> 
+ Bin = call(?glGetProgramInfoLog, <<Program:32/?UN, BufSize:32/?SN>>), 
+ case Bin of 
+	<<Length:32/?SN, InfoLog:Length/binary-unit:?GL_UNSIGNED_BYTE_SIZE>> -> 
+	 {Length, bin2list(Length, ?GL_UNSIGNED_BYTE, InfoLog)};
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    getShaderiv 
+%% Args:    Shader, Pname
+%% Returns: [Params]
+%% C-API func: void glGetShaderiv(GLuint shader, GLenum pname, GLint * params)
+getShaderiv(Shader, Pname) -> 
+ Bin = call(?glGetShaderiv, <<Shader:32/?UN, Pname:32/?UN>>), 
+ case Bin of 
+	<<Params:32/?SN>> -> 
+	 Params;
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    getShaderInfoLog 
+%% Args:    Shader, BufSize
+%% Returns: {[Length], [InfoLog]}
+%% C-API func: void glGetShaderInfoLog(GLuint shader, GLsizei bufSize, GLsizei * length, GLchar * infoLog)
+getShaderInfoLog(Shader, BufSize) -> 
+ Bin = call(?glGetShaderInfoLog, <<Shader:32/?UN, BufSize:32/?SN>>), 
+ case Bin of 
+	<<Length:32/?SN, InfoLog:Length/binary-unit:?GL_UNSIGNED_BYTE_SIZE>> -> 
+	 {Length, bin2list(Length, ?GL_UNSIGNED_BYTE, InfoLog)};
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    getShaderSource 
+%% Args:    Shader, BufSize
+%% Returns: {[Length], [Source]}
+%% C-API func: void glGetShaderSource(GLuint shader, GLsizei bufSize, GLsizei * length, GLchar * source)
+getShaderSource(Shader, BufSize) -> 
+ Bin = call(?glGetShaderSource, <<Shader:32/?UN, BufSize:32/?SN>>), 
+ case Bin of 
+	<<Length:32/?SN, Source:Length/binary-unit:?GL_UNSIGNED_BYTE_SIZE>> -> 
+	 {Length, bin2list(Length, ?GL_UNSIGNED_BYTE, Source)};
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    getUniformLocation 
+%% Args:    Program, <<[Name]>>
+%% Returns: ?GL_INT
+%% C-API func: GLint glGetUniformLocation(GLuint program,  const GLchar * name)
+getUniformLocation(Program, Name) -> 
+ sdl:send_bin(list_to_binary([Name,0]), ?MODULE, ?LINE),
+ Bin = call(?glGetUniformLocation, <<Program:32/?UN>>), 
+ case Bin of 
+	<<Ret:32/?SN>> -> 
+   Ret;
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    getUniformfv 
+%% Args:    Program, Location, #sdlmem{} = Params
+%% Returns: ok
+%% C-API func: void glGetUniformfv(GLuint program, GLint location, GLfloat * params)
+getUniformfv(Program, Location, #sdlmem{bin=Params}) -> 
+ sdl:send_bin(Params, ?MODULE, ?LINE),
+ cast(?glGetUniformfv, <<Program:32/?UN, Location:32/?SN>>).
+
+%% Func:    getUniformiv 
+%% Args:    Program, Location, #sdlmem{} = Params
+%% Returns: ok
+%% C-API func: void glGetUniformiv(GLuint program, GLint location, GLint * params)
+getUniformiv(Program, Location, #sdlmem{bin=Params}) -> 
+ sdl:send_bin(Params, ?MODULE, ?LINE),
+ cast(?glGetUniformiv, <<Program:32/?UN, Location:32/?SN>>).
+
+%% Func:    getVertexAttribdv 
+%% Args:    Index, Pname
+%% Returns: [Params]
+%% C-API func: void glGetVertexAttribdv(GLuint index, GLenum pname, GLdouble * params)
+getVertexAttribdv(Index, Pname) -> 
+ Bin = call(?glGetVertexAttribdv, <<Index:32/?UN, Pname:32/?UN>>), 
+ case Bin of 
+	<<Params:4/binary-unit:?GL_DOUBLE_SIZE>> -> 
+	 bin2list(4, ?GL_DOUBLE, Params);
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    getVertexAttribfv 
+%% Args:    Index, Pname
+%% Returns: [Params]
+%% C-API func: void glGetVertexAttribfv(GLuint index, GLenum pname, GLfloat * params)
+getVertexAttribfv(Index, Pname) -> 
+ Bin = call(?glGetVertexAttribfv, <<Index:32/?UN, Pname:32/?UN>>), 
+ case Bin of 
+	<<Params:4/binary-unit:?GL_FLOAT_SIZE>> -> 
+	 bin2list(4, ?GL_FLOAT, Params);
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    getVertexAttribiv 
+%% Args:    Index, Pname
+%% Returns: [Params]
+%% C-API func: void glGetVertexAttribiv(GLuint index, GLenum pname, GLint * params)
+getVertexAttribiv(Index, Pname) -> 
+ Bin = call(?glGetVertexAttribiv, <<Index:32/?UN, Pname:32/?UN>>), 
+ case Bin of 
+	<<Params:4/binary-unit:?GL_INT_SIZE>> -> 
+	 bin2list(4, ?GL_INT, Params);
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    getVertexAttribPointerv 
+%% Args:    Index, Pname
+%% Returns: Pointer=#sdlmem{}
+%% C-API func: void glGetVertexAttribPointerv(GLuint index, GLenum pname,  GLvoid* *pointer)
+getVertexAttribPointerv(Index, Pname) -> 
+ Bin = call(?glGetVertexAttribPointerv, <<Index:32/?UN, Pname:32/?UN>>), 
+ case Bin of 
+	<<Pointer:32/big-unsigned>> -> 
+	 erlang:fault({nyi, ?MODULE,?LINE});
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    isProgram 
+%% Args:    Program
+%% Returns: ?GL_BYTE
+%% C-API func: GLboolean glIsProgram(GLuint program)
+isProgram(Program) -> 
+ Bin = call(?glIsProgram, <<Program:32/?UN>>), 
+ case Bin of 
+	<<Ret:8/unsigned>> -> 
+   Ret /= ?GL_FALSE;
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    isShader 
+%% Args:    Shader
+%% Returns: ?GL_BYTE
+%% C-API func: GLboolean glIsShader(GLuint shader)
+isShader(Shader) -> 
+ Bin = call(?glIsShader, <<Shader:32/?UN>>), 
+ case Bin of 
+	<<Ret:8/unsigned>> -> 
+   Ret /= ?GL_FALSE;
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    linkProgram 
+%% Args:    Program
+%% Returns: ok
+%% C-API func: void glLinkProgram(GLuint program)
+linkProgram(Program) -> 
+ cast(?glLinkProgram, <<Program:32/?UN>>).
+
+%% Func:    shaderSource 
+%% Args:    Shader, Count, <<[Length]>>
+%% Returns: ok
+%% C-API func: void glShaderSource(GLuint shader, GLsizei count,  const GLchar* *string,  const GLint * length)
+shaderSource(Shader, Count, String, Length) -> 
+ lists:foreach(fun(Values) -> sdl:send_bin(list_to_binary([Values,0]), ?MODULE, ?LINE) end, String),
+ NewLength = if
+	is_list(Length) ; is_tuple(Length) -> term2bin(Length, Count, ?GL_INT);
+	is_binary(Length) -> Length;
+	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Length})
+ end, 
+ cast(?glShaderSource, [<<Shader:32/?UN, Count:32/?SN>>,NewLength]).
+
+%% Func:    useProgram 
+%% Args:    Program
+%% Returns: ok
+%% C-API func: void glUseProgram(GLuint program)
+useProgram(Program) -> 
+ cast(?glUseProgram, <<Program:32/?UN>>).
+
+%% Func:    uniform1f 
+%% Args:    Location, V0
+%% Returns: ok
+%% C-API func: void glUniform1f(GLint location, GLfloat v0)
+uniform1f(Location, V0) -> 
+ cast(?glUniform1f, <<Location:32/?SN, V0:32/?FN>>).
+
+%% Func:    uniform2f 
+%% Args:    Location, V0, V1
+%% Returns: ok
+%% C-API func: void glUniform2f(GLint location, GLfloat v0, GLfloat v1)
+uniform2f(Location, V0, V1) -> 
+ cast(?glUniform2f, <<Location:32/?SN, V0:32/?FN, V1:32/?FN>>).
+
+%% Func:    uniform3f 
+%% Args:    Location, V0, V1, V2
+%% Returns: ok
+%% C-API func: void glUniform3f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2)
+uniform3f(Location, V0, V1, V2) -> 
+ cast(?glUniform3f, <<Location:32/?SN, V0:32/?FN, V1:32/?FN, V2:32/?FN>>).
+
+%% Func:    uniform4f 
+%% Args:    Location, V0, V1, V2, V3
+%% Returns: ok
+%% C-API func: void glUniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
+uniform4f(Location, V0, V1, V2, V3) -> 
+ cast(?glUniform4f, <<Location:32/?SN, V0:32/?FN, V1:32/?FN, V2:32/?FN, V3:32/?FN>>).
+
+%% Func:    uniform1i 
+%% Args:    Location, V0
+%% Returns: ok
+%% C-API func: void glUniform1i(GLint location, GLint v0)
+uniform1i(Location, V0) -> 
+ cast(?glUniform1i, <<Location:32/?SN, V0:32/?SN>>).
+
+%% Func:    uniform2i 
+%% Args:    Location, V0, V1
+%% Returns: ok
+%% C-API func: void glUniform2i(GLint location, GLint v0, GLint v1)
+uniform2i(Location, V0, V1) -> 
+ cast(?glUniform2i, <<Location:32/?SN, V0:32/?SN, V1:32/?SN>>).
+
+%% Func:    uniform3i 
+%% Args:    Location, V0, V1, V2
+%% Returns: ok
+%% C-API func: void glUniform3i(GLint location, GLint v0, GLint v1, GLint v2)
+uniform3i(Location, V0, V1, V2) -> 
+ cast(?glUniform3i, <<Location:32/?SN, V0:32/?SN, V1:32/?SN, V2:32/?SN>>).
+
+%% Func:    uniform4i 
+%% Args:    Location, V0, V1, V2, V3
+%% Returns: ok
+%% C-API func: void glUniform4i(GLint location, GLint v0, GLint v1, GLint v2, GLint v3)
+uniform4i(Location, V0, V1, V2, V3) -> 
+ cast(?glUniform4i, <<Location:32/?SN, V0:32/?SN, V1:32/?SN, V2:32/?SN, V3:32/?SN>>).
+
+%% Func:    uniform1fv 
+%% Args:    Location, Count, {Value1}
+%% Returns: ok
+%% C-API func: void glUniform1fv(GLint location, GLsizei count,  const GLfloat * value)
+uniform1fv(Location, Count, {Value1}) -> 
+ cast(?glUniform1fv, <<Location:32/?SN, Count:32/?SN, Value1:32/?FN>>).
+
+%% Func:    uniform2fv 
+%% Args:    Location, Count, {Value1,Value2}
+%% Returns: ok
+%% C-API func: void glUniform2fv(GLint location, GLsizei count,  const GLfloat * value)
+uniform2fv(Location, Count, {Value1,Value2}) -> 
+ cast(?glUniform2fv, <<Location:32/?SN, Count:32/?SN, Value1:32/?FN,Value2:32/?FN>>).
+
+%% Func:    uniform3fv 
+%% Args:    Location, Count, {Value1,Value2,Value3}
+%% Returns: ok
+%% C-API func: void glUniform3fv(GLint location, GLsizei count,  const GLfloat * value)
+uniform3fv(Location, Count, {Value1,Value2,Value3}) -> 
+ cast(?glUniform3fv, <<Location:32/?SN, Count:32/?SN, Value1:32/?FN,Value2:32/?FN,Value3:32/?FN>>).
+
+%% Func:    uniform4fv 
+%% Args:    Location, Count, {Value1,Value2,Value3,Value4}
+%% Returns: ok
+%% C-API func: void glUniform4fv(GLint location, GLsizei count,  const GLfloat * value)
+uniform4fv(Location, Count, {Value1,Value2,Value3,Value4}) -> 
+ cast(?glUniform4fv, <<Location:32/?SN, Count:32/?SN, Value1:32/?FN,Value2:32/?FN,Value3:32/?FN,Value4:32/?FN>>).
+
+%% Func:    uniform1iv 
+%% Args:    Location, Count, {Value1}
+%% Returns: ok
+%% C-API func: void glUniform1iv(GLint location, GLsizei count,  const GLint * value)
+uniform1iv(Location, Count, {Value1}) -> 
+ cast(?glUniform1iv, <<Location:32/?SN, Count:32/?SN, Value1:32/?SN>>).
+
+%% Func:    uniform2iv 
+%% Args:    Location, Count, {Value1,Value2}
+%% Returns: ok
+%% C-API func: void glUniform2iv(GLint location, GLsizei count,  const GLint * value)
+uniform2iv(Location, Count, {Value1,Value2}) -> 
+ cast(?glUniform2iv, <<Location:32/?SN, Count:32/?SN, Value1:32/?SN,Value2:32/?SN>>).
+
+%% Func:    uniform3iv 
+%% Args:    Location, Count, {Value1,Value2,Value3}
+%% Returns: ok
+%% C-API func: void glUniform3iv(GLint location, GLsizei count,  const GLint * value)
+uniform3iv(Location, Count, {Value1,Value2,Value3}) -> 
+ cast(?glUniform3iv, <<Location:32/?SN, Count:32/?SN, Value1:32/?SN,Value2:32/?SN,Value3:32/?SN>>).
+
+%% Func:    uniform4iv 
+%% Args:    Location, Count, {Value1,Value2,Value3,Value4}
+%% Returns: ok
+%% C-API func: void glUniform4iv(GLint location, GLsizei count,  const GLint * value)
+uniform4iv(Location, Count, {Value1,Value2,Value3,Value4}) -> 
+ cast(?glUniform4iv, <<Location:32/?SN, Count:32/?SN, Value1:32/?SN,Value2:32/?SN,Value3:32/?SN,Value4:32/?SN>>).
+
+%% Func:    uniformMatrix2fv 
+%% Args:    Location, Count, Transpose, {Value1,Value2}
+%% Returns: ok
+%% C-API func: void glUniformMatrix2fv(GLint location, GLsizei count, GLboolean transpose,  const GLfloat * value)
+uniformMatrix2fv(Location, Count, Transpose, {Value1,Value2}) -> 
+ cast(?glUniformMatrix2fv, <<Location:32/?SN, Count:32/?SN, Transpose:8/unsigned, 0:24, Value1:32/?FN,Value2:32/?FN>>).
+
+%% Func:    uniformMatrix3fv 
+%% Args:    Location, Count, Transpose, {Value1,Value2,Value3}
+%% Returns: ok
+%% C-API func: void glUniformMatrix3fv(GLint location, GLsizei count, GLboolean transpose,  const GLfloat * value)
+uniformMatrix3fv(Location, Count, Transpose, {Value1,Value2,Value3}) -> 
+ cast(?glUniformMatrix3fv, <<Location:32/?SN, Count:32/?SN, Transpose:8/unsigned, 0:24, Value1:32/?FN,Value2:32/?FN,Value3:32/?FN>>).
+
+%% Func:    uniformMatrix4fv 
+%% Args:    Location, Count, Transpose, {Value1,Value2,Value3,Value4}
+%% Returns: ok
+%% C-API func: void glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose,  const GLfloat * value)
+uniformMatrix4fv(Location, Count, Transpose, {Value1,Value2,Value3,Value4}) -> 
+ cast(?glUniformMatrix4fv, <<Location:32/?SN, Count:32/?SN, Transpose:8/unsigned, 0:24, Value1:32/?FN,Value2:32/?FN,Value3:32/?FN,Value4:32/?FN>>).
+
+%% Func:    validateProgram 
+%% Args:    Program
+%% Returns: ok
+%% C-API func: void glValidateProgram(GLuint program)
+validateProgram(Program) -> 
+ cast(?glValidateProgram, <<Program:32/?UN>>).
+
+%% Func:    vertexAttrib1d 
+%% Args:    Index, X
+%% Returns: ok
+%% C-API func: void glVertexAttrib1d(GLuint index, GLdouble x)
+vertexAttrib1d(Index, X) -> 
+ cast(?glVertexAttrib1dv, <<Index:32/?UN, X:64/?FN>>).
+
+%% Func:    vertexAttrib1dv 
+%% Args:    Index, {V1}
+%% Returns: ok
+%% C-API func: void glVertexAttrib1dv(GLuint index,  const GLdouble * v)
+vertexAttrib1dv(Index, {V1}) -> 
+ cast(?glVertexAttrib1dv, <<Index:32/?UN, V1:64/?FN>>).
+
+%% Func:    vertexAttrib1f 
+%% Args:    Index, X
+%% Returns: ok
+%% C-API func: void glVertexAttrib1f(GLuint index, GLfloat x)
+vertexAttrib1f(Index, X) -> 
+ cast(?glVertexAttrib1fv, <<Index:32/?UN, X:32/?FN>>).
+
+%% Func:    vertexAttrib1fv 
+%% Args:    Index, {V1}
+%% Returns: ok
+%% C-API func: void glVertexAttrib1fv(GLuint index,  const GLfloat * v)
+vertexAttrib1fv(Index, {V1}) -> 
+ cast(?glVertexAttrib1fv, <<Index:32/?UN, V1:32/?FN>>).
+
+%% Func:    vertexAttrib1s 
+%% Args:    Index, X
+%% Returns: ok
+%% C-API func: void glVertexAttrib1s(GLuint index, GLshort x)
+vertexAttrib1s(Index, X) -> 
+ cast(?glVertexAttrib1sv, <<Index:32/?UN, X:16/?SN>>).
+
+%% Func:    vertexAttrib1sv 
+%% Args:    Index, {V1}
+%% Returns: ok
+%% C-API func: void glVertexAttrib1sv(GLuint index,  const GLshort * v)
+vertexAttrib1sv(Index, {V1}) -> 
+ cast(?glVertexAttrib1sv, <<Index:32/?UN, V1:16/?SN>>).
+
+%% Func:    vertexAttrib2d 
+%% Args:    Index, X, Y
+%% Returns: ok
+%% C-API func: void glVertexAttrib2d(GLuint index, GLdouble x, GLdouble y)
+vertexAttrib2d(Index, X, Y) -> 
+ cast(?glVertexAttrib2dv, <<Index:32/?UN, X:64/?FN, Y:64/?FN>>).
+
+%% Func:    vertexAttrib2dv 
+%% Args:    Index, {V1,V2}
+%% Returns: ok
+%% C-API func: void glVertexAttrib2dv(GLuint index,  const GLdouble * v)
+vertexAttrib2dv(Index, {V1,V2}) -> 
+ cast(?glVertexAttrib2dv, <<Index:32/?UN, V1:64/?FN,V2:64/?FN>>).
+
+%% Func:    vertexAttrib2f 
+%% Args:    Index, X, Y
+%% Returns: ok
+%% C-API func: void glVertexAttrib2f(GLuint index, GLfloat x, GLfloat y)
+vertexAttrib2f(Index, X, Y) -> 
+ cast(?glVertexAttrib2fv, <<Index:32/?UN, X:32/?FN, Y:32/?FN>>).
+
+%% Func:    vertexAttrib2fv 
+%% Args:    Index, {V1,V2}
+%% Returns: ok
+%% C-API func: void glVertexAttrib2fv(GLuint index,  const GLfloat * v)
+vertexAttrib2fv(Index, {V1,V2}) -> 
+ cast(?glVertexAttrib2fv, <<Index:32/?UN, V1:32/?FN,V2:32/?FN>>).
+
+%% Func:    vertexAttrib2s 
+%% Args:    Index, X, Y
+%% Returns: ok
+%% C-API func: void glVertexAttrib2s(GLuint index, GLshort x, GLshort y)
+vertexAttrib2s(Index, X, Y) -> 
+ cast(?glVertexAttrib2sv, <<Index:32/?UN, X:16/?SN, Y:16/?SN>>).
+
+%% Func:    vertexAttrib2sv 
+%% Args:    Index, {V1,V2}
+%% Returns: ok
+%% C-API func: void glVertexAttrib2sv(GLuint index,  const GLshort * v)
+vertexAttrib2sv(Index, {V1,V2}) -> 
+ cast(?glVertexAttrib2sv, <<Index:32/?UN, V1:16/?SN,V2:16/?SN>>).
+
+%% Func:    vertexAttrib3d 
+%% Args:    Index, X, Y, Z
+%% Returns: ok
+%% C-API func: void glVertexAttrib3d(GLuint index, GLdouble x, GLdouble y, GLdouble z)
+vertexAttrib3d(Index, X, Y, Z) -> 
+ cast(?glVertexAttrib3dv, <<Index:32/?UN, X:64/?FN, Y:64/?FN, Z:64/?FN>>).
+
+%% Func:    vertexAttrib3dv 
+%% Args:    Index, {V1,V2,V3}
+%% Returns: ok
+%% C-API func: void glVertexAttrib3dv(GLuint index,  const GLdouble * v)
+vertexAttrib3dv(Index, {V1,V2,V3}) -> 
+ cast(?glVertexAttrib3dv, <<Index:32/?UN, V1:64/?FN,V2:64/?FN,V3:64/?FN>>).
+
+%% Func:    vertexAttrib3f 
+%% Args:    Index, X, Y, Z
+%% Returns: ok
+%% C-API func: void glVertexAttrib3f(GLuint index, GLfloat x, GLfloat y, GLfloat z)
+vertexAttrib3f(Index, X, Y, Z) -> 
+ cast(?glVertexAttrib3fv, <<Index:32/?UN, X:32/?FN, Y:32/?FN, Z:32/?FN>>).
+
+%% Func:    vertexAttrib3fv 
+%% Args:    Index, {V1,V2,V3}
+%% Returns: ok
+%% C-API func: void glVertexAttrib3fv(GLuint index,  const GLfloat * v)
+vertexAttrib3fv(Index, {V1,V2,V3}) -> 
+ cast(?glVertexAttrib3fv, <<Index:32/?UN, V1:32/?FN,V2:32/?FN,V3:32/?FN>>).
+
+%% Func:    vertexAttrib3s 
+%% Args:    Index, X, Y, Z
+%% Returns: ok
+%% C-API func: void glVertexAttrib3s(GLuint index, GLshort x, GLshort y, GLshort z)
+vertexAttrib3s(Index, X, Y, Z) -> 
+ cast(?glVertexAttrib3sv, <<Index:32/?UN, X:16/?SN, Y:16/?SN, Z:16/?SN>>).
+
+%% Func:    vertexAttrib3sv 
+%% Args:    Index, {V1,V2,V3}
+%% Returns: ok
+%% C-API func: void glVertexAttrib3sv(GLuint index,  const GLshort * v)
+vertexAttrib3sv(Index, {V1,V2,V3}) -> 
+ cast(?glVertexAttrib3sv, <<Index:32/?UN, V1:16/?SN,V2:16/?SN,V3:16/?SN>>).
+
+%% Func:    vertexAttrib4Nbv 
+%% Args:    Index, <<[V]>>
+%% Returns: ok
+%% C-API func: void glVertexAttrib4Nbv(GLuint index,  const GLbyte * v)
+vertexAttrib4Nbv(Index, V) -> 
+ NewV = if
+	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_BYTE);
+	binary(V) -> V;
+	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
+ end, 
+ cast(?glVertexAttrib4Nbv, [<<Index:32/?UN>>,NewV]).
+
+%% Func:    vertexAttrib4Niv 
+%% Args:    Index, <<[V]>>
+%% Returns: ok
+%% C-API func: void glVertexAttrib4Niv(GLuint index,  const GLint * v)
+vertexAttrib4Niv(Index, V) -> 
+ NewV = if
+	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_INT);
+	binary(V) -> V;
+	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
+ end, 
+ cast(?glVertexAttrib4Niv, [<<Index:32/?UN>>,NewV]).
+
+%% Func:    vertexAttrib4Nsv 
+%% Args:    Index, <<[V]>>
+%% Returns: ok
+%% C-API func: void glVertexAttrib4Nsv(GLuint index,  const GLshort * v)
+vertexAttrib4Nsv(Index, V) -> 
+ NewV = if
+	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_SHORT);
+	binary(V) -> V;
+	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
+ end, 
+ cast(?glVertexAttrib4Nsv, [<<Index:32/?UN>>,NewV]).
+
+%% Func:    vertexAttrib4Nub 
+%% Args:    Index, X, Y, Z, W
+%% Returns: ok
+%% C-API func: void glVertexAttrib4Nub(GLuint index, GLubyte x, GLubyte y, GLubyte z, GLubyte w)
+vertexAttrib4Nub(Index, X, Y, Z, W) -> 
+ cast(?glVertexAttrib4Nub, <<Index:32/?UN, X:8/unsigned, Y:8/unsigned, Z:8/unsigned, W:8/unsigned>>).
+
+%% Func:    vertexAttrib4Nubv 
+%% Args:    Index, <<[V]>>
+%% Returns: ok
+%% C-API func: void glVertexAttrib4Nubv(GLuint index,  const GLubyte * v)
+vertexAttrib4Nubv(Index, V) -> 
+ NewV = if
+	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_UNSIGNED_BYTE);
+	binary(V) -> V;
+	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
+ end, 
+ cast(?glVertexAttrib4Nubv, [<<Index:32/?UN>>,NewV]).
+
+%% Func:    vertexAttrib4Nuiv 
+%% Args:    Index, <<[V]>>
+%% Returns: ok
+%% C-API func: void glVertexAttrib4Nuiv(GLuint index,  const GLuint * v)
+vertexAttrib4Nuiv(Index, V) -> 
+ NewV = if
+	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_UNSIGNED_INT);
+	binary(V) -> V;
+	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
+ end, 
+ cast(?glVertexAttrib4Nuiv, [<<Index:32/?UN>>,NewV]).
+
+%% Func:    vertexAttrib4Nusv 
+%% Args:    Index, <<[V]>>
+%% Returns: ok
+%% C-API func: void glVertexAttrib4Nusv(GLuint index,  const GLushort * v)
+vertexAttrib4Nusv(Index, V) -> 
+ NewV = if
+	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_UNSIGNED_SHORT);
+	binary(V) -> V;
+	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
+ end, 
+ cast(?glVertexAttrib4Nusv, [<<Index:32/?UN>>,NewV]).
+
+%% Func:    vertexAttrib4bv 
+%% Args:    Index, {V1,V2,V3,V4}
+%% Returns: ok
+%% C-API func: void glVertexAttrib4bv(GLuint index,  const GLbyte * v)
+vertexAttrib4bv(Index, {V1,V2,V3,V4}) -> 
+ cast(?glVertexAttrib4bv, <<Index:32/?UN, V1:8/signed,V2:8/signed,V3:8/signed,V4:8/signed>>).
+
+%% Func:    vertexAttrib4d 
+%% Args:    Index, X, Y, Z, W
+%% Returns: ok
+%% C-API func: void glVertexAttrib4d(GLuint index, GLdouble x, GLdouble y, GLdouble z, GLdouble w)
+vertexAttrib4d(Index, X, Y, Z, W) -> 
+ cast(?glVertexAttrib4dv, <<Index:32/?UN, X:64/?FN, Y:64/?FN, Z:64/?FN, W:64/?FN>>).
+
+%% Func:    vertexAttrib4dv 
+%% Args:    Index, {V1,V2,V3,V4}
+%% Returns: ok
+%% C-API func: void glVertexAttrib4dv(GLuint index,  const GLdouble * v)
+vertexAttrib4dv(Index, {V1,V2,V3,V4}) -> 
+ cast(?glVertexAttrib4dv, <<Index:32/?UN, V1:64/?FN,V2:64/?FN,V3:64/?FN,V4:64/?FN>>).
+
+%% Func:    vertexAttrib4f 
+%% Args:    Index, X, Y, Z, W
+%% Returns: ok
+%% C-API func: void glVertexAttrib4f(GLuint index, GLfloat x, GLfloat y, GLfloat z, GLfloat w)
+vertexAttrib4f(Index, X, Y, Z, W) -> 
+ cast(?glVertexAttrib4fv, <<Index:32/?UN, X:32/?FN, Y:32/?FN, Z:32/?FN, W:32/?FN>>).
+
+%% Func:    vertexAttrib4fv 
+%% Args:    Index, {V1,V2,V3,V4}
+%% Returns: ok
+%% C-API func: void glVertexAttrib4fv(GLuint index,  const GLfloat * v)
+vertexAttrib4fv(Index, {V1,V2,V3,V4}) -> 
+ cast(?glVertexAttrib4fv, <<Index:32/?UN, V1:32/?FN,V2:32/?FN,V3:32/?FN,V4:32/?FN>>).
+
+%% Func:    vertexAttrib4iv 
+%% Args:    Index, {V1,V2,V3,V4}
+%% Returns: ok
+%% C-API func: void glVertexAttrib4iv(GLuint index,  const GLint * v)
+vertexAttrib4iv(Index, {V1,V2,V3,V4}) -> 
+ cast(?glVertexAttrib4iv, <<Index:32/?UN, V1:32/?SN,V2:32/?SN,V3:32/?SN,V4:32/?SN>>).
+
+%% Func:    vertexAttrib4s 
+%% Args:    Index, X, Y, Z, W
+%% Returns: ok
+%% C-API func: void glVertexAttrib4s(GLuint index, GLshort x, GLshort y, GLshort z, GLshort w)
+vertexAttrib4s(Index, X, Y, Z, W) -> 
+ cast(?glVertexAttrib4sv, <<Index:32/?UN, X:16/?SN, Y:16/?SN, Z:16/?SN, W:16/?SN>>).
+
+%% Func:    vertexAttrib4sv 
+%% Args:    Index, {V1,V2,V3,V4}
+%% Returns: ok
+%% C-API func: void glVertexAttrib4sv(GLuint index,  const GLshort * v)
+vertexAttrib4sv(Index, {V1,V2,V3,V4}) -> 
+ cast(?glVertexAttrib4sv, <<Index:32/?UN, V1:16/?SN,V2:16/?SN,V3:16/?SN,V4:16/?SN>>).
+
+%% Func:    vertexAttrib4ubv 
+%% Args:    Index, {V1,V2,V3,V4}
+%% Returns: ok
+%% C-API func: void glVertexAttrib4ubv(GLuint index,  const GLubyte * v)
+vertexAttrib4ubv(Index, {V1,V2,V3,V4}) -> 
+ cast(?glVertexAttrib4ubv, <<Index:32/?UN, V1:8/unsigned,V2:8/unsigned,V3:8/unsigned,V4:8/unsigned>>).
+
+%% Func:    vertexAttrib4uiv 
+%% Args:    Index, {V1,V2,V3,V4}
+%% Returns: ok
+%% C-API func: void glVertexAttrib4uiv(GLuint index,  const GLuint * v)
+vertexAttrib4uiv(Index, {V1,V2,V3,V4}) -> 
+ cast(?glVertexAttrib4uiv, <<Index:32/?UN, V1:32/?UN,V2:32/?UN,V3:32/?UN,V4:32/?UN>>).
+
+%% Func:    vertexAttrib4usv 
+%% Args:    Index, {V1,V2,V3,V4}
+%% Returns: ok
+%% C-API func: void glVertexAttrib4usv(GLuint index,  const GLushort * v)
+vertexAttrib4usv(Index, {V1,V2,V3,V4}) -> 
+ cast(?glVertexAttrib4usv, <<Index:32/?UN, V1:16/?UN,V2:16/?UN,V3:16/?UN,V4:16/?UN>>).
+
+%% Func:    vertexAttribPointer 
+%% Args:    Index, Size, Type, Normalized, Stride, <<[Pointer]>>
+%% Returns: ok
+%% C-API func: void glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride,  const GLvoid * pointer)
+vertexAttribPointer(Index, Size, Type, Normalized, Stride, Pointer) -> 
+%% Maybe NULL or offset sometimes
+ NewPointer =
+   if is_integer(Pointer) -> Pointer;
+      true ->
+        sdl:send_bin(Pointer, ?MODULE, ?LINE),
+       0
+   end,
+ cast(?glVertexAttribPointer, [<<Index:32/?UN, Size:32/?SN, Type:32/?UN, Normalized:8/unsigned, 0:24, Stride:32/?SN, NewPointer:32/?SN>>]).
+
 %% Func:    weightbvARB 
 %% Args:    Size, <<[Weights]>>
 %% Returns: ok
@@ -4659,7 +5453,7 @@ weightbv(Size, Weights) ->
 	is_binary(Weights) -> Weights;
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Weights})
  end, 
- cast(?glWeightbvARB, [<<Size:32/?SN>>,NewWeights]).
+ cast(?glWeightbv, [<<Size:32/?SN>>,NewWeights]).
 
 %% Func:    weightsvARB 
 %% Args:    Size, <<[Weights]>>
@@ -4673,7 +5467,7 @@ weightsv(Size, Weights) ->
 	is_binary(Weights) -> Weights;
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Weights})
  end, 
- cast(?glWeightsvARB, [<<Size:32/?SN>>,NewWeights]).
+ cast(?glWeightsv, [<<Size:32/?SN>>,NewWeights]).
 
 %% Func:    weightivARB 
 %% Args:    Size, <<[Weights]>>
@@ -4687,7 +5481,7 @@ weightiv(Size, Weights) ->
 	is_binary(Weights) -> Weights;
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Weights})
  end, 
- cast(?glWeightivARB, [<<Size:32/?SN>>,NewWeights]).
+ cast(?glWeightiv, [<<Size:32/?SN>>,NewWeights]).
 
 %% Func:    weightfvARB 
 %% Args:    Size, <<[Weights]>>
@@ -4701,7 +5495,7 @@ weightfv(Size, Weights) ->
 	is_binary(Weights) -> Weights;
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Weights})
  end, 
- cast(?glWeightfvARB, [<<Size:32/?SN>>,NewWeights]).
+ cast(?glWeightfv, [<<Size:32/?SN>>,NewWeights]).
 
 %% Func:    weightdvARB 
 %% Args:    Size, <<[Weights]>>
@@ -4715,7 +5509,7 @@ weightdv(Size, Weights) ->
 	is_binary(Weights) -> Weights;
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Weights})
  end, 
- cast(?glWeightdvARB, [<<Size:32/?SN>>,NewWeights]).
+ cast(?glWeightdv, [<<Size:32/?SN>>,NewWeights]).
 
 %% Func:    weightubvARB 
 %% Args:    Size, <<[Weights]>>
@@ -4729,7 +5523,7 @@ weightubv(Size, Weights) ->
 	is_binary(Weights) -> Weights;
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Weights})
  end, 
- cast(?glWeightubvARB, [<<Size:32/?SN>>,NewWeights]).
+ cast(?glWeightubv, [<<Size:32/?SN>>,NewWeights]).
 
 %% Func:    weightusvARB 
 %% Args:    Size, <<[Weights]>>
@@ -4743,7 +5537,7 @@ weightusv(Size, Weights) ->
 	is_binary(Weights) -> Weights;
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Weights})
  end, 
- cast(?glWeightusvARB, [<<Size:32/?SN>>,NewWeights]).
+ cast(?glWeightusv, [<<Size:32/?SN>>,NewWeights]).
 
 %% Func:    weightuivARB 
 %% Args:    Size, <<[Weights]>>
@@ -4757,7 +5551,7 @@ weightuiv(Size, Weights) ->
 	is_binary(Weights) -> Weights;
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Weights})
  end, 
- cast(?glWeightuivARB, [<<Size:32/?SN>>,NewWeights]).
+ cast(?glWeightuiv, [<<Size:32/?SN>>,NewWeights]).
 
 %% Func:    weightPointerARB 
 %% Args:    Size, Type, Stride, <<[Pointer]>>
@@ -4773,7 +5567,7 @@ weightPointer(Size, Type, Stride, Pointer) ->
         sdl:send_bin(Pointer, ?MODULE, ?LINE),
        0
    end,
- cast(?glWeightPointerARB, [<<Size:32/?SN, Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
+ cast(?glWeightPointer, [<<Size:32/?SN, Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
 %% Func:    vertexBlendARB 
 %% Args:    Count
@@ -4782,7 +5576,7 @@ weightPointer(Size, Type, Stride, Pointer) ->
 vertexBlendARB(Count) -> 
  vertexBlend(Count).
 vertexBlend(Count) -> 
- cast(?glVertexBlendARB, <<Count:32/?SN>>).
+ cast(?glVertexBlend, <<Count:32/?SN>>).
 
 %% Func:    currentPaletteMatrixARB 
 %% Args:    Index
@@ -4791,7 +5585,7 @@ vertexBlend(Count) ->
 currentPaletteMatrixARB(Index) -> 
  currentPaletteMatrix(Index).
 currentPaletteMatrix(Index) -> 
- cast(?glCurrentPaletteMatrixARB, <<Index:32/?SN>>).
+ cast(?glCurrentPaletteMatrix, <<Index:32/?SN>>).
 
 %% Func:    matrixIndexubvARB 
 %% Args:    Size, <<[Indices]>>
@@ -4805,7 +5599,7 @@ matrixIndexubv(Size, Indices) ->
 	is_binary(Indices) -> Indices;
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Indices})
  end, 
- cast(?glMatrixIndexubvARB, [<<Size:32/?SN>>,NewIndices]).
+ cast(?glMatrixIndexubv, [<<Size:32/?SN>>,NewIndices]).
 
 %% Func:    matrixIndexusvARB 
 %% Args:    Size, <<[Indices]>>
@@ -4819,7 +5613,7 @@ matrixIndexusv(Size, Indices) ->
 	is_binary(Indices) -> Indices;
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Indices})
  end, 
- cast(?glMatrixIndexusvARB, [<<Size:32/?SN>>,NewIndices]).
+ cast(?glMatrixIndexusv, [<<Size:32/?SN>>,NewIndices]).
 
 %% Func:    matrixIndexuivARB 
 %% Args:    Size, <<[Indices]>>
@@ -4833,7 +5627,7 @@ matrixIndexuiv(Size, Indices) ->
 	is_binary(Indices) -> Indices;
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Indices})
  end, 
- cast(?glMatrixIndexuivARB, [<<Size:32/?SN>>,NewIndices]).
+ cast(?glMatrixIndexuiv, [<<Size:32/?SN>>,NewIndices]).
 
 %% Func:    matrixIndexPointerARB 
 %% Args:    Size, Type, Stride, <<[Pointer]>>
@@ -4849,480 +5643,7 @@ matrixIndexPointer(Size, Type, Stride, Pointer) ->
         sdl:send_bin(Pointer, ?MODULE, ?LINE),
        0
    end,
- cast(?glMatrixIndexPointerARB, [<<Size:32/?SN, Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
-
-%% Func:    vertexAttrib1dARB 
-%% Args:    Index, X
-%% Returns: ok
-%% C-API func: void glVertexAttrib1dARB(GLuint index, GLdouble x)
-vertexAttrib1dARB(Index, X) -> 
- vertexAttrib1d(Index, X).
-vertexAttrib1d(Index, X) -> 
- cast(?glVertexAttrib1dvARB, <<Index:32/?UN, X:64/?FN>>).
-
-%% Func:    vertexAttrib1dvARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib1dvARB(GLuint index,  const GLdouble * v)
-vertexAttrib1dvARB(Index, V) -> 
- vertexAttrib1dv(Index, V).
-vertexAttrib1dv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 1, ?GL_DOUBLE);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib1dvARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib1fARB 
-%% Args:    Index, X
-%% Returns: ok
-%% C-API func: void glVertexAttrib1fARB(GLuint index, GLfloat x)
-vertexAttrib1fARB(Index, X) -> 
- vertexAttrib1f(Index, X).
-vertexAttrib1f(Index, X) -> 
- cast(?glVertexAttrib1fvARB, <<Index:32/?UN, X:32/?FN>>).
-
-%% Func:    vertexAttrib1fvARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib1fvARB(GLuint index,  const GLfloat * v)
-vertexAttrib1fvARB(Index, V) -> 
- vertexAttrib1fv(Index, V).
-vertexAttrib1fv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 1, ?GL_FLOAT);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib1fvARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib1sARB 
-%% Args:    Index, X
-%% Returns: ok
-%% C-API func: void glVertexAttrib1sARB(GLuint index, GLshort x)
-vertexAttrib1sARB(Index, X) -> 
- vertexAttrib1s(Index, X).
-vertexAttrib1s(Index, X) -> 
- cast(?glVertexAttrib1svARB, <<Index:32/?UN, X:16/?SN>>).
-
-%% Func:    vertexAttrib1svARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib1svARB(GLuint index,  const GLshort * v)
-vertexAttrib1svARB(Index, V) -> 
- vertexAttrib1sv(Index, V).
-vertexAttrib1sv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 1, ?GL_SHORT);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib1svARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib2dARB 
-%% Args:    Index, X, Y
-%% Returns: ok
-%% C-API func: void glVertexAttrib2dARB(GLuint index, GLdouble x, GLdouble y)
-vertexAttrib2dARB(Index, X, Y) -> 
- vertexAttrib2d(Index, X, Y).
-vertexAttrib2d(Index, X, Y) -> 
- cast(?glVertexAttrib2dvARB, <<Index:32/?UN, X:64/?FN, Y:64/?FN>>).
-
-%% Func:    vertexAttrib2dvARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib2dvARB(GLuint index,  const GLdouble * v)
-vertexAttrib2dvARB(Index, V) -> 
- vertexAttrib2dv(Index, V).
-vertexAttrib2dv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 2, ?GL_DOUBLE);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib2dvARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib2fARB 
-%% Args:    Index, X, Y
-%% Returns: ok
-%% C-API func: void glVertexAttrib2fARB(GLuint index, GLfloat x, GLfloat y)
-vertexAttrib2fARB(Index, X, Y) -> 
- vertexAttrib2f(Index, X, Y).
-vertexAttrib2f(Index, X, Y) -> 
- cast(?glVertexAttrib2fvARB, <<Index:32/?UN, X:32/?FN, Y:32/?FN>>).
-
-%% Func:    vertexAttrib2fvARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib2fvARB(GLuint index,  const GLfloat * v)
-vertexAttrib2fvARB(Index, V) -> 
- vertexAttrib2fv(Index, V).
-vertexAttrib2fv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 2, ?GL_FLOAT);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib2fvARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib2sARB 
-%% Args:    Index, X, Y
-%% Returns: ok
-%% C-API func: void glVertexAttrib2sARB(GLuint index, GLshort x, GLshort y)
-vertexAttrib2sARB(Index, X, Y) -> 
- vertexAttrib2s(Index, X, Y).
-vertexAttrib2s(Index, X, Y) -> 
- cast(?glVertexAttrib2svARB, <<Index:32/?UN, X:16/?SN, Y:16/?SN>>).
-
-%% Func:    vertexAttrib2svARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib2svARB(GLuint index,  const GLshort * v)
-vertexAttrib2svARB(Index, V) -> 
- vertexAttrib2sv(Index, V).
-vertexAttrib2sv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 2, ?GL_SHORT);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib2svARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib3dARB 
-%% Args:    Index, X, Y, Z
-%% Returns: ok
-%% C-API func: void glVertexAttrib3dARB(GLuint index, GLdouble x, GLdouble y, GLdouble z)
-vertexAttrib3dARB(Index, X, Y, Z) -> 
- vertexAttrib3d(Index, X, Y, Z).
-vertexAttrib3d(Index, X, Y, Z) -> 
- cast(?glVertexAttrib3dvARB, <<Index:32/?UN, X:64/?FN, Y:64/?FN, Z:64/?FN>>).
-
-%% Func:    vertexAttrib3dvARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib3dvARB(GLuint index,  const GLdouble * v)
-vertexAttrib3dvARB(Index, V) -> 
- vertexAttrib3dv(Index, V).
-vertexAttrib3dv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 3, ?GL_DOUBLE);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib3dvARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib3fARB 
-%% Args:    Index, X, Y, Z
-%% Returns: ok
-%% C-API func: void glVertexAttrib3fARB(GLuint index, GLfloat x, GLfloat y, GLfloat z)
-vertexAttrib3fARB(Index, X, Y, Z) -> 
- vertexAttrib3f(Index, X, Y, Z).
-vertexAttrib3f(Index, X, Y, Z) -> 
- cast(?glVertexAttrib3fvARB, <<Index:32/?UN, X:32/?FN, Y:32/?FN, Z:32/?FN>>).
-
-%% Func:    vertexAttrib3fvARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib3fvARB(GLuint index,  const GLfloat * v)
-vertexAttrib3fvARB(Index, V) -> 
- vertexAttrib3fv(Index, V).
-vertexAttrib3fv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 3, ?GL_FLOAT);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib3fvARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib3sARB 
-%% Args:    Index, X, Y, Z
-%% Returns: ok
-%% C-API func: void glVertexAttrib3sARB(GLuint index, GLshort x, GLshort y, GLshort z)
-vertexAttrib3sARB(Index, X, Y, Z) -> 
- vertexAttrib3s(Index, X, Y, Z).
-vertexAttrib3s(Index, X, Y, Z) -> 
- cast(?glVertexAttrib3svARB, <<Index:32/?UN, X:16/?SN, Y:16/?SN, Z:16/?SN>>).
-
-%% Func:    vertexAttrib3svARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib3svARB(GLuint index,  const GLshort * v)
-vertexAttrib3svARB(Index, V) -> 
- vertexAttrib3sv(Index, V).
-vertexAttrib3sv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 3, ?GL_SHORT);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib3svARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib4NbvARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib4NbvARB(GLuint index,  const GLbyte * v)
-vertexAttrib4NbvARB(Index, V) -> 
- vertexAttrib4Nbv(Index, V).
-vertexAttrib4Nbv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_BYTE);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib4NbvARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib4NivARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib4NivARB(GLuint index,  const GLint * v)
-vertexAttrib4NivARB(Index, V) -> 
- vertexAttrib4Niv(Index, V).
-vertexAttrib4Niv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_INT);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib4NivARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib4NsvARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib4NsvARB(GLuint index,  const GLshort * v)
-vertexAttrib4NsvARB(Index, V) -> 
- vertexAttrib4Nsv(Index, V).
-vertexAttrib4Nsv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_SHORT);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib4NsvARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib4NubARB 
-%% Args:    Index, X, Y, Z, W
-%% Returns: ok
-%% C-API func: void glVertexAttrib4NubARB(GLuint index, GLubyte x, GLubyte y, GLubyte z, GLubyte w)
-vertexAttrib4NubARB(Index, X, Y, Z, W) -> 
- vertexAttrib4Nub(Index, X, Y, Z, W).
-vertexAttrib4Nub(Index, X, Y, Z, W) -> 
- cast(?glVertexAttrib4NubARB, <<Index:32/?UN, X:8/unsigned, Y:8/unsigned, Z:8/unsigned, W:8/unsigned>>).
-
-%% Func:    vertexAttrib4NubvARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib4NubvARB(GLuint index,  const GLubyte * v)
-vertexAttrib4NubvARB(Index, V) -> 
- vertexAttrib4Nubv(Index, V).
-vertexAttrib4Nubv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_UNSIGNED_BYTE);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib4NubvARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib4NuivARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib4NuivARB(GLuint index,  const GLuint * v)
-vertexAttrib4NuivARB(Index, V) -> 
- vertexAttrib4Nuiv(Index, V).
-vertexAttrib4Nuiv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_UNSIGNED_INT);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib4NuivARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib4NusvARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib4NusvARB(GLuint index,  const GLushort * v)
-vertexAttrib4NusvARB(Index, V) -> 
- vertexAttrib4Nusv(Index, V).
-vertexAttrib4Nusv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_UNSIGNED_SHORT);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib4NusvARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib4bvARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib4bvARB(GLuint index,  const GLbyte * v)
-vertexAttrib4bvARB(Index, V) -> 
- vertexAttrib4bv(Index, V).
-vertexAttrib4bv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_BYTE);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib4bvARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib4dARB 
-%% Args:    Index, X, Y, Z, W
-%% Returns: ok
-%% C-API func: void glVertexAttrib4dARB(GLuint index, GLdouble x, GLdouble y, GLdouble z, GLdouble w)
-vertexAttrib4dARB(Index, X, Y, Z, W) -> 
- vertexAttrib4d(Index, X, Y, Z, W).
-vertexAttrib4d(Index, X, Y, Z, W) -> 
- cast(?glVertexAttrib4dvARB, <<Index:32/?UN, X:64/?FN, Y:64/?FN, Z:64/?FN, W:64/?FN>>).
-
-%% Func:    vertexAttrib4dvARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib4dvARB(GLuint index,  const GLdouble * v)
-vertexAttrib4dvARB(Index, V) -> 
- vertexAttrib4dv(Index, V).
-vertexAttrib4dv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_DOUBLE);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib4dvARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib4fARB 
-%% Args:    Index, X, Y, Z, W
-%% Returns: ok
-%% C-API func: void glVertexAttrib4fARB(GLuint index, GLfloat x, GLfloat y, GLfloat z, GLfloat w)
-vertexAttrib4fARB(Index, X, Y, Z, W) -> 
- vertexAttrib4f(Index, X, Y, Z, W).
-vertexAttrib4f(Index, X, Y, Z, W) -> 
- cast(?glVertexAttrib4fvARB, <<Index:32/?UN, X:32/?FN, Y:32/?FN, Z:32/?FN, W:32/?FN>>).
-
-%% Func:    vertexAttrib4fvARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib4fvARB(GLuint index,  const GLfloat * v)
-vertexAttrib4fvARB(Index, V) -> 
- vertexAttrib4fv(Index, V).
-vertexAttrib4fv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_FLOAT);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib4fvARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib4ivARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib4ivARB(GLuint index,  const GLint * v)
-vertexAttrib4ivARB(Index, V) -> 
- vertexAttrib4iv(Index, V).
-vertexAttrib4iv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_INT);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib4ivARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib4sARB 
-%% Args:    Index, X, Y, Z, W
-%% Returns: ok
-%% C-API func: void glVertexAttrib4sARB(GLuint index, GLshort x, GLshort y, GLshort z, GLshort w)
-vertexAttrib4sARB(Index, X, Y, Z, W) -> 
- vertexAttrib4s(Index, X, Y, Z, W).
-vertexAttrib4s(Index, X, Y, Z, W) -> 
- cast(?glVertexAttrib4svARB, <<Index:32/?UN, X:16/?SN, Y:16/?SN, Z:16/?SN, W:16/?SN>>).
-
-%% Func:    vertexAttrib4svARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib4svARB(GLuint index,  const GLshort * v)
-vertexAttrib4svARB(Index, V) -> 
- vertexAttrib4sv(Index, V).
-vertexAttrib4sv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_SHORT);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib4svARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib4ubvARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib4ubvARB(GLuint index,  const GLubyte * v)
-vertexAttrib4ubvARB(Index, V) -> 
- vertexAttrib4ubv(Index, V).
-vertexAttrib4ubv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_UNSIGNED_BYTE);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib4ubvARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib4uivARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib4uivARB(GLuint index,  const GLuint * v)
-vertexAttrib4uivARB(Index, V) -> 
- vertexAttrib4uiv(Index, V).
-vertexAttrib4uiv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_UNSIGNED_INT);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib4uivARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttrib4usvARB 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
-%% C-API func: void glVertexAttrib4usvARB(GLuint index,  const GLushort * v)
-vertexAttrib4usvARB(Index, V) -> 
- vertexAttrib4usv(Index, V).
-vertexAttrib4usv(Index, V) -> 
- NewV = if
-	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_UNSIGNED_SHORT);
-	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
- end, 
- cast(?glVertexAttrib4usvARB, [<<Index:32/?UN>>,NewV]).
-
-%% Func:    vertexAttribPointerARB 
-%% Args:    Index, Size, Type, Normalized, Stride, <<[Pointer]>>
-%% Returns: ok
-%% C-API func: void glVertexAttribPointerARB(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride,  const GLvoid * pointer)
-vertexAttribPointerARB(Index, Size, Type, Normalized, Stride, Pointer) -> 
- vertexAttribPointer(Index, Size, Type, Normalized, Stride, Pointer).
-vertexAttribPointer(Index, Size, Type, Normalized, Stride, Pointer) -> 
-%% Maybe NULL or offset sometimes
- NewPointer =
-   if is_integer(Pointer) -> Pointer;
-      true ->
-        sdl:send_bin(Pointer, ?MODULE, ?LINE),
-       0
-   end,
- cast(?glVertexAttribPointerARB, [<<Index:32/?UN, Size:32/?SN, Type:32/?UN, Normalized:8/unsigned, 0:24, Stride:32/?SN, NewPointer:32/?SN>>]).
-
-%% Func:    enableVertexAttribArrayARB 
-%% Args:    Index
-%% Returns: ok
-%% C-API func: void glEnableVertexAttribArrayARB(GLuint index)
-enableVertexAttribArrayARB(Index) -> 
- enableVertexAttribArray(Index).
-enableVertexAttribArray(Index) -> 
- cast(?glEnableVertexAttribArrayARB, <<Index:32/?UN>>).
-
-%% Func:    disableVertexAttribArrayARB 
-%% Args:    Index
-%% Returns: ok
-%% C-API func: void glDisableVertexAttribArrayARB(GLuint index)
-disableVertexAttribArrayARB(Index) -> 
- disableVertexAttribArray(Index).
-disableVertexAttribArray(Index) -> 
- cast(?glDisableVertexAttribArrayARB, <<Index:32/?UN>>).
+ cast(?glMatrixIndexPointer, [<<Size:32/?SN, Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
 %% Func:    programStringARB 
 %% Args:    Target, Format, Len, <<[String]>>
@@ -5338,7 +5659,7 @@ programString(Target, Format, Len, String) ->
         sdl:send_bin(String, ?MODULE, ?LINE),
        0
    end,
- cast(?glProgramStringARB, [<<Target:32/?UN, Format:32/?UN, Len:32/?SN, NewString:32/?SN>>]).
+ cast(?glProgramString, [<<Target:32/?UN, Format:32/?UN, Len:32/?SN, NewString:32/?SN>>]).
 
 %% Func:    bindProgramARB 
 %% Args:    Target, Program
@@ -5347,7 +5668,7 @@ programString(Target, Format, Len, String) ->
 bindProgramARB(Target, Program) -> 
  bindProgram(Target, Program).
 bindProgram(Target, Program) -> 
- cast(?glBindProgramARB, <<Target:32/?UN, Program:32/?UN>>).
+ cast(?glBindProgram, <<Target:32/?UN, Program:32/?UN>>).
 
 %% Func:    deleteProgramsARB 
 %% Args:    N, <<[Programs]>>
@@ -5361,7 +5682,7 @@ deletePrograms(N, Programs) ->
 	is_binary(Programs) -> Programs;
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Programs})
  end, 
- cast(?glDeleteProgramsARB, [<<N:32/?SN>>,NewPrograms]).
+ cast(?glDeletePrograms, [<<N:32/?SN>>,NewPrograms]).
 
 %% Func:    genProgramsARB 
 %% Args:    N
@@ -5370,7 +5691,7 @@ deletePrograms(N, Programs) ->
 genProgramsARB(N) -> 
  genPrograms(N).
 genPrograms(N) -> 
- Bin = call(?glGenProgramsARB, <<N:32/?SN>>), 
+ Bin = call(?glGenPrograms, <<N:32/?SN>>), 
  case Bin of 
 	<<Programs:N/binary-unit:?GL_UNSIGNED_INT_SIZE>> -> 
 	 bin2list(N, ?GL_UNSIGNED_INT, Programs);
@@ -5384,7 +5705,7 @@ genPrograms(N) ->
 programEnvParameter4dARB(Target, Index, X, Y, Z, W) -> 
  programEnvParameter4d(Target, Index, X, Y, Z, W).
 programEnvParameter4d(Target, Index, X, Y, Z, W) -> 
- cast(?glProgramEnvParameter4dvARB, <<Target:32/?UN, Index:32/?UN, X:64/?FN, Y:64/?FN, Z:64/?FN, W:64/?FN>>).
+ cast(?glProgramEnvParameter4dv, <<Target:32/?UN, Index:32/?UN, X:64/?FN, Y:64/?FN, Z:64/?FN, W:64/?FN>>).
 
 %% Func:    programEnvParameter4dvARB 
 %% Args:    Target, Index, <<[Params]>>
@@ -5398,7 +5719,7 @@ programEnvParameter4dv(Target, Index, Params) ->
 	binary(Params) -> Params;
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
  end, 
- cast(?glProgramEnvParameter4dvARB, [<<Target:32/?UN, Index:32/?UN>>,NewParams]).
+ cast(?glProgramEnvParameter4dv, [<<Target:32/?UN, Index:32/?UN>>,NewParams]).
 
 %% Func:    programEnvParameter4fARB 
 %% Args:    Target, Index, X, Y, Z, W
@@ -5407,7 +5728,7 @@ programEnvParameter4dv(Target, Index, Params) ->
 programEnvParameter4fARB(Target, Index, X, Y, Z, W) -> 
  programEnvParameter4f(Target, Index, X, Y, Z, W).
 programEnvParameter4f(Target, Index, X, Y, Z, W) -> 
- cast(?glProgramEnvParameter4fvARB, <<Target:32/?UN, Index:32/?UN, X:32/?FN, Y:32/?FN, Z:32/?FN, W:32/?FN>>).
+ cast(?glProgramEnvParameter4fv, <<Target:32/?UN, Index:32/?UN, X:32/?FN, Y:32/?FN, Z:32/?FN, W:32/?FN>>).
 
 %% Func:    programEnvParameter4fvARB 
 %% Args:    Target, Index, <<[Params]>>
@@ -5421,7 +5742,7 @@ programEnvParameter4fv(Target, Index, Params) ->
 	binary(Params) -> Params;
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
  end, 
- cast(?glProgramEnvParameter4fvARB, [<<Target:32/?UN, Index:32/?UN>>,NewParams]).
+ cast(?glProgramEnvParameter4fv, [<<Target:32/?UN, Index:32/?UN>>,NewParams]).
 
 %% Func:    programLocalParameter4dARB 
 %% Args:    Target, Index, X, Y, Z, W
@@ -5430,7 +5751,7 @@ programEnvParameter4fv(Target, Index, Params) ->
 programLocalParameter4dARB(Target, Index, X, Y, Z, W) -> 
  programLocalParameter4d(Target, Index, X, Y, Z, W).
 programLocalParameter4d(Target, Index, X, Y, Z, W) -> 
- cast(?glProgramLocalParameter4dvARB, <<Target:32/?UN, Index:32/?UN, X:64/?FN, Y:64/?FN, Z:64/?FN, W:64/?FN>>).
+ cast(?glProgramLocalParameter4dv, <<Target:32/?UN, Index:32/?UN, X:64/?FN, Y:64/?FN, Z:64/?FN, W:64/?FN>>).
 
 %% Func:    programLocalParameter4dvARB 
 %% Args:    Target, Index, <<[Params]>>
@@ -5444,7 +5765,7 @@ programLocalParameter4dv(Target, Index, Params) ->
 	binary(Params) -> Params;
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
  end, 
- cast(?glProgramLocalParameter4dvARB, [<<Target:32/?UN, Index:32/?UN>>,NewParams]).
+ cast(?glProgramLocalParameter4dv, [<<Target:32/?UN, Index:32/?UN>>,NewParams]).
 
 %% Func:    programLocalParameter4fARB 
 %% Args:    Target, Index, X, Y, Z, W
@@ -5453,7 +5774,7 @@ programLocalParameter4dv(Target, Index, Params) ->
 programLocalParameter4fARB(Target, Index, X, Y, Z, W) -> 
  programLocalParameter4f(Target, Index, X, Y, Z, W).
 programLocalParameter4f(Target, Index, X, Y, Z, W) -> 
- cast(?glProgramLocalParameter4fvARB, <<Target:32/?UN, Index:32/?UN, X:32/?FN, Y:32/?FN, Z:32/?FN, W:32/?FN>>).
+ cast(?glProgramLocalParameter4fv, <<Target:32/?UN, Index:32/?UN, X:32/?FN, Y:32/?FN, Z:32/?FN, W:32/?FN>>).
 
 %% Func:    programLocalParameter4fvARB 
 %% Args:    Target, Index, <<[Params]>>
@@ -5467,7 +5788,7 @@ programLocalParameter4fv(Target, Index, Params) ->
 	binary(Params) -> Params;
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
  end, 
- cast(?glProgramLocalParameter4fvARB, [<<Target:32/?UN, Index:32/?UN>>,NewParams]).
+ cast(?glProgramLocalParameter4fv, [<<Target:32/?UN, Index:32/?UN>>,NewParams]).
 
 %% Func:    getProgramEnvParameterdvARB 
 %% Args:    Target, Index
@@ -5476,7 +5797,7 @@ programLocalParameter4fv(Target, Index, Params) ->
 getProgramEnvParameterdvARB(Target, Index) -> 
  getProgramEnvParameterdv(Target, Index).
 getProgramEnvParameterdv(Target, Index) -> 
- Bin = call(?glGetProgramEnvParameterdvARB, <<Target:32/?UN, Index:32/?UN>>), 
+ Bin = call(?glGetProgramEnvParameterdv, <<Target:32/?UN, Index:32/?UN>>), 
  case Bin of 
 	<<Params:4/binary-unit:?GL_DOUBLE_SIZE>> -> 
 	 bin2list(4, ?GL_DOUBLE, Params);
@@ -5490,7 +5811,7 @@ getProgramEnvParameterdv(Target, Index) ->
 getProgramEnvParameterfvARB(Target, Index) -> 
  getProgramEnvParameterfv(Target, Index).
 getProgramEnvParameterfv(Target, Index) -> 
- Bin = call(?glGetProgramEnvParameterfvARB, <<Target:32/?UN, Index:32/?UN>>), 
+ Bin = call(?glGetProgramEnvParameterfv, <<Target:32/?UN, Index:32/?UN>>), 
  case Bin of 
 	<<Params:4/binary-unit:?GL_FLOAT_SIZE>> -> 
 	 bin2list(4, ?GL_FLOAT, Params);
@@ -5504,7 +5825,7 @@ getProgramEnvParameterfv(Target, Index) ->
 getProgramLocalParameterdvARB(Target, Index) -> 
  getProgramLocalParameterdv(Target, Index).
 getProgramLocalParameterdv(Target, Index) -> 
- Bin = call(?glGetProgramLocalParameterdvARB, <<Target:32/?UN, Index:32/?UN>>), 
+ Bin = call(?glGetProgramLocalParameterdv, <<Target:32/?UN, Index:32/?UN>>), 
  case Bin of 
 	<<Params:4/binary-unit:?GL_DOUBLE_SIZE>> -> 
 	 bin2list(4, ?GL_DOUBLE, Params);
@@ -5518,24 +5839,10 @@ getProgramLocalParameterdv(Target, Index) ->
 getProgramLocalParameterfvARB(Target, Index) -> 
  getProgramLocalParameterfv(Target, Index).
 getProgramLocalParameterfv(Target, Index) -> 
- Bin = call(?glGetProgramLocalParameterfvARB, <<Target:32/?UN, Index:32/?UN>>), 
+ Bin = call(?glGetProgramLocalParameterfv, <<Target:32/?UN, Index:32/?UN>>), 
  case Bin of 
 	<<Params:4/binary-unit:?GL_FLOAT_SIZE>> -> 
 	 bin2list(4, ?GL_FLOAT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
- end.
-
-%% Func:    getProgramivARB 
-%% Args:    Target, Pname
-%% Returns: [Params]
-%% C-API func: void glGetProgramivARB(GLenum target, GLenum pname, GLint * params)
-getProgramivARB(Target, Pname) -> 
- getProgramiv(Target, Pname).
-getProgramiv(Target, Pname) -> 
- Bin = call(?glGetProgramivARB, <<Target:32/?UN, Pname:32/?UN>>), 
- case Bin of 
-	<<Params:32/?SN>> -> 
-	 Params;
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
@@ -5547,595 +5854,7 @@ getProgramStringARB(Target, Pname, #sdlmem{bin=String}) ->
  getProgramString(Target, Pname, #sdlmem{bin=String}).
 getProgramString(Target, Pname, #sdlmem{bin=String}) -> 
  sdl:send_bin(String, ?MODULE, ?LINE),
- cast(?glGetProgramStringARB, <<Target:32/?UN, Pname:32/?UN>>).
-
-%% Func:    getVertexAttribdvARB 
-%% Args:    Index, Pname
-%% Returns: [Params]
-%% C-API func: void glGetVertexAttribdvARB(GLuint index, GLenum pname, GLdouble * params)
-getVertexAttribdvARB(Index, Pname) -> 
- getVertexAttribdv(Index, Pname).
-getVertexAttribdv(Index, Pname) -> 
- Bin = call(?glGetVertexAttribdvARB, <<Index:32/?UN, Pname:32/?UN>>), 
- case Bin of 
-	<<Params:4/binary-unit:?GL_DOUBLE_SIZE>> -> 
-	 bin2list(4, ?GL_DOUBLE, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
- end.
-
-%% Func:    getVertexAttribfvARB 
-%% Args:    Index, Pname
-%% Returns: [Params]
-%% C-API func: void glGetVertexAttribfvARB(GLuint index, GLenum pname, GLfloat * params)
-getVertexAttribfvARB(Index, Pname) -> 
- getVertexAttribfv(Index, Pname).
-getVertexAttribfv(Index, Pname) -> 
- Bin = call(?glGetVertexAttribfvARB, <<Index:32/?UN, Pname:32/?UN>>), 
- case Bin of 
-	<<Params:4/binary-unit:?GL_FLOAT_SIZE>> -> 
-	 bin2list(4, ?GL_FLOAT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
- end.
-
-%% Func:    getVertexAttribivARB 
-%% Args:    Index, Pname
-%% Returns: [Params]
-%% C-API func: void glGetVertexAttribivARB(GLuint index, GLenum pname, GLint * params)
-getVertexAttribivARB(Index, Pname) -> 
- getVertexAttribiv(Index, Pname).
-getVertexAttribiv(Index, Pname) -> 
- Bin = call(?glGetVertexAttribivARB, <<Index:32/?UN, Pname:32/?UN>>), 
- case Bin of 
-	<<Params:4/binary-unit:?GL_INT_SIZE>> -> 
-	 bin2list(4, ?GL_INT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
- end.
-
-%% Func:    getVertexAttribPointervARB 
-%% Args:    Index, Pname
-%% Returns: Pointer=#sdlmem{}
-%% C-API func: void glGetVertexAttribPointervARB(GLuint index, GLenum pname,  GLvoid* *pointer)
-getVertexAttribPointervARB(Index, Pname) -> 
- getVertexAttribPointerv(Index, Pname).
-getVertexAttribPointerv(Index, Pname) -> 
- Bin = call(?glGetVertexAttribPointervARB, <<Index:32/?UN, Pname:32/?UN>>), 
- case Bin of 
-	<<Pointer:32/big-unsigned>> -> 
-	 erlang:fault({nyi, ?MODULE,?LINE});
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
- end.
-
-%% Func:    isProgramARB 
-%% Args:    Program
-%% Returns: ?GL_BYTE
-%% C-API func: GLboolean glIsProgramARB(GLuint program)
-isProgramARB(Program) -> 
- isProgram(Program).
-isProgram(Program) -> 
- Bin = call(?glIsProgramARB, <<Program:32/?UN>>), 
- case Bin of 
-	<<Ret:8/unsigned>> -> 
-   Ret /= ?GL_FALSE;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
- end.
-
-%% Func:    deleteObjectARB 
-%% Args:    Obj
-%% Returns: ok
-%% C-API func: void glDeleteObjectARB(GLhandleARB obj)
-deleteObjectARB(Obj) -> 
- deleteObject(Obj).
-deleteObject(Obj) -> 
- cast(?glDeleteObjectARB, <<Obj:32/?UN>>).
-
-%% Func:    getHandleARB 
-%% Args:    Pname
-%% Returns: ?GL_UNSIGNED_INT
-%% C-API func: GLhandleARB glGetHandleARB(GLenum pname)
-getHandleARB(Pname) -> 
- getHandle(Pname).
-getHandle(Pname) -> 
- Bin = call(?glGetHandleARB, <<Pname:32/?UN>>), 
- case Bin of 
-	<<Ret:32/?UN>> -> 
-   Ret;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
- end.
-
-%% Func:    detachObjectARB 
-%% Args:    ContainerObj, AttachedObj
-%% Returns: ok
-%% C-API func: void glDetachObjectARB(GLhandleARB containerObj, GLhandleARB attachedObj)
-detachObjectARB(ContainerObj, AttachedObj) -> 
- detachObject(ContainerObj, AttachedObj).
-detachObject(ContainerObj, AttachedObj) -> 
- cast(?glDetachObjectARB, <<ContainerObj:32/?UN, AttachedObj:32/?UN>>).
-
-%% Func:    createShaderObjectARB 
-%% Args:    ShaderType
-%% Returns: ?GL_UNSIGNED_INT
-%% C-API func: GLhandleARB glCreateShaderObjectARB(GLenum shaderType)
-createShaderObjectARB(ShaderType) -> 
- createShaderObject(ShaderType).
-createShaderObject(ShaderType) -> 
- Bin = call(?glCreateShaderObjectARB, <<ShaderType:32/?UN>>), 
- case Bin of 
-	<<Ret:32/?UN>> -> 
-   Ret;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
- end.
-
-%% Func:    shaderSourceARB 
-%% Args:    ShaderObj, Count, <<[Length]>>
-%% Returns: ok
-%% C-API func: void glShaderSourceARB(GLhandleARB shaderObj, GLsizei count,  const GLcharARB* *string,  const GLint * length)
-shaderSourceARB(ShaderObj, Count, String, Length) -> 
- shaderSource(ShaderObj, Count, String, Length).
-shaderSource(ShaderObj, Count, String, Length) -> 
- lists:foreach(fun(Values) -> sdl:send_bin(list_to_binary([Values,0]), ?MODULE, ?LINE) end, String),
- NewLength = if
-	is_list(Length) ; is_tuple(Length) -> term2bin(Length, Count, ?GL_INT);
-	is_binary(Length) -> Length;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Length})
- end, 
- cast(?glShaderSourceARB, [<<ShaderObj:32/?UN, Count:32/?SN>>,NewLength]).
-
-%% Func:    compileShaderARB 
-%% Args:    ShaderObj
-%% Returns: ok
-%% C-API func: void glCompileShaderARB(GLhandleARB shaderObj)
-compileShaderARB(ShaderObj) -> 
- compileShader(ShaderObj).
-compileShader(ShaderObj) -> 
- cast(?glCompileShaderARB, <<ShaderObj:32/?UN>>).
-
-%% Func:    createProgramObjectARB 
-%% Args:    
-%% Returns: ?GL_UNSIGNED_INT
-%% C-API func: GLhandleARB glCreateProgramObjectARB()
-createProgramObjectARB() -> 
- createProgramObject().
-createProgramObject() -> 
- Bin = call(?glCreateProgramObjectARB, []), 
- case Bin of 
-	<<Ret:32/?UN>> -> 
-   Ret;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
- end.
-
-%% Func:    attachObjectARB 
-%% Args:    ContainerObj, Obj
-%% Returns: ok
-%% C-API func: void glAttachObjectARB(GLhandleARB containerObj, GLhandleARB obj)
-attachObjectARB(ContainerObj, Obj) -> 
- attachObject(ContainerObj, Obj).
-attachObject(ContainerObj, Obj) -> 
- cast(?glAttachObjectARB, <<ContainerObj:32/?UN, Obj:32/?UN>>).
-
-%% Func:    linkProgramARB 
-%% Args:    ProgramObj
-%% Returns: ok
-%% C-API func: void glLinkProgramARB(GLhandleARB programObj)
-linkProgramARB(ProgramObj) -> 
- linkProgram(ProgramObj).
-linkProgram(ProgramObj) -> 
- cast(?glLinkProgramARB, <<ProgramObj:32/?UN>>).
-
-%% Func:    useProgramObjectARB 
-%% Args:    ProgramObj
-%% Returns: ok
-%% C-API func: void glUseProgramObjectARB(GLhandleARB programObj)
-useProgramObjectARB(ProgramObj) -> 
- useProgramObject(ProgramObj).
-useProgramObject(ProgramObj) -> 
- cast(?glUseProgramObjectARB, <<ProgramObj:32/?UN>>).
-
-%% Func:    validateProgramARB 
-%% Args:    ProgramObj
-%% Returns: ok
-%% C-API func: void glValidateProgramARB(GLhandleARB programObj)
-validateProgramARB(ProgramObj) -> 
- validateProgram(ProgramObj).
-validateProgram(ProgramObj) -> 
- cast(?glValidateProgramARB, <<ProgramObj:32/?UN>>).
-
-%% Func:    uniform1fARB 
-%% Args:    Location, V0
-%% Returns: ok
-%% C-API func: void glUniform1fARB(GLint location, GLfloat v0)
-uniform1fARB(Location, V0) -> 
- uniform1f(Location, V0).
-uniform1f(Location, V0) -> 
- cast(?glUniform1fARB, <<Location:32/?SN, V0:32/?FN>>).
-
-%% Func:    uniform2fARB 
-%% Args:    Location, V0, V1
-%% Returns: ok
-%% C-API func: void glUniform2fARB(GLint location, GLfloat v0, GLfloat v1)
-uniform2fARB(Location, V0, V1) -> 
- uniform2f(Location, V0, V1).
-uniform2f(Location, V0, V1) -> 
- cast(?glUniform2fARB, <<Location:32/?SN, V0:32/?FN, V1:32/?FN>>).
-
-%% Func:    uniform3fARB 
-%% Args:    Location, V0, V1, V2
-%% Returns: ok
-%% C-API func: void glUniform3fARB(GLint location, GLfloat v0, GLfloat v1, GLfloat v2)
-uniform3fARB(Location, V0, V1, V2) -> 
- uniform3f(Location, V0, V1, V2).
-uniform3f(Location, V0, V1, V2) -> 
- cast(?glUniform3fARB, <<Location:32/?SN, V0:32/?FN, V1:32/?FN, V2:32/?FN>>).
-
-%% Func:    uniform4fARB 
-%% Args:    Location, V0, V1, V2, V3
-%% Returns: ok
-%% C-API func: void glUniform4fARB(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
-uniform4fARB(Location, V0, V1, V2, V3) -> 
- uniform4f(Location, V0, V1, V2, V3).
-uniform4f(Location, V0, V1, V2, V3) -> 
- cast(?glUniform4fARB, <<Location:32/?SN, V0:32/?FN, V1:32/?FN, V2:32/?FN, V3:32/?FN>>).
-
-%% Func:    uniform1iARB 
-%% Args:    Location, V0
-%% Returns: ok
-%% C-API func: void glUniform1iARB(GLint location, GLint v0)
-uniform1iARB(Location, V0) -> 
- uniform1i(Location, V0).
-uniform1i(Location, V0) -> 
- cast(?glUniform1iARB, <<Location:32/?SN, V0:32/?SN>>).
-
-%% Func:    uniform2iARB 
-%% Args:    Location, V0, V1
-%% Returns: ok
-%% C-API func: void glUniform2iARB(GLint location, GLint v0, GLint v1)
-uniform2iARB(Location, V0, V1) -> 
- uniform2i(Location, V0, V1).
-uniform2i(Location, V0, V1) -> 
- cast(?glUniform2iARB, <<Location:32/?SN, V0:32/?SN, V1:32/?SN>>).
-
-%% Func:    uniform3iARB 
-%% Args:    Location, V0, V1, V2
-%% Returns: ok
-%% C-API func: void glUniform3iARB(GLint location, GLint v0, GLint v1, GLint v2)
-uniform3iARB(Location, V0, V1, V2) -> 
- uniform3i(Location, V0, V1, V2).
-uniform3i(Location, V0, V1, V2) -> 
- cast(?glUniform3iARB, <<Location:32/?SN, V0:32/?SN, V1:32/?SN, V2:32/?SN>>).
-
-%% Func:    uniform4iARB 
-%% Args:    Location, V0, V1, V2, V3
-%% Returns: ok
-%% C-API func: void glUniform4iARB(GLint location, GLint v0, GLint v1, GLint v2, GLint v3)
-uniform4iARB(Location, V0, V1, V2, V3) -> 
- uniform4i(Location, V0, V1, V2, V3).
-uniform4i(Location, V0, V1, V2, V3) -> 
- cast(?glUniform4iARB, <<Location:32/?SN, V0:32/?SN, V1:32/?SN, V2:32/?SN, V3:32/?SN>>).
-
-%% Func:    uniform1fvARB 
-%% Args:    Location, Count, <<[Value]>>
-%% Returns: ok
-%% C-API func: void glUniform1fvARB(GLint location, GLsizei count,  const GLfloat * value)
-uniform1fvARB(Location, Count, Value) -> 
- uniform1fv(Location, Count, Value).
-uniform1fv(Location, Count, Value) -> 
- NewValue = if
-	is_list(Value) ; is_tuple(Value) -> term2bin(Value, Count, ?GL_FLOAT);
-	is_binary(Value) -> Value;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Value})
- end, 
- cast(?glUniform1fvARB, [<<Location:32/?SN, Count:32/?SN>>,NewValue]).
-
-%% Func:    uniform2fvARB 
-%% Args:    Location, Count, <<[Value]>>
-%% Returns: ok
-%% C-API func: void glUniform2fvARB(GLint location, GLsizei count,  const GLfloat * value)
-uniform2fvARB(Location, Count, Value) -> 
- uniform2fv(Location, Count, Value).
-uniform2fv(Location, Count, Value) -> 
- NewValue = if
-	is_list(Value) ; is_tuple(Value) -> term2bin(Value, Count*2, ?GL_FLOAT);
-	is_binary(Value) -> Value;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Value})
- end, 
- cast(?glUniform2fvARB, [<<Location:32/?SN, Count:32/?SN>>,NewValue]).
-
-%% Func:    uniform3fvARB 
-%% Args:    Location, Count, <<[Value]>>
-%% Returns: ok
-%% C-API func: void glUniform3fvARB(GLint location, GLsizei count,  const GLfloat * value)
-uniform3fvARB(Location, Count, Value) -> 
- uniform3fv(Location, Count, Value).
-uniform3fv(Location, Count, Value) -> 
- NewValue = if
-	is_list(Value) ; is_tuple(Value) -> term2bin(Value, Count*3, ?GL_FLOAT);
-	is_binary(Value) -> Value;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Value})
- end, 
- cast(?glUniform3fvARB, [<<Location:32/?SN, Count:32/?SN>>,NewValue]).
-
-%% Func:    uniform4fvARB 
-%% Args:    Location, Count, <<[Value]>>
-%% Returns: ok
-%% C-API func: void glUniform4fvARB(GLint location, GLsizei count,  const GLfloat * value)
-uniform4fvARB(Location, Count, Value) -> 
- uniform4fv(Location, Count, Value).
-uniform4fv(Location, Count, Value) -> 
- NewValue = if
-	is_list(Value) ; is_tuple(Value) -> term2bin(Value, Count*4, ?GL_FLOAT);
-	is_binary(Value) -> Value;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Value})
- end, 
- cast(?glUniform4fvARB, [<<Location:32/?SN, Count:32/?SN>>,NewValue]).
-
-%% Func:    uniform1ivARB 
-%% Args:    Location, Count, <<[Value]>>
-%% Returns: ok
-%% C-API func: void glUniform1ivARB(GLint location, GLsizei count,  const GLint * value)
-uniform1ivARB(Location, Count, Value) -> 
- uniform1iv(Location, Count, Value).
-uniform1iv(Location, Count, Value) -> 
- NewValue = if
-	is_list(Value) ; is_tuple(Value) -> term2bin(Value, Count, ?GL_INT);
-	is_binary(Value) -> Value;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Value})
- end, 
- cast(?glUniform1ivARB, [<<Location:32/?SN, Count:32/?SN>>,NewValue]).
-
-%% Func:    uniform2ivARB 
-%% Args:    Location, Count, <<[Value]>>
-%% Returns: ok
-%% C-API func: void glUniform2ivARB(GLint location, GLsizei count,  const GLint * value)
-uniform2ivARB(Location, Count, Value) -> 
- uniform2iv(Location, Count, Value).
-uniform2iv(Location, Count, Value) -> 
- NewValue = if
-	is_list(Value) ; is_tuple(Value) -> term2bin(Value, Count*2, ?GL_INT);
-	is_binary(Value) -> Value;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Value})
- end, 
- cast(?glUniform2ivARB, [<<Location:32/?SN, Count:32/?SN>>,NewValue]).
-
-%% Func:    uniform3ivARB 
-%% Args:    Location, Count, <<[Value]>>
-%% Returns: ok
-%% C-API func: void glUniform3ivARB(GLint location, GLsizei count,  const GLint * value)
-uniform3ivARB(Location, Count, Value) -> 
- uniform3iv(Location, Count, Value).
-uniform3iv(Location, Count, Value) -> 
- NewValue = if
-	is_list(Value) ; is_tuple(Value) -> term2bin(Value, Count*3, ?GL_INT);
-	is_binary(Value) -> Value;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Value})
- end, 
- cast(?glUniform3ivARB, [<<Location:32/?SN, Count:32/?SN>>,NewValue]).
-
-%% Func:    uniform4ivARB 
-%% Args:    Location, Count, <<[Value]>>
-%% Returns: ok
-%% C-API func: void glUniform4ivARB(GLint location, GLsizei count,  const GLint * value)
-uniform4ivARB(Location, Count, Value) -> 
- uniform4iv(Location, Count, Value).
-uniform4iv(Location, Count, Value) -> 
- NewValue = if
-	is_list(Value) ; is_tuple(Value) -> term2bin(Value, Count*4, ?GL_INT);
-	is_binary(Value) -> Value;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Value})
- end, 
- cast(?glUniform4ivARB, [<<Location:32/?SN, Count:32/?SN>>,NewValue]).
-
-%% Func:    uniformMatrix2fvARB 
-%% Args:    Location, Count, Transpose, <<[Value]>>
-%% Returns: ok
-%% C-API func: void glUniformMatrix2fvARB(GLint location, GLsizei count, GLboolean transpose,  const GLfloat * value)
-uniformMatrix2fvARB(Location, Count, Transpose, Value) -> 
- uniformMatrix2fv(Location, Count, Transpose, Value).
-uniformMatrix2fv(Location, Count, Transpose, Value) -> 
- NewValue = if
-	is_list(Value) ; is_tuple(Value) -> term2bin(Value, Count*4, ?GL_FLOAT);
-	is_binary(Value) -> Value;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Value})
- end, 
- cast(?glUniformMatrix2fvARB, [<<Location:32/?SN, Count:32/?SN, Transpose:8/unsigned, 0:24>>,NewValue]).
-
-%% Func:    uniformMatrix3fvARB 
-%% Args:    Location, Count, Transpose, <<[Value]>>
-%% Returns: ok
-%% C-API func: void glUniformMatrix3fvARB(GLint location, GLsizei count, GLboolean transpose,  const GLfloat * value)
-uniformMatrix3fvARB(Location, Count, Transpose, Value) -> 
- uniformMatrix3fv(Location, Count, Transpose, Value).
-uniformMatrix3fv(Location, Count, Transpose, Value) -> 
- NewValue = if
-	is_list(Value) ; is_tuple(Value) -> term2bin(Value, Count*9, ?GL_FLOAT);
-	is_binary(Value) -> Value;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Value})
- end, 
- cast(?glUniformMatrix3fvARB, [<<Location:32/?SN, Count:32/?SN, Transpose:8/unsigned, 0:24>>,NewValue]).
-
-%% Func:    uniformMatrix4fvARB 
-%% Args:    Location, Count, Transpose, <<[Value]>>
-%% Returns: ok
-%% C-API func: void glUniformMatrix4fvARB(GLint location, GLsizei count, GLboolean transpose,  const GLfloat * value)
-uniformMatrix4fvARB(Location, Count, Transpose, Value) -> 
- uniformMatrix4fv(Location, Count, Transpose, Value).
-uniformMatrix4fv(Location, Count, Transpose, Value) -> 
- NewValue = if
-	is_list(Value) ; is_tuple(Value) -> term2bin(Value, Count*16, ?GL_FLOAT);
-	is_binary(Value) -> Value;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Value})
- end, 
- cast(?glUniformMatrix4fvARB, [<<Location:32/?SN, Count:32/?SN, Transpose:8/unsigned, 0:24>>,NewValue]).
-
-%% Func:    getObjectParameterfvARB 
-%% Args:    Obj, Pname
-%% Returns: [Params]
-%% C-API func: void glGetObjectParameterfvARB(GLhandleARB obj, GLenum pname, GLfloat * params)
-getObjectParameterfvARB(Obj, Pname) -> 
- getObjectParameterfv(Obj, Pname).
-getObjectParameterfv(Obj, Pname) -> 
- Bin = call(?glGetObjectParameterfvARB, <<Obj:32/?UN, Pname:32/?UN>>), 
- case Bin of 
-	<<Params:32/?FN>> -> 
-	 Params;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
- end.
-
-%% Func:    getObjectParameterivARB 
-%% Args:    Obj, Pname
-%% Returns: [Params]
-%% C-API func: void glGetObjectParameterivARB(GLhandleARB obj, GLenum pname, GLint * params)
-getObjectParameterivARB(Obj, Pname) -> 
- getObjectParameteriv(Obj, Pname).
-getObjectParameteriv(Obj, Pname) -> 
- Bin = call(?glGetObjectParameterivARB, <<Obj:32/?UN, Pname:32/?UN>>), 
- case Bin of 
-	<<Params:32/?SN>> -> 
-	 Params;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
- end.
-
-%% Func:    getInfoLogARB 
-%% Args:    Obj, MaxLength
-%% Returns: {[Length], [InfoLog]}
-%% C-API func: void glGetInfoLogARB(GLhandleARB obj, GLsizei maxLength, GLsizei * length, GLcharARB * infoLog)
-getInfoLogARB(Obj, MaxLength) -> 
- getInfoLog(Obj, MaxLength).
-getInfoLog(Obj, MaxLength) -> 
- Bin = call(?glGetInfoLogARB, <<Obj:32/?UN, MaxLength:32/?SN>>), 
- case Bin of 
-	<<Length:32/?SN, InfoLog:Length/binary-unit:?GL_UNSIGNED_BYTE_SIZE>> -> 
-	 {Length, bin2list(Length, ?GL_UNSIGNED_BYTE, InfoLog)};
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
- end.
-
-%% Func:    getAttachedObjectsARB 
-%% Args:    ContainerObj, MaxCount
-%% Returns: {[Count], [Obj]}
-%% C-API func: void glGetAttachedObjectsARB(GLhandleARB containerObj, GLsizei maxCount, GLsizei * count, GLhandleARB * obj)
-getAttachedObjectsARB(ContainerObj, MaxCount) -> 
- getAttachedObjects(ContainerObj, MaxCount).
-getAttachedObjects(ContainerObj, MaxCount) -> 
- Bin = call(?glGetAttachedObjectsARB, <<ContainerObj:32/?UN, MaxCount:32/?SN>>), 
- case Bin of 
-	<<Count:32/?SN, Obj:Count/binary-unit:?GL_UNSIGNED_INT_SIZE>> -> 
-	 {Count, bin2list(Count, ?GL_UNSIGNED_INT, Obj)};
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
- end.
-
-%% Func:    getUniformLocationARB 
-%% Args:    ProgramObj, <<[Name]>>
-%% Returns: ?GL_INT
-%% C-API func: GLint glGetUniformLocationARB(GLhandleARB programObj,  const GLcharARB * name)
-getUniformLocationARB(ProgramObj, Name) -> 
- getUniformLocation(ProgramObj, Name).
-getUniformLocation(ProgramObj, Name) -> 
- sdl:send_bin(list_to_binary([Name,0]), ?MODULE, ?LINE),
- Bin = call(?glGetUniformLocationARB, <<ProgramObj:32/?UN>>), 
- case Bin of 
-	<<Ret:32/?SN>> -> 
-   Ret;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
- end.
-
-%% Func:    getActiveUniformARB 
-%% Args:    ProgramObj, Index, MaxLength
-%% Returns: {[Length], [Size], [Type], [Name]}
-%% C-API func: void glGetActiveUniformARB(GLhandleARB programObj, GLuint index, GLsizei maxLength, GLsizei * length, GLint * size, GLenum * type, GLcharARB * name)
-getActiveUniformARB(ProgramObj, Index, MaxLength) -> 
- getActiveUniform(ProgramObj, Index, MaxLength).
-getActiveUniform(ProgramObj, Index, MaxLength) -> 
- Bin = call(?glGetActiveUniformARB, <<ProgramObj:32/?UN, Index:32/?UN, MaxLength:32/?SN>>), 
- case Bin of 
-	<<Length:32/?SN, Size:32/?SN, Type:32/?UN, Name:Length/binary-unit:?GL_UNSIGNED_BYTE_SIZE>> -> 
-	 {Length, Size, Type, bin2list(Length, ?GL_UNSIGNED_BYTE, Name)};
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
- end.
-
-%% Func:    getUniformfvARB 
-%% Args:    ProgramObj, Location, #sdlmem{} = Params
-%% Returns: ok
-%% C-API func: void glGetUniformfvARB(GLhandleARB programObj, GLint location, GLfloat * params)
-getUniformfvARB(ProgramObj, Location, #sdlmem{bin=Params}) -> 
- getUniformfv(ProgramObj, Location, #sdlmem{bin=Params}).
-getUniformfv(ProgramObj, Location, #sdlmem{bin=Params}) -> 
- sdl:send_bin(Params, ?MODULE, ?LINE),
- cast(?glGetUniformfvARB, <<ProgramObj:32/?UN, Location:32/?SN>>).
-
-%% Func:    getUniformivARB 
-%% Args:    ProgramObj, Location, #sdlmem{} = Params
-%% Returns: ok
-%% C-API func: void glGetUniformivARB(GLhandleARB programObj, GLint location, GLint * params)
-getUniformivARB(ProgramObj, Location, #sdlmem{bin=Params}) -> 
- getUniformiv(ProgramObj, Location, #sdlmem{bin=Params}).
-getUniformiv(ProgramObj, Location, #sdlmem{bin=Params}) -> 
- sdl:send_bin(Params, ?MODULE, ?LINE),
- cast(?glGetUniformivARB, <<ProgramObj:32/?UN, Location:32/?SN>>).
-
-%% Func:    getShaderSourceARB 
-%% Args:    Obj, MaxLength
-%% Returns: {[Length], [Source]}
-%% C-API func: void glGetShaderSourceARB(GLhandleARB obj, GLsizei maxLength, GLsizei * length, GLcharARB * source)
-getShaderSourceARB(Obj, MaxLength) -> 
- getShaderSource(Obj, MaxLength).
-getShaderSource(Obj, MaxLength) -> 
- Bin = call(?glGetShaderSourceARB, <<Obj:32/?UN, MaxLength:32/?SN>>), 
- case Bin of 
-	<<Length:32/?SN, Source:Length/binary-unit:?GL_UNSIGNED_BYTE_SIZE>> -> 
-	 {Length, bin2list(Length, ?GL_UNSIGNED_BYTE, Source)};
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
- end.
-
-%% Func:    bindAttribLocationARB 
-%% Args:    ProgramObj, Index, <<[Name]>>
-%% Returns: ok
-%% C-API func: void glBindAttribLocationARB(GLhandleARB programObj, GLuint index,  const GLcharARB * name)
-bindAttribLocationARB(ProgramObj, Index, Name) -> 
- bindAttribLocation(ProgramObj, Index, Name).
-bindAttribLocation(ProgramObj, Index, Name) -> 
- sdl:send_bin(list_to_binary([Name,0]), ?MODULE, ?LINE),
- cast(?glBindAttribLocationARB, <<ProgramObj:32/?UN, Index:32/?UN>>).
-
-%% Func:    getActiveAttribARB 
-%% Args:    ProgramObj, Index, MaxLength
-%% Returns: {[Length], [Size], [Type], [Name]}
-%% C-API func: void glGetActiveAttribARB(GLhandleARB programObj, GLuint index, GLsizei maxLength, GLsizei * length, GLint * size, GLenum * type, GLcharARB * name)
-getActiveAttribARB(ProgramObj, Index, MaxLength) -> 
- getActiveAttrib(ProgramObj, Index, MaxLength).
-getActiveAttrib(ProgramObj, Index, MaxLength) -> 
- Bin = call(?glGetActiveAttribARB, <<ProgramObj:32/?UN, Index:32/?UN, MaxLength:32/?SN>>), 
- case Bin of 
-	<<Length:32/?SN, Size:32/?SN, Type:32/?UN, Name:Length/binary-unit:?GL_UNSIGNED_BYTE_SIZE>> -> 
-	 {Length, Size, Type, bin2list(Length, ?GL_UNSIGNED_BYTE, Name)};
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
- end.
-
-%% Func:    getAttribLocationARB 
-%% Args:    ProgramObj, <<[Name]>>
-%% Returns: ?GL_INT
-%% C-API func: GLint glGetAttribLocationARB(GLhandleARB programObj,  const GLcharARB * name)
-getAttribLocationARB(ProgramObj, Name) -> 
- getAttribLocation(ProgramObj, Name).
-getAttribLocation(ProgramObj, Name) -> 
- sdl:send_bin(list_to_binary([Name,0]), ?MODULE, ?LINE),
- Bin = call(?glGetAttribLocationARB, <<ProgramObj:32/?UN>>), 
- case Bin of 
-	<<Ret:32/?SN>> -> 
-   Ret;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
- end.
-
-%% Func:    drawBuffersARB 
-%% Args:    N, <<[Bufs]>>
-%% Returns: ok
-%% C-API func: void glDrawBuffersARB(GLsizei n,  const GLenum * bufs)
-drawBuffersARB(N, Bufs) -> 
- drawBuffers(N, Bufs).
-drawBuffers(N, Bufs) -> 
- NewBufs = if
-	is_list(Bufs) ; is_tuple(Bufs) -> term2bin(Bufs, N, ?GL_INT);
-	is_binary(Bufs) -> Bufs;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Bufs})
- end, 
- cast(?glDrawBuffersARB, [<<N:32/?SN>>,NewBufs]).
+ cast(?glGetProgramString, <<Target:32/?UN, Pname:32/?UN>>).
 
 %% Func:    stencilOpSeparateATI 
 %% Args:    Face, Sfail, Dpfail, Dppass

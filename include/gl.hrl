@@ -1485,8 +1485,9 @@
 %%% OpenGL v1.2 and later
 
 -define(__glext_h_, 1).
-
--define(GL_GLEXT_VERSION, 24).
+%%%% glext.h last updated 2005/01/20 
+%%%% Current version at http://oss.sgi.com/projects/ogl-sample/registry/ 
+-define(GL_GLEXT_VERSION, 26).
 -ifndef(GL_VERSION_1_2).
 -define(GL_UNSIGNED_BYTE_3_3_2, 16#8032).
 -define(GL_UNSIGNED_SHORT_4_4_4_4, 16#8033).
@@ -1799,6 +1800,92 @@
 -define(GL_SRC1_ALPHA, ?GL_SOURCE1_ALPHA).
 -define(GL_SRC2_ALPHA, ?GL_SOURCE2_ALPHA).
 -endif.
+-ifndef(GL_VERSION_2_0).
+-define(GL_BLEND_EQUATION_RGB, ?GL_BLEND_EQUATION).
+-define(GL_VERTEX_ATTRIB_ARRAY_ENABLED, 16#8622).
+-define(GL_VERTEX_ATTRIB_ARRAY_SIZE, 16#8623).
+-define(GL_VERTEX_ATTRIB_ARRAY_STRIDE, 16#8624).
+-define(GL_VERTEX_ATTRIB_ARRAY_TYPE, 16#8625).
+-define(GL_CURRENT_VERTEX_ATTRIB, 16#8626).
+-define(GL_VERTEX_PROGRAM_POINT_SIZE, 16#8642).
+-define(GL_VERTEX_PROGRAM_TWO_SIDE, 16#8643).
+-define(GL_VERTEX_ATTRIB_ARRAY_POINTER, 16#8645).
+-define(GL_STENCIL_BACK_FUNC, 16#8800).
+-define(GL_STENCIL_BACK_FAIL, 16#8801).
+-define(GL_STENCIL_BACK_PASS_DEPTH_FAIL, 16#8802).
+-define(GL_STENCIL_BACK_PASS_DEPTH_PASS, 16#8803).
+-define(GL_MAX_DRAW_BUFFERS, 16#8824).
+-define(GL_DRAW_BUFFER0, 16#8825).
+-define(GL_DRAW_BUFFER1, 16#8826).
+-define(GL_DRAW_BUFFER2, 16#8827).
+-define(GL_DRAW_BUFFER3, 16#8828).
+-define(GL_DRAW_BUFFER4, 16#8829).
+-define(GL_DRAW_BUFFER5, 16#882A).
+-define(GL_DRAW_BUFFER6, 16#882B).
+-define(GL_DRAW_BUFFER7, 16#882C).
+-define(GL_DRAW_BUFFER8, 16#882D).
+-define(GL_DRAW_BUFFER9, 16#882E).
+-define(GL_DRAW_BUFFER10, 16#882F).
+-define(GL_DRAW_BUFFER11, 16#8830).
+-define(GL_DRAW_BUFFER12, 16#8831).
+-define(GL_DRAW_BUFFER13, 16#8832).
+-define(GL_DRAW_BUFFER14, 16#8833).
+-define(GL_DRAW_BUFFER15, 16#8834).
+-define(GL_BLEND_EQUATION_ALPHA, 16#883D).
+-define(GL_POINT_SPRITE, 16#8861).
+-define(GL_COORD_REPLACE, 16#8862).
+-define(GL_MAX_VERTEX_ATTRIBS, 16#8869).
+-define(GL_VERTEX_ATTRIB_ARRAY_NORMALIZED, 16#886A).
+-define(GL_MAX_TEXTURE_COORDS, 16#8871).
+-define(GL_MAX_TEXTURE_IMAGE_UNITS, 16#8872).
+-define(GL_FRAGMENT_SHADER, 16#8B30).
+-define(GL_VERTEX_SHADER, 16#8B31).
+-define(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS, 16#8B49).
+-define(GL_MAX_VERTEX_UNIFORM_COMPONENTS, 16#8B4A).
+-define(GL_MAX_VARYING_FLOATS, 16#8B4B).
+-define(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, 16#8B4C).
+-define(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, 16#8B4D).
+-define(GL_SHADER_TYPE, 16#8B4F).
+-define(GL_FLOAT_VEC2, 16#8B50).
+-define(GL_FLOAT_VEC3, 16#8B51).
+-define(GL_FLOAT_VEC4, 16#8B52).
+-define(GL_INT_VEC2, 16#8B53).
+-define(GL_INT_VEC3, 16#8B54).
+-define(GL_INT_VEC4, 16#8B55).
+-define(GL_BOOL, 16#8B56).
+-define(GL_BOOL_VEC2, 16#8B57).
+-define(GL_BOOL_VEC3, 16#8B58).
+-define(GL_BOOL_VEC4, 16#8B59).
+-define(GL_FLOAT_MAT2, 16#8B5A).
+-define(GL_FLOAT_MAT3, 16#8B5B).
+-define(GL_FLOAT_MAT4, 16#8B5C).
+-define(GL_SAMPLER_1D, 16#8B5D).
+-define(GL_SAMPLER_2D, 16#8B5E).
+-define(GL_SAMPLER_3D, 16#8B5F).
+-define(GL_SAMPLER_CUBE, 16#8B60).
+-define(GL_SAMPLER_1D_SHADOW, 16#8B61).
+-define(GL_SAMPLER_2D_SHADOW, 16#8B62).
+-define(GL_DELETE_STATUS, 16#8B80).
+-define(GL_COMPILE_STATUS, 16#8B81).
+-define(GL_LINK_STATUS, 16#8B82).
+-define(GL_VALIDATE_STATUS, 16#8B83).
+-define(GL_INFO_LOG_LENGTH, 16#8B84).
+-define(GL_ATTACHED_SHADERS, 16#8B85).
+-define(GL_ACTIVE_UNIFORMS, 16#8B86).
+-define(GL_ACTIVE_UNIFORM_MAX_LENGTH, 16#8B87).
+-define(GL_SHADER_SOURCE_LENGTH, 16#8B88).
+-define(GL_ACTIVE_ATTRIBUTES, 16#8B89).
+-define(GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, 16#8B8A).
+-define(GL_FRAGMENT_SHADER_DERIVATIVE_HINT, 16#8B8B).
+-define(GL_SHADING_LANGUAGE_VERSION, 16#8B8C).
+-define(GL_CURRENT_PROGRAM, 16#8B8D).
+-define(GL_POINT_SPRITE_COORD_ORIGIN, 16#8CA0).
+-define(GL_LOWER_LEFT, 16#8CA1).
+-define(GL_UPPER_LEFT, 16#8CA2).
+-define(GL_STENCIL_BACK_REF, 16#8CA3).
+-define(GL_STENCIL_BACK_VALUE_MASK, 16#8CA4).
+-define(GL_STENCIL_BACK_WRITEMASK, 16#8CA5).
+-endif.
 -ifndef(GL_ARB_vertex_blend).
 -define(GL_MAX_VERTEX_UNITS_ARB, 16#86A4).
 -define(GL_MAX_VERTEX_UNITS, 16#86A4).
@@ -1917,15 +2004,15 @@
 -define(GL_VERTEX_PROGRAM_ARB, 16#8620).
 -define(GL_VERTEX_PROGRAM, 16#8620).
 -define(GL_VERTEX_ATTRIB_ARRAY_ENABLED_ARB, 16#8622).
--define(GL_VERTEX_ATTRIB_ARRAY_ENABLED, 16#8622).
+%-define(GL_VERTEX_ATTRIB_ARRAY_ENABLED, 16#8622).
 -define(GL_VERTEX_ATTRIB_ARRAY_SIZE_ARB, 16#8623).
--define(GL_VERTEX_ATTRIB_ARRAY_SIZE, 16#8623).
+%-define(GL_VERTEX_ATTRIB_ARRAY_SIZE, 16#8623).
 -define(GL_VERTEX_ATTRIB_ARRAY_STRIDE_ARB, 16#8624).
--define(GL_VERTEX_ATTRIB_ARRAY_STRIDE, 16#8624).
+%-define(GL_VERTEX_ATTRIB_ARRAY_STRIDE, 16#8624).
 -define(GL_VERTEX_ATTRIB_ARRAY_TYPE_ARB, 16#8625).
--define(GL_VERTEX_ATTRIB_ARRAY_TYPE, 16#8625).
+%-define(GL_VERTEX_ATTRIB_ARRAY_TYPE, 16#8625).
 -define(GL_CURRENT_VERTEX_ATTRIB_ARB, 16#8626).
--define(GL_CURRENT_VERTEX_ATTRIB, 16#8626).
+%-define(GL_CURRENT_VERTEX_ATTRIB, 16#8626).
 -define(GL_PROGRAM_LENGTH_ARB, 16#8627).
 -define(GL_PROGRAM_LENGTH, 16#8627).
 -define(GL_PROGRAM_STRING_ARB, 16#8628).
@@ -1939,19 +2026,19 @@
 -define(GL_CURRENT_MATRIX_ARB, 16#8641).
 -define(GL_CURRENT_MATRIX, 16#8641).
 -define(GL_VERTEX_PROGRAM_POINT_SIZE_ARB, 16#8642).
--define(GL_VERTEX_PROGRAM_POINT_SIZE, 16#8642).
+%-define(GL_VERTEX_PROGRAM_POINT_SIZE, 16#8642).
 -define(GL_VERTEX_PROGRAM_TWO_SIDE_ARB, 16#8643).
--define(GL_VERTEX_PROGRAM_TWO_SIDE, 16#8643).
+%-define(GL_VERTEX_PROGRAM_TWO_SIDE, 16#8643).
 -define(GL_VERTEX_ATTRIB_ARRAY_POINTER_ARB, 16#8645).
--define(GL_VERTEX_ATTRIB_ARRAY_POINTER, 16#8645).
+%-define(GL_VERTEX_ATTRIB_ARRAY_POINTER, 16#8645).
 -define(GL_PROGRAM_ERROR_POSITION_ARB, 16#864B).
 -define(GL_PROGRAM_ERROR_POSITION, 16#864B).
 -define(GL_PROGRAM_BINDING_ARB, 16#8677).
 -define(GL_PROGRAM_BINDING, 16#8677).
 -define(GL_MAX_VERTEX_ATTRIBS_ARB, 16#8869).
--define(GL_MAX_VERTEX_ATTRIBS, 16#8869).
+%-define(GL_MAX_VERTEX_ATTRIBS, 16#8869).
 -define(GL_VERTEX_ATTRIB_ARRAY_NORMALIZED_ARB, 16#886A).
--define(GL_VERTEX_ATTRIB_ARRAY_NORMALIZED, 16#886A).
+%-define(GL_VERTEX_ATTRIB_ARRAY_NORMALIZED, 16#886A).
 -define(GL_PROGRAM_ERROR_STRING_ARB, 16#8874).
 -define(GL_PROGRAM_ERROR_STRING, 16#8874).
 -define(GL_PROGRAM_FORMAT_ASCII_ARB, 16#8875).
@@ -2099,151 +2186,9 @@
 -define(GL_MAX_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB, 16#8810).
 -define(GL_MAX_PROGRAM_NATIVE_TEX_INDIRECTIONS, 16#8810).
 -define(GL_MAX_TEXTURE_COORDS_ARB, 16#8871).
--define(GL_MAX_TEXTURE_COORDS, 16#8871).
+%-define(GL_MAX_TEXTURE_COORDS, 16#8871).
 -define(GL_MAX_TEXTURE_IMAGE_UNITS_ARB, 16#8872).
--define(GL_MAX_TEXTURE_IMAGE_UNITS, 16#8872).
--endif.
--ifndef(GL_ARB_shader_objects).
--define(GL_PROGRAM_OBJECT_ARB, 16#8B40).
--define(GL_PROGRAM_OBJECT, 16#8B40).
--define(GL_SHADER_OBJECT_ARB, 16#8B48).
--define(GL_SHADER_OBJECT, 16#8B48).
--define(GL_OBJECT_TYPE_ARB, 16#8B4E).
--define(GL_OBJECT_TYPE, 16#8B4E).
--define(GL_OBJECT_SUBTYPE_ARB, 16#8B4F).
--define(GL_OBJECT_SUBTYPE, 16#8B4F).
--define(GL_FLOAT_VEC2_ARB, 16#8B50).
--define(GL_FLOAT_VEC2, 16#8B50).
--define(GL_FLOAT_VEC3_ARB, 16#8B51).
--define(GL_FLOAT_VEC3, 16#8B51).
--define(GL_FLOAT_VEC4_ARB, 16#8B52).
--define(GL_FLOAT_VEC4, 16#8B52).
--define(GL_INT_VEC2_ARB, 16#8B53).
--define(GL_INT_VEC2, 16#8B53).
--define(GL_INT_VEC3_ARB, 16#8B54).
--define(GL_INT_VEC3, 16#8B54).
--define(GL_INT_VEC4_ARB, 16#8B55).
--define(GL_INT_VEC4, 16#8B55).
--define(GL_BOOL_ARB, 16#8B56).
--define(GL_BOOL, 16#8B56).
--define(GL_BOOL_VEC2_ARB, 16#8B57).
--define(GL_BOOL_VEC2, 16#8B57).
--define(GL_BOOL_VEC3_ARB, 16#8B58).
--define(GL_BOOL_VEC3, 16#8B58).
--define(GL_BOOL_VEC4_ARB, 16#8B59).
--define(GL_BOOL_VEC4, 16#8B59).
--define(GL_FLOAT_MAT2_ARB, 16#8B5A).
--define(GL_FLOAT_MAT2, 16#8B5A).
--define(GL_FLOAT_MAT3_ARB, 16#8B5B).
--define(GL_FLOAT_MAT3, 16#8B5B).
--define(GL_FLOAT_MAT4_ARB, 16#8B5C).
--define(GL_FLOAT_MAT4, 16#8B5C).
--define(GL_SAMPLER_1D_ARB, 16#8B5D).
--define(GL_SAMPLER_1D, 16#8B5D).
--define(GL_SAMPLER_2D_ARB, 16#8B5E).
--define(GL_SAMPLER_2D, 16#8B5E).
--define(GL_SAMPLER_3D_ARB, 16#8B5F).
--define(GL_SAMPLER_3D, 16#8B5F).
--define(GL_SAMPLER_CUBE_ARB, 16#8B60).
--define(GL_SAMPLER_CUBE, 16#8B60).
--define(GL_SAMPLER_1D_SHADOW_ARB, 16#8B61).
--define(GL_SAMPLER_1D_SHADOW, 16#8B61).
--define(GL_SAMPLER_2D_SHADOW_ARB, 16#8B62).
--define(GL_SAMPLER_2D_SHADOW, 16#8B62).
--define(GL_SAMPLER_2D_RECT_ARB, 16#8B63).
--define(GL_SAMPLER_2D_RECT, 16#8B63).
--define(GL_SAMPLER_2D_RECT_SHADOW_ARB, 16#8B64).
--define(GL_SAMPLER_2D_RECT_SHADOW, 16#8B64).
--define(GL_OBJECT_DELETE_STATUS_ARB, 16#8B80).
--define(GL_OBJECT_DELETE_STATUS, 16#8B80).
--define(GL_OBJECT_COMPILE_STATUS_ARB, 16#8B81).
--define(GL_OBJECT_COMPILE_STATUS, 16#8B81).
--define(GL_OBJECT_LINK_STATUS_ARB, 16#8B82).
--define(GL_OBJECT_LINK_STATUS, 16#8B82).
--define(GL_OBJECT_VALIDATE_STATUS_ARB, 16#8B83).
--define(GL_OBJECT_VALIDATE_STATUS, 16#8B83).
--define(GL_OBJECT_INFO_LOG_LENGTH_ARB, 16#8B84).
--define(GL_OBJECT_INFO_LOG_LENGTH, 16#8B84).
--define(GL_OBJECT_ATTACHED_OBJECTS_ARB, 16#8B85).
--define(GL_OBJECT_ATTACHED_OBJECTS, 16#8B85).
--define(GL_OBJECT_ACTIVE_UNIFORMS_ARB, 16#8B86).
--define(GL_OBJECT_ACTIVE_UNIFORMS, 16#8B86).
--define(GL_OBJECT_ACTIVE_UNIFORM_MAX_LENGTH_ARB, 16#8B87).
--define(GL_OBJECT_ACTIVE_UNIFORM_MAX_LENGTH, 16#8B87).
--define(GL_OBJECT_SHADER_SOURCE_LENGTH_ARB, 16#8B88).
--define(GL_OBJECT_SHADER_SOURCE_LENGTH, 16#8B88).
--endif.
--ifndef(GL_ARB_vertex_shader).
--define(GL_VERTEX_SHADER_ARB, 16#8B31).
--define(GL_VERTEX_SHADER, 16#8B31).
--define(GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB, 16#8B4A).
--define(GL_MAX_VERTEX_UNIFORM_COMPONENTS, 16#8B4A).
--define(GL_MAX_VARYING_FLOATS_ARB, 16#8B4B).
--define(GL_MAX_VARYING_FLOATS, 16#8B4B).
--define(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB, 16#8B4C).
--define(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, 16#8B4C).
--define(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB, 16#8B4D).
--define(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, 16#8B4D).
--define(GL_OBJECT_ACTIVE_ATTRIBUTES_ARB, 16#8B89).
--define(GL_OBJECT_ACTIVE_ATTRIBUTES, 16#8B89).
--define(GL_OBJECT_ACTIVE_ATTRIBUTE_MAX_LENGTH_ARB, 16#8B8A).
--define(GL_OBJECT_ACTIVE_ATTRIBUTE_MAX_LENGTH, 16#8B8A).
--endif.
--ifndef(GL_ARB_fragment_shader).
--define(GL_FRAGMENT_SHADER_ARB, 16#8B30).
--define(GL_FRAGMENT_SHADER, 16#8B30).
--define(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB, 16#8B49).
--define(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS, 16#8B49).
--define(GL_FRAGMENT_SHADER_DERIVATIVE_HINT_ARB, 16#8B8B).
--define(GL_FRAGMENT_SHADER_DERIVATIVE_HINT, 16#8B8B).
--endif.
--ifndef(GL_ARB_shading_language_100).
--define(GL_SHADING_LANGUAGE_VERSION_ARB, 16#8B8C).
--define(GL_SHADING_LANGUAGE_VERSION, 16#8B8C).
--endif.
--ifndef(GL_ARB_texture_non_power_of_two).
--endif.
--ifndef(GL_ARB_point_sprite).
--define(GL_POINT_SPRITE_ARB, 16#8861).
--define(GL_POINT_SPRITE, 16#8861).
--define(GL_COORD_REPLACE_ARB, 16#8862).
--define(GL_COORD_REPLACE, 16#8862).
--endif.
--ifndef(GL_ARB_draw_buffers).
--define(GL_MAX_DRAW_BUFFERS_ARB, 16#8824).
--define(GL_MAX_DRAW_BUFFERS, 16#8824).
--define(GL_DRAW_BUFFER0_ARB, 16#8825).
--define(GL_DRAW_BUFFER0, 16#8825).
--define(GL_DRAW_BUFFER1_ARB, 16#8826).
--define(GL_DRAW_BUFFER1, 16#8826).
--define(GL_DRAW_BUFFER2_ARB, 16#8827).
--define(GL_DRAW_BUFFER2, 16#8827).
--define(GL_DRAW_BUFFER3_ARB, 16#8828).
--define(GL_DRAW_BUFFER3, 16#8828).
--define(GL_DRAW_BUFFER4_ARB, 16#8829).
--define(GL_DRAW_BUFFER4, 16#8829).
--define(GL_DRAW_BUFFER5_ARB, 16#882A).
--define(GL_DRAW_BUFFER5, 16#882A).
--define(GL_DRAW_BUFFER6_ARB, 16#882B).
--define(GL_DRAW_BUFFER6, 16#882B).
--define(GL_DRAW_BUFFER7_ARB, 16#882C).
--define(GL_DRAW_BUFFER7, 16#882C).
--define(GL_DRAW_BUFFER8_ARB, 16#882D).
--define(GL_DRAW_BUFFER8, 16#882D).
--define(GL_DRAW_BUFFER9_ARB, 16#882E).
--define(GL_DRAW_BUFFER9, 16#882E).
--define(GL_DRAW_BUFFER10_ARB, 16#882F).
--define(GL_DRAW_BUFFER10, 16#882F).
--define(GL_DRAW_BUFFER11_ARB, 16#8830).
--define(GL_DRAW_BUFFER11, 16#8830).
--define(GL_DRAW_BUFFER12_ARB, 16#8831).
--define(GL_DRAW_BUFFER12, 16#8831).
--define(GL_DRAW_BUFFER13_ARB, 16#8832).
--define(GL_DRAW_BUFFER13, 16#8832).
--define(GL_DRAW_BUFFER14_ARB, 16#8833).
--define(GL_DRAW_BUFFER14, 16#8833).
--define(GL_DRAW_BUFFER15_ARB, 16#8834).
--define(GL_DRAW_BUFFER15, 16#8834).
+%-define(GL_MAX_TEXTURE_IMAGE_UNITS, 16#8872).
 -endif.
 -ifndef(GL_NV_depth_clamp).
 -define(GL_DEPTH_CLAMP_NV, 16#864F).
@@ -2291,18 +2236,23 @@
 -define(GL_STENCIL_BACK_PASS_DEPTH_FAIL_ATI, 16#8802).
 -define(GL_STENCIL_BACK_PASS_DEPTH_PASS_ATI, 16#8803).
 -endif.
+-ifndef(GL_OES_read_format).
+-define(GL_IMPLEMENTATION_COLOR_READ_TYPE_OES, 16#8B9A).
+-define(GL_IMPLEMENTATION_COLOR_READ_FORMAT_OES, 16#8B9B).
+-endif.
 -ifndef(GL_EXT_texture_mirror_clamp).
 -define(GL_MIRROR_CLAMP_EXT, 16#8742).
 -define(GL_MIRROR_CLAMP_TO_EDGE_EXT, 16#8743).
 -define(GL_MIRROR_CLAMP_TO_BORDER_EXT, 16#8912).
 -endif.
 %%%% pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer pointer 
+-ifndef(GL_VERSION_2_0).
+%%%% GL type for program/shader text 
+-endif.
 -ifndef(GL_VERSION_1_5).
 %%%% GL types for handling large vertex buffer objects 
 -endif.
--ifndef(GL_ARB_shader_objects).
-%%%% GL types for handling shader object handles and characters 
--endif.
+%%%% GL types for "half" precision lpar s10e5 rpar float data in host memory 
 -ifndef(GL_VERSION_1_2).
 -define(GL_VERSION_1_2, 1).
 -endif.
@@ -2314,6 +2264,9 @@
 -endif.
 -ifndef(GL_VERSION_1_5).
 -define(GL_VERSION_1_5, 1).
+-endif.
+-ifndef(GL_VERSION_2_0).
+-define(GL_VERSION_2_0, 1).
 -endif.
 -ifndef(GL_ARB_vertex_blend).
 -define(GL_ARB_vertex_blend, 1).
@@ -2331,27 +2284,6 @@
 -define(GL_ARB_fragment_program, 1).
 %%%% All ARB_fragment_program entry points are shared with ARB_vertex_program. 
 -endif.
--ifndef(GL_ARB_shader_objects).
--define(GL_ARB_shader_objects, 1).
--endif.
--ifndef(GL_ARB_vertex_shader).
--define(GL_ARB_vertex_shader, 1).
--endif.
--ifndef(GL_ARB_fragment_shader).
--define(GL_ARB_fragment_shader, 1).
--endif.
--ifndef(GL_ARB_shading_language_100).
--define(GL_ARB_shading_language_100, 1).
--endif.
--ifndef(GL_ARB_texture_non_power_of_two).
--define(GL_ARB_texture_non_power_of_two, 1).
--endif.
--ifndef(GL_ARB_point_sprite).
--define(GL_ARB_point_sprite, 1).
--endif.
--ifndef(GL_ARB_draw_buffers).
--define(GL_ARB_draw_buffers, 1).
--endif.
 -ifndef(GL_NV_depth_clamp).
 -define(GL_NV_depth_clamp, 1).
 -endif.
@@ -2366,6 +2298,9 @@
 -endif.
 -ifndef(GL_ATI_separate_stencil).
 -define(GL_ATI_separate_stencil, 1).
+-endif.
+-ifndef(GL_OES_read_format).
+-define(GL_OES_read_format, 1).
 -endif.
 -ifndef(GL_EXT_texture_mirror_clamp).
 -define(GL_EXT_texture_mirror_clamp, 1).

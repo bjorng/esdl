@@ -139,7 +139,7 @@ init_files("glext", State) ->
     catch conv_glext:init_erl(State#fs.erl),    
     catch conv_glext:init_c(State#fs.c),
     catch conv_glext:init_h(State#fs.h);
-init_files(Which, State) ->
+init_files(Which, _State) ->
     io:format("Don't no how to initialize ~s~n", [Which]).
 
 post_files("gl", State) ->
@@ -174,10 +174,12 @@ generate(["#define", What, eol | R], Fd) ->
 generate(["#define", What, Value, eol | R], Fd) ->
     V = generate_value(Value),
     io:format(Fd#fs.hrl, "-define(~s, ~s).~n", [What, V]),
-    case arb(What) of
-	false -> ignore;
-	NoArb -> 
-	    io:format(Fd#fs.hrl, "-define(~s, ~s).~n", [NoArb, V])
+    {Arb,String} = arb(What),
+    case Arb of
+	true -> 
+	    io:format(Fd#fs.hrl, "-define(~s, ~s).~n", [String, V]);
+	false ->
+	    ignore
     end,
     generate(R, Fd);
 generate(["#ifndef", What, eol | R], Fd) ->
@@ -221,7 +223,7 @@ generate(["};"|R], Fd) ->
     generate(R, Fd);
 generate([eol|R], Fd) ->
     generate(R, Fd);
-generate([], Fd) ->
+generate([], _Fd) ->
     ok;
 generate([[]|R], Fd) ->
     generate(R, Fd);
@@ -241,7 +243,7 @@ generate(["typedef", Type, lpar, "APIENTRYP", Func, rpar|R], Fd) ->
 generate(["typedef"|R], Fd) ->
     io:format("skipped typedef ~p ~n", [string:substr(R, 1, 5)]),
     C = lists:dropwhile(fun(eol) -> false; 
-			   (A) -> true
+			   (_A) -> true
 			end, R),
     generate(C, Fd);
 
@@ -362,25 +364,38 @@ genfuncs(Type, FuncName, Args, F) ->
 	    Last+1
     end.
     
-genf_hrl(Type, FuncName, Args, Last, File, Fd) -> 
-    ?W("-define(~s, ?SDL_~s_HRL + ~p).~n", [FuncName, File, Last]).
-genf_h(Type, FuncName, Args, Last, File, Fd) -> 
-    F = FuncName ++ "Func",
-    ?W("enum { ~s = ~s_H + ~p };~n", [F, File, Last]),
-    case is_extension(FuncName) of
-	true -> gen_extension(Type, FuncName, Args, Fd);
-	false -> ignore
-    end,
-    ?W("void ~s (sdl_data *, int, char *); ~n", [format_func2c(FuncName)]).
-genf_sw(Type, FN, Args, Last, Fd) -> 
-    case is_extension(FN) of
-	true ->
-	    ?W("{ ~sFunc,  \"~s\", ~s, &esdl_~s},~n",
-	       [FN,FN,format_func2c(FN),FN]);
-	false ->
-	    ?W("{ ~sFunc,  \"~s\", ~s },~n",[FN,FN,format_func2c(FN)])
+genf_hrl(_Type, FuncName0, _Args, Last, File, Fd) -> 
+    case skip(FuncName0) of
+	true -> ignore;
+	_ ->
+	    {_, FuncName} = arb(FuncName0),
+	    ?W("-define(~s, ?SDL_~s_HRL + ~p).~n", [FuncName, File, Last])
     end.
-genf_erl(Type, FuncName, Args0, Last, Fd) -> 
+genf_h(Type, FuncName, Args, Last, File, Fd) -> 
+    case skip(FuncName) of
+	true -> ignore;
+	_ ->
+	    F = FuncName ++ "Func",
+	    ?W("enum { ~s = ~s_H + ~p };~n", [F, File, Last]),
+	    case is_extension(FuncName) of
+		true -> gen_extension(Type, FuncName, Args, Fd);
+		false -> ignore
+	    end,
+	    ?W("void ~s (sdl_data *, int, char *); ~n", [format_func2c(FuncName)])
+    end.
+genf_sw(_Type, FN, _Args, _Last, Fd) -> 
+    case skip(FN) of
+	true -> ignore;
+	_ ->
+	    case is_extension(FN) of
+		true ->
+		    ?W("{ ~sFunc,  \"~s\", ~s, &esdl_~s},~n",
+		       [FN,FN,format_func2c(FN),FN]);
+		false ->
+		    ?W("{ ~sFunc,  \"~s\", ~s },~n",[FN,FN,format_func2c(FN)])
+	    end
+    end.
+genf_erl(Type, FuncName, Args0, _Last, Fd) -> 
     EFN = format_func2erl(FuncName),
     {Rets,Args1} = find_returns(Args0, FuncName),
     Args = fixArgsOrder(FuncName, Args1),
@@ -394,9 +409,9 @@ genf_erl(Type, FuncName, Args0, Last, Fd) ->
     Cfunc = case skip(FuncName) of call_vector -> call_vector(FuncName); _ -> FuncName end,
     ?W(")~n~s(", [EFN]), write_args(FuncName, erl, Args1, Fd), ?W(") -> ~n", []),
     case arb(EFN) of 
-	false ->
+	{false,_} ->
 	    ignore;
-	NoArb->
+	{true,NoArb} ->
 	    ?W(" ~s(", [NoArb]), write_args(FuncName, erl, Args1, Fd), 
 	    ?W(").~n~s(", [NoArb]), write_args(FuncName, erl, Args1, Fd),
 	    ?W(") -> ~n", [])
@@ -405,11 +420,11 @@ genf_erl(Type, FuncName, Args0, Last, Fd) ->
     NewArgs = maybe_build_erlbinaries(FuncName, Args, Fd),
     case {Type, Rets} of
 	{"void", []} ->
-	    ?W(" cast(?~s, ", [Cfunc]),
+	    ?W(" cast(?~s, ", [element(2,arb(Cfunc))]),
 	    write_args(FuncName, binerl, NewArgs, Fd),
 	    ?W(").~n~n", []);
 	_ -> 
-	    ?W(" Bin = call(?~s, ", [Cfunc]),
+	    ?W(" Bin = call(?~s, ", [element(2,arb(Cfunc))]),
 	    write_args(FuncName, binerl, NewArgs, Fd),
 	    ?W("), ~n",[]),
 	    write_undef_rets(FuncName, Rets, Fd),
@@ -440,7 +455,7 @@ gen_extension(Type, Func, Args, Fd) ->
 	    ignore
     end.
 
-genf_c(Type, FuncName, Args0, Last, Fd) -> 
+genf_c(Type, FuncName, Args0, _Last, Fd) -> 
     CallFunc =  case is_extension(FuncName) of
 		    true -> "esdl_" ++ FuncName;
 		    false -> FuncName
@@ -526,7 +541,7 @@ genf_c(Type, FuncName, Args0, Last, Fd) ->
 					 " bp += sizeof(~s)*(*~s);~n",
 					 [V1,T1,Val,T1,Val])
 			      end;
-			 ({V1,pointer,T1}) ->
+			 ({V1,pointer,_T1}) ->
 			      ?W(" putPointer(bp, ~s);~n", [V1])
 		      end,
 	    lists:foreach(Forloop, Rets),
@@ -536,7 +551,7 @@ genf_c(Type, FuncName, Args0, Last, Fd) ->
     end,
     ?W("}~n~n~n", []).
 
-free_mem([{T, const, pointer, pointer, V1}|Args], FuncName, Fd) 
+free_mem([{_T, const, pointer, pointer, V1}|Args], FuncName, Fd) 
   when FuncName == "glShaderSourceARB" ->
     ?W(" free(~s);~n", [V1]),
     free_mem(Args, FuncName, Fd);
@@ -598,7 +613,7 @@ maybe_build_erlbinaries(Func,[Arg={_,const,pointer,pointer,_}|R],Fd) ->
 	_ ->
 	    [Arg | maybe_build_erlbinaries(Func, R, Fd)]
     end;
-maybe_build_erlbinaries(Func, [V={T,pointer,Var}|R], Fd) ->
+maybe_build_erlbinaries(Func, [V={_T,pointer,Var}|R], Fd) ->
     case getdef(Func, Var) of
 	pointer -> 
 	    ?W(" sdl:send_bin(~s, ?MODULE, ?LINE),~n", [uppercase(Var)]),
@@ -611,10 +626,10 @@ maybe_build_erlbinaries(Func, [V={T,pointer,Var}|R], Fd) ->
     end;
 maybe_build_erlbinaries(Func, [V|R], Fd) ->
     [V|maybe_build_erlbinaries(Func, R,Fd)];
-maybe_build_erlbinaries(F, [], Fd) ->
+maybe_build_erlbinaries(_F, [], _Fd) ->
     [].
 
-build_erlbinaries(Func, {T, const, pointer, pointer,V}, IsLast, Fd) ->
+build_erlbinaries(_Func, {_T, const, pointer, pointer,V}, _IsLast, Fd) ->
     ?W(" lists:foreach(fun(Values) -> sdl:send_bin(list_to_binary([Values,0]), ?MODULE, ?LINE) end, ~s),~n", 
        [uppercase(V)]),
     already_sent;
@@ -633,7 +648,7 @@ build_erlbinaries(Func, {T, const, pointer,V}, IsLast, Fd) ->
 		   EnumType
 	   end,
     case getdef(Func, V) of
-	pointer when T == "GLcharARB" -> 
+	pointer when T == "GLcharARB";T == "GLchar"  -> 
 	    ?W(" sdl:send_bin(list_to_binary([~s,0]), ?MODULE, ?LINE),~n", [Var]),
 	    already_sent;
 	pointer ->
@@ -702,11 +717,11 @@ build_erlbinaries(Func, {T, const, pointer,V}, IsLast, Fd) ->
 	    {binary, "new" ++ Var}
     end.
 
-get_size(Func, {"GLubyte",pointer}, R, First) ->
+get_size(Func, {"GLubyte",pointer}, R, _First) ->
     "strlen(egl_res) " ++ get_size(Func, "void", R, "+ ");
 get_size(Func, {Type,pointer}, R, "") when ?GLUTYPE(Type) ->
     "sizeof(" ++ Type ++ "*) " ++ get_size(Func, "void", R, "+ ");
-get_size(Func,"void", [{V,pointer,T}|R], First) ->
+get_size(Func,"void", [{_V,pointer,T}|R], First) ->
     First ++ "sizeof(" ++ T ++ "*)" ++ get_size(Func,"void", R, "+ ");
 get_size(Func,"void", [{V,T}|R], First) ->
     case getdef(Func, V) of
@@ -769,8 +784,8 @@ write_args(FuncName, Type, [H|R], Fd, Prev0, Align0) ->
     {Prev,Align} = write_arg(FuncName, Type, Args, Fd, Prev0, false, Align0),
     write_args(FuncName, Type, R, Fd, Prev, Align).
 
-write_arg(FuncName, Type, {T,V}, Fd, Prev0, IsLast, Align0) ->
-    Cont = case Prev0 of first -> ""; Else -> ", "  end,
+write_arg(_FuncName, Type, {T,V}, Fd, Prev0, IsLast, Align0) ->
+    Cont = case Prev0 of first -> ""; _Else -> ", "  end,
     Align = write_align(Type, Align0, T, Fd),
     Prev = 
 	case Type of
@@ -818,8 +833,8 @@ write_arg(FuncName, Type, {T,V}, Fd, Prev0, IsLast, Align0) ->
 	end,
     {Prev, Align+typeSz(T)};
 
-write_arg(FuncName, Type, {T,pointer, V}, Fd, Prev0, IsLast, Align0) ->
-    Cont = case Prev0 of first -> "";  Else -> ", "  end,
+write_arg(FuncName, Type, {T,pointer, V}, Fd, Prev0, _IsLast, Align0) ->
+    Cont = case Prev0 of first -> "";  _Else -> ", "  end,
     Align = write_align(Type, Align0, T, Fd),
     Prev = 
 	case Type of
@@ -877,7 +892,7 @@ write_arg(FuncName, Type, {T,pointer, V}, Fd, Prev0, IsLast, Align0) ->
 
 		    Var when integer(Var) ->
 			skip;
-		    {undefined, Var, _} ->
+		    {undefined, _Var, _} ->
 			skip;
 		    Error ->
 			erlang:fault({?MODULE, ?LINE, Error})
@@ -932,7 +947,7 @@ write_arg(FuncName, Type, {T,pointer, V}, Fd, Prev0, IsLast, Align0) ->
     {Prev, Align};
 
 write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
-    Cont = case Prev0 of first -> ""; Else -> ", "  end,
+    Cont = case Prev0 of first -> ""; _Else -> ", "  end,
     Align1 = write_align(Type, Align0, T, Fd),
     Prev = 
 	case Type of
@@ -950,7 +965,7 @@ write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
 			   true ->
 				?W(" ~s ~s[~w];int * ~sLen;~n", [T,V,Val,V])
 			end;
-		    {undefined, Val,_}  ->
+		    {undefined, _Val,_}  ->
 			?W(" ~s * ~s;~n", [T,V]);
 		    pointer when ((T=="GLdouble") or (T=="GLclampd")) -> 
 			?W("{not_implemented, ~p}", [?LINE]),
@@ -966,7 +981,7 @@ write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
 			?W(" ~s * ~s = NULL; ~n", [T,V]);
 
 		    Error ->
-			erlang:fault({?MODULE, ?LINE})
+			erlang:fault({?MODULE, ?LINE, Error})
 		end;
 	    binc ->
 		case getdef(FuncName, V) of
@@ -1022,7 +1037,7 @@ write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
 			?W(" ~s = (~s *) bp;~n", [V,T]),
 			bump_buff(IsLast, TT,Str,Fd);
 		    Error -> 
-			erlang:fault({?MODULE,?LINE})
+			erlang:fault({?MODULE,?LINE, Error})
 		end;
 	    
 	    ccalls ->
@@ -1058,11 +1073,11 @@ write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
 	    end,
     {Prev, Align};
 
-write_arg(FuncName, Type, {T, pointer, pointer, V}, Fd, First, _IsLast, Align) 
+write_arg(_FuncName, _Type, {T,pointer,pointer,_V}, _Fd, _First, _IsLast, _Align) 
   when T == ((T=="GLdouble") or (T=="GLclampd")) ->
     erlang:fault({not_implemented, ?LINE});
-write_arg(FuncName, Type, {T, pointer, pointer, V}, Fd, First, IsLast, Align) ->
-    Cont = case First of first -> ""; {first,_} -> ""; Else -> ", "  end,
+write_arg(_FuncName, Type, {T, pointer, pointer, V}, Fd, First, _IsLast, Align) ->
+    Cont = case First of first -> ""; {first,_} -> ""; _Else -> ", "  end,
     case Type of
 	c ->
 	    ?W("~s ~s* *~s", [Cont, T, V]);
@@ -1078,19 +1093,19 @@ write_arg(FuncName, Type, {T, pointer, pointer, V}, Fd, First, IsLast, Align) ->
     end,
     {no, Align};
 
-write_arg(FuncName, Type, {T, const, pointer, pointer, V}, Fd, First, IsLast, Align) 
-  when FuncName == "glShaderSourceARB" ->
-    Cont = case First of first -> ""; {first,_} -> ""; Else -> ", "  end,
+write_arg(FuncName,Type,{T,const,pointer,pointer,V},Fd,First, _IsLast,Align) 
+  when FuncName == "glShaderSource" ->
+    Cont = case First of first -> ""; {first,_} -> ""; _Else -> ", "  end,
     case Type of
 	c ->
 	    ?W("~s const ~s* *~s", [Cont, T, V]);
 	cdef ->
-	    ?W(" ~s* *~s;~n", [T,V]),
+	    ?W(" const ~s* *~s;~n", [T,V]),
 	    ?W(" int index;~n", []);
 	binc -> 
 	    case getdef(FuncName, V) of 
 		Variable when list(Variable) ->
-		    ?W(" ~s = (~s* *) malloc(sizeof(~s*)*(*~s));~n",
+		    ?W(" ~s = (const ~s* *) malloc(sizeof(~s*)*(*~s));~n",
 		       [V,T,T,Variable]),
 		    Cnt = get(arg_cnt),
 		    ?W(" for(index=0; index < *~s; index++) ~n"
@@ -1110,7 +1125,7 @@ write_arg(FuncName, Type, {T, const, pointer, pointer, V}, Fd, First, IsLast, Al
 
 
 
-write_arg(FuncName, Type, {T, callback, V}, Fd, First, _, Align) ->
+write_arg(_FuncName, _Type, {_T, callback, _V}, Fd, _First, _, Align) ->
     io:format("Error Dont know how to generate callbacks~n", []),
     io:format(Fd,"Error Dont know how to generate callbacks~n", []),
     {no, Align}.
@@ -1148,8 +1163,8 @@ write_binarg(Prev0, _, Fd) ->
 	    buildbin		
     end.
 
-write_undef_rets(FuncName, [], Fd) ->    ok;
-write_undef_rets(FuncName, [{V,T}|R], Fd) ->
+write_undef_rets(_FuncName, [], _Fd) ->    ok;
+write_undef_rets(FuncName, [{V,_T}|R], Fd) ->
     case getdef(FuncName,V) of
 	{undefined, Max, Enum} ->
 	    ?W( " ~sLen = ~sLen(~s),~n", 
@@ -1163,7 +1178,7 @@ write_undef_rets(FuncName, [{V,T}|R], Fd) ->
 write_undef_rets(FuncName, [_|R],Fd) ->
     write_undef_rets(FuncName,R,Fd).
 
-write_returns(FuncName, erlcom, Type, Rets, Fd) ->
+write_returns(_FuncName, erlcom, Type, Rets, Fd) ->
     case {Type, Rets} of
 	{"void", []} -> ?W("ok", []);
 	{"void", [{D,_}]} ->
@@ -1208,7 +1223,7 @@ write_returns(FuncName, erl, Type, Rets, Fd) ->
 	    write_rets(FuncName,Rets,Rets,Fd, 1, Type)
     end.
 
-write_rets(Func, [Ret], _, Fd, 0,T) ->
+write_rets(Func, [Ret], _, Fd, 0,_T) ->
     ?W("\t<<",[]),
     write_ret(Func, Ret, Fd),
     ?W(">> -> ~n\t ",[]),
@@ -1240,7 +1255,7 @@ write_ret(FuncName, {D,T}, Fd) ->
     case getdef(FuncName, D) of
 	1 ->
 	    ?W("~s~s", [UD, bintype(T)]);
-	{undefined, Max, _} ->
+	{undefined, _Max, _} ->
 	    ?W("~s:~sLen/binary-unit:~s_SIZE,_:~sBump/binary-unit:~s_SIZE",
 	       [UD, UD, type_to_enum(T), UD, type_to_enum(T)]);
 	{Length,_Max} when list(Length) ->
@@ -1253,7 +1268,7 @@ write_ret(FuncName, {D,T}, Fd) ->
 	    ?W("~s:~w/binary-unit:~s_SIZE", 
 	       [UD, Length, type_to_enum(T)])
     end;
-write_ret(FuncName, {D,pointer,T}, Fd) ->
+write_ret(_FuncName, {D,pointer,_T}, Fd) ->
     UD = uppercase(D),
     ?W("~s:32/big-unsigned", [UD]).
 
@@ -1262,7 +1277,7 @@ write_ret2(FuncName, {D,T}, Cont, Fd) ->
     case getdef(FuncName, D) of
 	1 ->
 	    ?W("~s~s", [Cont,UD]);
-	{undefined, Max, _} ->
+	{undefined, _Max, _} ->
 	    ?W("~sbin2list(~sLen, ~s, ~s)", 
 	       [Cont,UD,type_to_enum(T),UD]);
 	Length when list(Length) -> 
@@ -1275,14 +1290,13 @@ write_ret2(FuncName, {D,T}, Cont, Fd) ->
 	    ?W("~sbin2list(~w, ~s, ~s)", 
 	       [Cont,Length,type_to_enum(T),UD])
     end;
-write_ret2(FuncName, {D,pointer,T}, Cont, Fd) ->
-    UD = uppercase(D),
+write_ret2(_FuncName, {_D,pointer,_T}, Cont, Fd) ->
     %%    ?W("~s#sdlmem{ptr=~s}", [Cont,UD]).
     ?W("~serlang:fault({nyi, ?MODULE,?LINE})", [Cont]).
 
 find_returns(Args,Funcs) ->
     find_returns(Args,Funcs,[],[]).
-find_returns([W={T, pointer, pointer, V}|R], Func, Rets, Args) ->
+find_returns([{T, pointer, pointer, V}|R], Func, Rets, Args) ->
     find_returns(R, Func, [{V,pointer,T}|Rets],Args);
 find_returns([W={T, pointer, V}|R], Func, Rets, Args) ->
     case getdef(Func, V) of
@@ -1300,7 +1314,7 @@ find_returns([W={T, pointer, V}|R], Func, Rets, Args) ->
     end;
 find_returns([H|R], Func,Rets,Args) ->
     find_returns(R, Func, Rets, [H|Args]);
-find_returns([], Func,Rets,Args) ->
+find_returns([], _Func,Rets,Args) ->
     {lists:reverse(Rets),lists:reverse(Args)}.
 
 boolret(Var, "GLboolean") ->
@@ -1424,6 +1438,8 @@ type_to_enum("GLubyte") ->
     "?GL_UNSIGNED_BYTE";
 type_to_enum("GLcharARB") ->
     "?GL_UNSIGNED_BYTE";
+type_to_enum("GLchar") ->
+    "?GL_UNSIGNED_BYTE";
 type_to_enum("GLushort") ->
     "?GL_UNSIGNED_SHORT";
 type_to_enum("GLuint") ->
@@ -1487,7 +1503,7 @@ remCarray(Arg) ->
     case string:tokens(Arg, "[]") of
 	[Arg] ->
 	    [Arg];
-	[Arg1, ArraySize] ->
+	[Arg1, _ArraySize] ->
 	    [Arg1]
     end.
     
@@ -1543,7 +1559,7 @@ tokens1([C|S], Seps, Toks) ->
         true -> tokens1(S, Seps, [C|Toks]);
         false -> tokens2(S, Seps, Toks, [C])
     end;
-tokens1([], Seps, Toks) ->
+tokens1([], _Seps, Toks) ->
     replace_and_remove(Toks, []).
 
 tokens2([C|S], Seps, Toks, Cs) ->
@@ -1551,7 +1567,7 @@ tokens2([C|S], Seps, Toks, Cs) ->
         true -> tokens1(S, Seps, [C, lists:reverse(Cs) |Toks]);
         false -> tokens2(S, Seps, Toks, [C|Cs])
     end;
-tokens2([], Seps, Toks, Cs) ->
+tokens2([], _Seps, Toks, Cs) ->
     replace_and_remove([lists:reverse(Cs)|Toks], []).
 
 replace_and_remove([E|R], Acc) when list(E) -> %% Keep everything that is a word
@@ -1567,7 +1583,7 @@ replace_and_remove([$* | R], Acc) ->
 replace_and_remove([$, | R], Acc) ->
     replace_and_remove(R, [separtor|Acc]);
 
-replace_and_remove([E|R], Acc) ->       %% Ignore everthing else
+replace_and_remove([_E|R], Acc) ->       %% Ignore everthing else
     replace_and_remove(R, Acc);
 replace_and_remove([], Acc) ->
     Acc.
@@ -1580,13 +1596,13 @@ skip_extensions("GL_ARB_shadow_ambient",_R) ->  false;
 skip_extensions("GL_ARB_vertex_program",_R) ->  false;
 skip_extensions("GL_ARB_fragment_program",_R) ->  false;
 skip_extensions("GL_NV_depth_clamp",_R) ->  false;
-skip_extensions("GL_ARB_vertex_shader",_R) ->  false;
-skip_extensions("GL_ARB_fragment_shader", _R) ->  false;
-skip_extensions("GL_ARB_shading_language_100",_R) ->  false;
-skip_extensions("GL_ARB_texture_non_power_of_two",_R) ->  false;
-skip_extensions("GL_ARB_point_sprite",_R) ->  false;
-skip_extensions("GL_ARB_shader_objects",_R) ->  false;
-skip_extensions("GL_ARB_draw_buffers",_R) ->  false;
+%% skip_extensions("GL_ARB_vertex_shader",_R) ->  false;
+%% skip_extensions("GL_ARB_fragment_shader", _R) ->  false;
+%% skip_extensions("GL_ARB_shading_language_100",_R) ->  false;
+%% skip_extensions("GL_ARB_texture_non_power_of_two",_R) ->  false;
+%% skip_extensions("GL_ARB_point_sprite",_R) ->  false;
+%% skip_extensions("GL_ARB_shader_objects",_R) ->  false;
+%% skip_extensions("GL_ARB_draw_buffers",_R) ->  false;
 skip_extensions("GL_ABGR_EXT", _R) -> false;
 skip_extensions("GL_ATI_separate_stencil",_R) -> false;    
 %% skip_extensions("",_R) -> false;
@@ -1634,10 +1650,10 @@ skip_extensions("GL_ATI_" ++ _, R) ->
     skip_to_endif(R,0);
 skip_extensions("GL_OML_" ++ _, R) ->
     skip_to_endif(R,0);
-skip_extensions(What, R) ->
+skip_extensions(_What, _R) ->
     false.
 
-skip_to_endif(["#ifdef", What, eol | R],N) ->
+skip_to_endif(["#ifdef", _What, eol | R],N) ->
     skip_to_endif(R,N+1);
 skip_to_endif(["#endif", eol |R], N) ->
     if N == 0 -> R;
@@ -1652,7 +1668,7 @@ skip_to_endif(R0, N) ->
     skip_to_endif(R, N).
 
 prototypes(Func) ->
-    F = "PFN" ++ uppercase_all(Func) ++ "PROC".
+    "PFN" ++ uppercase_all(Func) ++ "PROC".
 
 store_prototypes([Pre, _Type|R0]) 
   when Pre == "WINGDIAPI"; Pre == "GLAPI"; Pre == "extern" ->
@@ -1684,26 +1700,24 @@ is_extension(Func) ->
 
 skip(Func) ->
     case get(Func) of
-	{skip, Else} ->
+	{skip, _Else} ->
 	    true;
-	Else ->
-% 	    case remove_extension of
-
+	_Else ->
 	    has_vector(lists:reverse(Func))
     end.
 
 arb(Func) ->
     case lists:reverse(Func) of
 	"BRA_" ++ Define ->
-	    lists:reverse(Define);
+	    {true,lists:reverse(Define)};
 	"BRA" ++ Rfunc ->
-	    lists:reverse(Rfunc);
-	_ -> false
+	    {true,lists:reverse(Rfunc)};
+	_ -> {false,Func}
     end.
 
 call_vector(FuncName) ->
     call_vector(lists:reverse(FuncName), FuncName).
-call_vector("BRA" ++ List, Func) ->
+call_vector("BRA" ++ List, _Func) ->
     lists:reverse(List) ++ "vARB";
 call_vector(_, Func) ->
     Func ++ "v".
@@ -1777,17 +1791,17 @@ remap_const(FuncName, Arg = {T, pointer, V}) ->
     case get(FuncName) of
 	undefined ->
 	    Arg;
-	{List, Spec} ->
+	{List, _Spec} ->
 	    case lists:keysearch(V, 1, List) of
-		{value, {V, {const,Value}}} ->
+		{value, {V, {const,_Value}}} ->
 		    {T, const, pointer, V};
-		{value, {V, {const,Value}, Type}} ->
+		{value, {V, {const,_Value}, _Type}} ->
 		    {T, const, pointer, V};
 		_ ->
 		    Arg
 	    end
     end;
-remap_const(FuncName, What) ->
+remap_const(_FuncName, What) ->
     What.
 
 fixArgsOrder(Func, Args) ->
@@ -1812,7 +1826,7 @@ fixArgsOrder(Next, [A|As], Ordered) ->
 fixArgsOrder([], [], Ordered) ->
     lists:reverse(Ordered).
 
-getdef(Func, Var) when Var == "tess"; Var == "nurb"; Var == "quad" ->	
+getdef(_Func, Var) when Var == "tess"; Var == "nurb"; Var == "quad" ->	
     Var;
 getdef(Func, Var) ->			   
     case get(Func) of
@@ -1829,13 +1843,13 @@ getdef(Func, Var) ->
 	    case lists:keysearch(Var, 1, List) of
 		{value, {Var, {const,Value}}} ->
 		    Value;
-		{value, {Var, {const,Value}, Type}} ->
+		{value, {Var, {const,Value}, _Type}} ->
 		    Value;
 		{value, {Var, Value}} ->
 		    Value;
-		{value, {Var, Value, Type}} ->
+		{value, {Var, Value, _Type}} ->
 		    Value;
-		Else ->
+		_Else ->
 		    NewList = List ++ [{Var, "XXX"}],
 		    io:format("Undefined length ~p ~n",
 			      [{Func, Var, {NewList, Spec}}]),
@@ -1844,7 +1858,7 @@ getdef(Func, Var) ->
     end.
 
 
-gettype(Func, Var) when Var == "tess"; Var == "nurb"; Var == "quad" ->
+gettype(_Func, Var) when Var == "tess"; Var == "nurb"; Var == "quad" ->
     Var;
 gettype(Func, Var) ->
     case get(Func) of
@@ -1854,13 +1868,13 @@ gettype(Func, Var) ->
 	    Var;
 	{List, Spec} ->
 	    case lists:keysearch(Var, 1, List) of
-		{value, {Var, Value}} ->
+		{value, {Var, _Value}} ->
 		    io:format("Undefined type ~p ~n", 
 			      [{Func, Var, {List, Spec}}]),
 		    undefined;
-		{value, {Var, Value, Type}} ->
+		{value, {Var, _Value, Type}} ->
 		    Type;
-		Else ->
+		_Else ->
 		    io:format("Undefined type ~p ~n", 
 			      [{Func, Var, {List, Spec}}]),
 		    undefined
@@ -1870,7 +1884,7 @@ gettype(Func, Var) ->
 
 is_matrixOp([]) -> false;
 is_matrixOp("Matrix" ++ _) -> true;
-is_matrixOp([A|R]) -> is_matrixOp(R).
+is_matrixOp([_A|R]) -> is_matrixOp(R).
 
 
      
