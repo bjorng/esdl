@@ -2684,15 +2684,15 @@ void egl_shaderSourceARB(sdl_data *egl_sd, int egl_len, char *egl_buff)
  char * bp; 
  GLhandleARB * shaderObj;
  GLsizei * count;
- GLcharARB* *string;
+ const GLcharARB* *string;
  int index;
  GLint * length = NULL; 
  bp = egl_buff;
  shaderObj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
  count = (GLsizei *) bp; bp += sizeof(GLsizei); 
- string = (GLcharARB** ) malloc(sizeof(GLcharARB*)*(*count));
+ string = (const GLcharARB** ) malloc(sizeof(GLcharARB*)*(*count));
  for(index=0; index < *count; index++) 
-    string[index] = (GLcharARB *) egl_sd->bin[index+0].base;
+    string[index] = (const GLcharARB *) egl_sd->bin[index+0].base;
  length = (GLint *) bp;
  esdl_glShaderSourceARB(*shaderObj, *count, string, NULL);
  free(string); 
