@@ -254,13 +254,6 @@ void wog_compat_if_event_state(sdl_data *sd, int len, char *buff)
     default:
 	goto error;
     }
-#if 1
-    {
-	char buff[128];
-	sprintf(buff,"type = %d, state = %d",type,state);
-	MessageBox(NULL,buff,buff,MB_OK);
-    }
-#endif
     wog_listen(&(sd->wd),wetype,onoff);
     bp = sdl_getbuff(sd,1);
     put8(bp,1);
@@ -270,6 +263,19 @@ void wog_compat_if_event_state(sdl_data *sd, int len, char *buff)
     bp = sdl_getbuff(sd,1);
     put8(bp,0);
     sdl_send(sd, 1);
+}
+
+unsigned short translate_key_modifiers(int wog_modifiers) 
+{ 
+    unsigned short mods;
+    mods = 0;
+    if (wog_modifiers & WOG_MODIFIER_SHIFT)
+	mods |= 1; /*KMOD_LSHIFT*/
+    if (wog_modifiers & WOG_MODIFIER_CTRL)
+	mods |= 0x40; /*KMOD_LCTRL*/
+    if (wog_modifiers & WOG_MODIFIER_ALT)
+	mods |= 0x100; /*KMOD_LALT*/
+    return mods;
 }
 
 void wog_compat_if_poll_event(sdl_data *sd, int len, char *buff)
@@ -305,14 +311,7 @@ void wog_compat_if_poll_event(sdl_data *sd, int len, char *buff)
 	put8(bp,msg->key_up_down.scancode);
 	put16be(bp,msg->key_up_down.code);
 	/* build the modifiers... */
-	mods = 0;
-	if (msg->key_up_down.modifiers & WOG_MODIFIER_SHIFT)
-	    mods |= 1; /*KMOD_LSHIFT*/
-	if (msg->key_up_down.modifiers & WOG_MODIFIER_CTRL)
-	    mods |= 0x40; /*KMOD_LCTRL*/
-	if (msg->key_up_down.modifiers & WOG_MODIFIER_ALT)
-	    mods |= 0x100; /*KMOD_LALT*/
-	put16be(bp,mods);
+	put16be(bp,translate_key_modifiers(msg->key_up_down.modifiers));
 	put16be(bp,0); /* XXX: Unicode not yet implemented! */
 	if (msg->key_up_down.repeat > 1) {
 	    --(msg->key_up_down.repeat);
@@ -333,8 +332,7 @@ void wog_compat_if_poll_event(sdl_data *sd, int len, char *buff)
 	if (msg->mouse_move.modifiers & WOG_MODIFIER_MOUSE_RIGHT)
 	    mods |= 4;
 	put8(bp,mods);
-	put16be(bp,0); /* Hell *will* freeze over before 
-			  i'm going to implement this...*/
+	put16be(bp,translate_key_modifiers(msg->mouse_move.modifiers));
 	put16be(bp,msg->mouse_move.x);
 	put16be(bp,msg->mouse_move.y);
 	if (sd->save_x < 0) { /* first time */
@@ -370,7 +368,7 @@ void wog_compat_if_poll_event(sdl_data *sd, int len, char *buff)
 	} else {
 	    put8(bp,SDL_PRESSED);
 	}
-	put16be(bp,0); /* Not implemented... */
+	put16be(bp,translate_key_modifiers(msg->mouse_up_down.modifiers));
 	put16be(bp,msg->mouse_up_down.x);
 	put16be(bp,msg->mouse_up_down.y);
 	wog_free_event_message(msg);

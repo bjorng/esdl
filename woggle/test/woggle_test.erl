@@ -45,13 +45,13 @@ go() ->
     io:format("Maximized: ~p~n",   [sdl_video:wm_isMaximized()]), 
 
     io:format("~p", [catch gl:getConvolutionParameterfv(16#8011, 16#801A)]),
-    sdl_events:eventState(?SDL_ALLEVENTS ,?SDL_IGNORE),
+    sdl_events:eventState(?SDL_ALLEVENTS ,?SDL_ENABLE),
     sdl_events:eventState(?SDL_KEYDOWN ,?SDL_ENABLE),
     sdl_events:eventState(?SDL_QUIT ,?SDL_ENABLE),
     sdl_events:eventState(?SDL_VIDEORESIZE, ?SDL_ENABLE),
 
     dogl_start(),
-    dogl(1000).
+    dogl(10000).
 
 
 dogl_start() ->
