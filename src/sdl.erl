@@ -68,7 +68,8 @@ init(Flags) when is_integer(Flags) ->
 %% Returns:  Quits the wrapper
 %% C-API func: void SDL_Quit(void);
 quit() ->    
-    cast(?SDL_Quit, []).
+    cast(?SDL_Quit, []),
+    erlang:port_close(esdl_port).
 
 %% Func:  getError
 %% Args:  none
