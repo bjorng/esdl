@@ -80,3 +80,9 @@
 -define(SDL_SetGamma, ?SDL_WM_IsMaximized +1).
 -define(SDL_SetGammaRamp, ?SDL_SetGamma +1).
 -define(SDL_GetGammaRamp, ?SDL_SetGammaRamp +1).
+
+-define(SDL_MapRGBA,              ?SDL_GetGammaRamp + 1).
+-define(SDL_GetRGBA,              ?SDL_MapRGBA + 1).
+-define(SDL_GetClipRect,          ?SDL_GetRGBA + 1).
+-define(SDL_SetClipRect,          ?SDL_GetClipRect + 1).
+-define(SDL_DisplayFormatAlpha,   ?SDL_SetClipRect + 1).

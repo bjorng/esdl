@@ -454,7 +454,7 @@ void es_createRGBSurface(sdl_data *sd, int len, char *buff){
    char *bp, *start;  
    int sendlen;
    SDL_Surface * sptr;
-   int width, height, depth;
+   int width, height, depth, def;
    Uint32 flags, rmask, gmask, bmask, amask;
     
    bp = buff;
@@ -462,10 +462,28 @@ void es_createRGBSurface(sdl_data *sd, int len, char *buff){
    width  = get16be(bp);
    height = get16be(bp);
    depth  = get8(bp); 
+   def = get8(bp);
+   if (def==1) 
+     {
    rmask  = get32be(bp);
    gmask  = get32be(bp);
    bmask  = get32be(bp);
    amask  = get16be(bp);
+     }
+   else
+     {
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN /* OpenGL RGBA masks */
+       rmask = 0x000000FF;
+       gmask = 0x0000FF00;
+       bmask = 0x00FF0000; 
+       amask = 0xFF000000;
+#else
+       rmask = 0xFF000000;
+       gmask = 0x00FF0000; 
+       bmask = 0x0000FF00; 
+       amask = 0x000000FF;
+#endif
+     };
    
    sptr = SDL_CreateRGBSurface(flags, width, height, depth, 
 			       rmask, gmask, bmask, amask);
@@ -607,17 +625,6 @@ void es_setAlpha(sdl_data *sd, int len, char *buff)
 
 void es_setClipping(sdl_data *sd, int len, char *buff)
 {
-   char *bp;
-   SDL_Surface *sptr;
-   int top, left, bottom, right;
-   bp = buff;   
-   sptr = (SDL_Surface *) get32be(bp);
-   top =  get32be(bp);
-   left = get32be(bp); 
-   bottom =  get32be(bp);
-   right = get32be(bp); 
-   
-   /*   SDL_SetClipping(sptr, top, left, bottom, right);  Disappeared ?? */
    error();
 }
 
@@ -871,3 +878,92 @@ void es_gl_swapBuffers(sdl_data *sd, int len, char *buff)
    sendlen = bp - start;
    sdl_send(sd, sendlen);
 }
+
+void es_mapRGBA(sdl_data *sd, int len, char *buff)
+{
+   char *bp, *start;  
+   int sendlen;
+   SDL_Surface * sptr;
+   Uint32 res;
+   Uint8 r,g,b,a;
+   
+   bp = buff;
+   sptr = (SDL_Surface *) get32be(bp);
+   r = get8(bp);
+   g = get8(bp);
+   b = get8(bp);
+   a = get8(bp);
+   if(sptr == NULL  || sptr->format == NULL) 
+      error();
+   res = SDL_MapRGBA(sptr->format, r,g,b,a);
+   
+   bp = start = sdl_get_temp_buff(sd, 4);
+   put32be(bp, res);
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_getRGBA(sdl_data *sd, int len, char *buff)
+{
+  error();
+}
+
+void es_getClipRect(sdl_data *sd, int len, char *buff)
+{
+   char *bp, *start;  
+   int sendlen;
+   SDL_Surface * sptr;
+   SDL_Rect rect;
+   
+   bp = buff;
+   sptr = (SDL_Surface *) get32be(bp);
+   if(sptr == NULL) 
+      error();
+   SDL_GetClipRect(sptr, &rect);
+   
+   bp = start = sdl_get_temp_buff(sd, 8);
+   put16be(bp, rect.x);
+   put16be(bp, rect.y);
+   put16be(bp, rect.w);
+   put16be(bp, rect.h);
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+void es_setClipRect(sdl_data *sd, int len, char *buff)
+{
+   char *bp;  
+   SDL_Surface * sptr;
+   SDL_Rect rect;
+   
+   bp = buff;
+   sptr = (SDL_Surface *) get32be(bp);
+   rect.x = get16be(bp);
+   rect.y = get16be(bp);
+   rect.w = get16be(bp);
+   rect.h = get16be(bp);
+   if(sptr == NULL) 
+      error();
+   SDL_SetClipRect(sptr, &rect);
+   
+}
+
+void es_displayFormatAlpha(sdl_data *sd, int len, char * buff)
+{
+   char *bp, *start;  
+   int sendlen;
+   SDL_Surface * sptr, *new;
+    
+   bp = buff;
+   sptr = (SDL_Surface *) get32be(bp);
+   if(sptr == NULL) 
+      error();            
+   new = SDL_DisplayFormatAlpha(sptr);
+   bp = start = sdl_get_temp_buff(sd, 4);
+   put32be(bp, (int) new);
+    
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
+
+

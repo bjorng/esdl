@@ -91,11 +91,11 @@ void copySdlImage2GLArray(sdl_data *sd, int len, char * buff)
 	      mem[k++] = 0; 
 	    break;
 	  case 4:
-	    mem[k++] = rowlo[j*3 + rs];
-	    mem[k++] = rowlo[j*3 + gs];
-	    mem[k++] = rowlo[j*3 + bs];
+	    mem[k++] = rowlo[j*4 + rs];
+	    mem[k++] = rowlo[j*4 + gs];
+	    mem[k++] = rowlo[j*4 + bs];
 	    if(type == 4)
-	      mem[k++] = rowlo[j*3 + as];
+	      mem[k++] = rowlo[j*4 + as];
 	    break;
 	  }
       }

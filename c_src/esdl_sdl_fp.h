@@ -33,11 +33,17 @@
 { SDL_LoadBMPFunc, "SDL_LoadBMPFunc",    es_loadBMP },
 { SDL_SaveBMPFunc, "SDL_SaveBMPFunc",    es_saveBMP }, 
 { SDL_SetAlphaFunc, "SDL_SetAlphaFunc",    es_setAlpha }, 
-{ SDL_SetClippingFunc, "SDL_SetClippingFunc",    es_setClipping },
+/* { SDL_SetClippingFunc, "SDL_SetClippingFunc",    es_setClipping }, Removed */
 
 { SDL_SetGammaFunc,     "SDL_SetGamma",     es_setGamma },
 { SDL_SetGammaRampFunc, "SDL_SetGammaRamp", es_setGammaRamp },
 { SDL_GetGammaRampFunc, "SDL_GetGamma",     es_getGammaRamp },
+
+{ SDL_MapRGBAFunc, "SDL_MapRGBAFunc",           es_mapRGBA },
+{ SDL_GetRGBAFunc, "SDL_GetRGBAFunc", es_getRGBA},
+{ SDL_GetClipRectFunc, "SDL_GetClipRectFunc", es_getClipRect},
+{ SDL_SetClipRectFunc, "SDL_SetClipRectFunc", es_setClipRect},
+{ SDL_DisplayFormatAlphaFunc, "SDL_DisplayFormatAlphaFunc", es_displayFormatAlpha},
 
 { SDL_WM_SetCaptionFunc, "SDL_WM_SetCaptionFunc", es_wm_setCaption },
 { SDL_WM_GetCaptionFunc, "SDL_WM_GetCaptionFunc", es_wm_getCaption },

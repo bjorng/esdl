@@ -62,7 +62,7 @@ void es_setColorKey(sdl_data *, int len, char * buff);
 #define SDL_SetAlphaFunc           (SDL_SetColorKeyFunc + 1)
 void es_setAlpha(sdl_data *, int len, char *buff);
 #define SDL_SetClippingFunc     (SDL_SetAlphaFunc + 1)
-void es_setClipping(sdl_data *, int len, char *buff);
+       /* void es_setClipping(sdl_data *, int len, char *buff); removed */
 
 #define SDL_ConvertSurfaceFunc  (SDL_SetClippingFunc + 1 ) /* SDL_internal */
 #define SDL_BlitSurfaceFunc     (SDL_ConvertSurfaceFunc + 1)
@@ -117,6 +117,16 @@ void es_setGammaRamp(sdl_data *, int len, char * buff);
 #define SDL_GetGammaRampFunc         (SDL_SetGammaRampFunc +1)
 void es_getGammaRamp(sdl_data *, int len, char * buff);
 
+#define SDL_MapRGBAFunc          (SDL_GetGammaRampFunc + 1)
+void es_mapRGBA(sdl_data *, int len, char *buff);
+#define SDL_GetRGBAFunc          (SDL_MapRGBAFunc + 1)
+void es_getRGBA(sdl_data *, int len, char *buff);
+#define SDL_GetClipRectFunc          (SDL_GetRGBAFunc + 1)
+void es_getClipRect(sdl_data *, int len, char *buff);
+#define SDL_SetClipRectFunc          (SDL_GetClipRectFunc + 1)
+void es_setClipRect(sdl_data *, int len, char *buff);
+#define SDL_DisplayFormatAlphaFunc   (SDL_SetClipRectFunc + 1)
+void es_displayFormatAlpha(sdl_data *, int len, char * buff);
 
 #ifdef __cplusplus
     }

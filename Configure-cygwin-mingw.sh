@@ -262,6 +262,8 @@ export PATH
 make OS_FLAG=mingw \$*
 EOF
 
+chmod u+x $BUILDSCRIPT
+
 echo "ok."
 echo
 echo "Done, run $BUILDSCRIPT to compile."

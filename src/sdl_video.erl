@@ -27,8 +27,10 @@
 -export([
 	 blitSurface/4,            
 	 createRGBsurface/8,
+	 createRGBsurface/4,
 	 createRGBsurfaceFrom/9,
 	 displayFormat/1,
+	 displayFormatAlpha/1,
 	 fillRect/3,  
 	 flip/1,      
 	 freeSurface/1,   
@@ -39,6 +41,7 @@
 	 loadBMP/1,
 	 lockSurface/1,
 	 mapRGB/4,
+	 mapRGBA/5,
 	 mustLock/1,
 	 saveBMP/2,
 	 setAlpha/3,
@@ -66,7 +69,10 @@
 	 %% OpenGL Support funcs 
 	 gl_setAttribute/2,
 	 gl_getAttribute/1,
-	 gl_swapBuffers/0
+	 gl_swapBuffers/0,
+
+	 getClipRect/1,
+	 setClipRect/2
 	]).
 
 %% Imports
@@ -390,11 +396,11 @@ setColors({surfacep, Ref}, Colors, FirstColor, Ncolors) when list(Colors) ->
     <<Res:8>> = call(?SDL_SetColors, <<Ref:32, FirstColor:32, Length:32, BinC/binary>>),
     Res == 1.
 
-mkbin_colors([], _) ->    [] ;
-mkbin_colors(_,  0) ->    [] ;
+mkbin_colors([], _) ->    <<>> ;
+mkbin_colors(_,  0) ->    <<>> ;
 mkbin_colors([H|R], N) ->
-    [<<(H#sdl_color.r):8, (H#sdl_color.g):8,(H#sdl_color.b):8>> 
-     | mkbin_colors(R, N-1)]. 
+	Bb = mkbin_colors(R, N-1),
+    <<(H#sdl_color.r):8, (H#sdl_color.g):8,(H#sdl_color.b):8, Bb/binary>>. 
 
 %% Func: setColorKey
 %% Args: Surface Ref, Flag(int), Key(int)
@@ -422,12 +428,21 @@ mapRGB({surfacep, Ref}, R, G, B) ->
 %% C-API func: SDL_Surface *SDL_CreateRGBSurface(Uint32 flags, int width, int height, int depth, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask);
 createRGBsurface(Flags, W, H, D, RM, GM, BM, AM) ->
     <<Ref:32>> = call(?SDL_CreateRGBSurface,
-		      <<Flags:32, W:16, H:16, D:8,
+		      <<Flags:32, W:16, H:16, D:8, 1:8,
 		       RM:32, GM:32, BM:32, AM:32>>),
     case Ref of
 	0 -> exit({createRGBsurface, returned_null_pointer});
 	_ -> {surfacep, Ref}
     end.
+
+createRGBsurface(Flags, W, H, D) ->
+    <<Ref:32>> = call(?SDL_CreateRGBSurface,
+		      <<Flags:32, W:16, H:16, D:8, 0:8>>),
+    case Ref of
+	0 -> exit({createRGBsurface, returned_null_pointer});
+	_ -> {surfacep, Ref}
+    end.
+
 
 %% Func:    createRGBsurfaceFrom
 %% Args:    Pixels(Binary) Width Height Depth Pitch 
@@ -511,7 +526,7 @@ loadBMP(File) when is_list(File) ->
 saveBMP(Surface, File) when record(Surface, sdl_surface) ->
     saveBMP(Surface#sdl_surface.self, File);
 saveBMP({surfacep, Ref}, File) when is_list(File) ->
-    <<Res:8>> = call(?SDL_SaveBMP, [<<Ref:32>>,0]),
+    <<Res:8>> = call(?SDL_SaveBMP, [<<Ref:32>>,File,0]),
     Res == 0.
 
 %% Func: setAlpha  
@@ -666,4 +681,53 @@ gl_swapBuffers() ->
     <<TS:32/unsigned>> = call(?SDL_GL_SwapBuffers, []),
     TS.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Func: mapRGBA
+%% Args: Surface Ref, Int32, Int32, Int32, Int32
+%% Returns: Int32 
+%% C-API func:  Uint32 SDL_MapRGB(SDL_PixelFormat *format, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+mapRGBA(Surface, R, G, B, A) when record(Surface, sdl_surface) -> 
+    mapRGBA(Surface#sdl_surface.self, R, G, B, A);
+mapRGBA({surfacep, Ref}, R, G, B, A) ->
+    <<Pixel:32>> = call(?SDL_MapRGBA, <<Ref:32, R:8, G:8, B:8, A:8>>),
+    Pixel.
+
+%% Func: getClipRect
+%% Args: Surface Ref 
+%% Returns: Rect
+%% C-API func: void SDL_GetClipRect(SDL_Surface *surface, SDL_Rect *rect);
+getClipRect(Surface) when record(Surface, sdl_surface) ->
+    getClipRect(Surface#sdl_surface.self);
+getClipRect({surfacep, Ref}) ->
+    <<X:16, Y:16, W:16, H:16>> = call(?SDL_GetClipRect, <<Ref:32>>),
+    #sdl_rect{x=X, y=Y, w=W, h=H}.
+    
+
+%% Func: setClipRect
+%% Args: Surface Ref, Rect
+%% Returns: ok
+%% C-API func: void SDL_SetClipRect(SDL_Surface *surface, SDL_Rect *rect);
+setClipRect(Surface, Rect)  when record(Surface, sdl_surface) ->
+    setClipRect(Surface#sdl_surface.self, Rect);
+setClipRect({surfacep, Ref}, #sdl_rect{x=X, y=Y, w=W, h=H}) ->
+    cast(?SDL_SetClipRect, <<Ref:32, X:16, Y:16, W:16, H:16>>).
+
+%% Func: displayFormatAlpha
+%% Args: Surface Ref 
+%% Returns: Surface Ref
+%% C-API func: SDL_Surface * SDL_DisplayFormatAlpha(SDL_Surface *surface);
+displayFormatAlpha(Surface) when record(Surface, sdl_surface) ->
+    displayFormat(Surface#sdl_surface.self);
+displayFormatAlpha({surfacep, Ref}) ->
+    <<Res:32>> = call(?SDL_DisplayFormatAlpha, <<Ref:32>>),
+    case Res of
+	0 -> exit({sdl_displayformatalpha, returned_null_pointer});
+	_ -> {surfacep, Res}
+    end.
+
+
+
+
 %%%%%%%%%%% Internal functions %%%%%%%%%%%    
+
