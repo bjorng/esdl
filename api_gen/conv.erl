@@ -176,10 +176,10 @@ generate(["#define", What, Value, eol | R], Fd) ->
     io:format(Fd#fs.hrl, "-define(~s, ~s).~n", [What, V]),
     {Arb,String} = arb(What),
     case Arb of
-	true -> 
-	    io:format(Fd#fs.hrl, "-define(~s, ~s).~n", [String, V]);
-	false ->
-	    ignore
+	false -> 
+	    ignore;
+	_ ->
+	    io:format(Fd#fs.hrl, "-define(~s, ~s).~n", [String, V])
     end,
     generate(R, Fd);
 generate(["#ifndef", What, eol | R], Fd) ->
@@ -355,6 +355,7 @@ genfuncs(Type, FuncName, Args, F) ->
 	    genf_erl(Type, FuncName, Args, Last, F#fs.erl),
 	    Last;
 	false ->
+	    io:format("Generating:  {~p,{skip,[]}},~n", [FuncName]),
 	    Last = F#fs.last,
 	    genf_h(Type, FuncName, Args, Last, F#fs.file, F#fs.h),
 	    genf_sw(Type, FuncName, Args, Last, F#fs.sw),
@@ -408,10 +409,18 @@ genf_erl(Type, FuncName, Args0, _Last, Fd) ->
     write_args(FuncName, c, Args0, Fd),
     Cfunc = case skip(FuncName) of call_vector -> call_vector(FuncName); _ -> FuncName end,
     ?W(")~n~s(", [EFN]), write_args(FuncName, erl, Args1, Fd), ?W(") -> ~n", []),
-    case arb(EFN) of 
+    case arb(FuncName) of 
 	{false,_} ->
 	    ignore;
-	{true,NoArb} ->
+	{{test,ReNamed},_} ->
+	    ?W(" try ~s(", [ReNamed]), write_args(FuncName, erl, Args1, Fd), 
+	    ?W(")~n catch error:undef -> ~s_fallback(", [FuncName]), 
+	    write_args(FuncName, erl, Args1, Fd),
+	    ?W(") end.~n",[]),
+	    ?W("~s_fallback(", [FuncName]), write_args(FuncName, erl, Args1, Fd),
+	    ?W(") -> ~n", []);
+	{true,NoArb0} ->
+	    NoArb = format_func2erl(NoArb0),
 	    ?W(" ~s(", [NoArb]), write_args(FuncName, erl, Args1, Fd), 
 	    ?W(").~n~s(", [NoArb]), write_args(FuncName, erl, Args1, Fd),
 	    ?W(") -> ~n", [])
@@ -1601,7 +1610,7 @@ skip_extensions("GL_NV_depth_clamp",_R) ->  false;
 %% skip_extensions("GL_ARB_shading_language_100",_R) ->  false;
 %% skip_extensions("GL_ARB_texture_non_power_of_two",_R) ->  false;
 %% skip_extensions("GL_ARB_point_sprite",_R) ->  false;
-%% skip_extensions("GL_ARB_shader_objects",_R) ->  false;
+skip_extensions("GL_ARB_shader_objects",_R) ->  false;
 %% skip_extensions("GL_ARB_draw_buffers",_R) ->  false;
 skip_extensions("GL_ABGR_EXT", _R) -> false;
 skip_extensions("GL_ATI_separate_stencil",_R) -> false;    
@@ -1707,12 +1716,17 @@ skip(Func) ->
     end.
 
 arb(Func) ->
-    case lists:reverse(Func) of
-	"BRA_" ++ Define ->
-	    {true,lists:reverse(Define)};
-	"BRA" ++ Rfunc ->
-	    {true,lists:reverse(Rfunc)};
-	_ -> {false,Func}
+    case get(Func) of 
+	{{use,Other}, _} -> 
+	    {{test,format_func2erl(Other)}, Func};
+	_What ->
+	    case lists:reverse(Func) of
+		"BRA_" ++ Define ->
+		    {true,lists:reverse(Define)};
+		"BRA" ++ Rfunc ->
+		    {true,lists:reverse(Rfunc)};
+		_ -> {false,Func}
+	    end
     end.
 
 call_vector(FuncName) ->
@@ -1728,7 +1742,7 @@ has_vector([_,_|"paMlg"]) ->  %% glMap1d
     false;
 has_vector([_,_|"dirGpaMlg"]) -> %% glMapGrid1d
     false;
-has_vector([_,_|"mrofinUlg"]) -> %% glMapGrid1d
+has_vector([_,_|"mrofinUlg"]) -> %% glUniform
     false;
 has_vector([$b, N|_]) when N > 47, N < 58 ->
     call_vector;
@@ -1791,6 +1805,8 @@ remap_const(FuncName, Arg = {T, pointer, V}) ->
     case get(FuncName) of
 	undefined ->
 	    Arg;
+	{{use, TestFunc},_} -> 
+	    remap_const(TestFunc,Arg);
 	{List, _Spec} ->
 	    case lists:keysearch(V, 1, List) of
 		{value, {V, {const,_Value}}} ->
@@ -1808,6 +1824,8 @@ fixArgsOrder(Func, Args) ->
     case get(Func) of
 	undefined -> 
 	    Args;
+	{{use, TestFunc},_} -> 
+	    fixArgsOrder(TestFunc,Args);
 	{_, []} ->
 	    Args;
 	{_, Order} ->
@@ -1839,6 +1857,8 @@ getdef(Func, Var) ->
 		Num ->
 		    Num
 	    end;
+	{{use, TestFunc},_} -> 
+	    getdef(TestFunc,Var);
 	{List, Spec} ->
 	    case lists:keysearch(Var, 1, List) of
 		{value, {Var, {const,Value}}} ->
@@ -1866,6 +1886,8 @@ gettype(Func, Var) ->
 	    io:format("Undefined type {\"~s\", {[{\"~s\", XX}], []}},~n", 
 		      [Func, Var]),
 	    Var;
+	{{use, TestFunc},_} -> 
+	    gettype(TestFunc,Var);
 	{List, Spec} ->
 	    case lists:keysearch(Var, 1, List) of
 		{value, {Var, _Value}} ->

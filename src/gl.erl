@@ -5856,6 +5856,147 @@ getProgramString(Target, Pname, #sdlmem{bin=String}) ->
  sdl:send_bin(String, ?MODULE, ?LINE),
  cast(?glGetProgramString, <<Target:32/?UN, Pname:32/?UN>>).
 
+%% Func:    deleteObjectARB 
+%% Args:    Obj
+%% Returns: ok
+%% C-API func: void glDeleteObjectARB(GLhandleARB obj)
+deleteObjectARB(Obj) -> 
+ try deleteProgram(Obj)
+ catch error:undef -> glDeleteObjectARB_fallback(Obj) end.
+glDeleteObjectARB_fallback(Obj) -> 
+ cast(?glDeleteObjectARB, <<Obj:32/?UN>>).
+
+%% Func:    getHandleARB 
+%% Args:    Pname
+%% Returns: ?GL_UNSIGNED_INT
+%% C-API func: GLhandleARB glGetHandleARB(GLenum pname)
+getHandleARB(Pname) -> 
+ getHandle(Pname).
+getHandle(Pname) -> 
+ Bin = call(?glGetHandle, <<Pname:32/?UN>>), 
+ case Bin of 
+	<<Ret:32/?UN>> -> 
+   Ret;
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    detachObjectARB 
+%% Args:    ContainerObj, AttachedObj
+%% Returns: ok
+%% C-API func: void glDetachObjectARB(GLhandleARB containerObj, GLhandleARB attachedObj)
+detachObjectARB(ContainerObj, AttachedObj) -> 
+ try detachShader(ContainerObj, AttachedObj)
+ catch error:undef -> glDetachObjectARB_fallback(ContainerObj, AttachedObj) end.
+glDetachObjectARB_fallback(ContainerObj, AttachedObj) -> 
+ cast(?glDetachObjectARB, <<ContainerObj:32/?UN, AttachedObj:32/?UN>>).
+
+%% Func:    createShaderObjectARB 
+%% Args:    ShaderType
+%% Returns: ?GL_UNSIGNED_INT
+%% C-API func: GLhandleARB glCreateShaderObjectARB(GLenum shaderType)
+createShaderObjectARB(ShaderType) -> 
+ try createShader(ShaderType)
+ catch error:undef -> glCreateShaderObjectARB_fallback(ShaderType) end.
+glCreateShaderObjectARB_fallback(ShaderType) -> 
+ Bin = call(?glCreateShaderObjectARB, <<ShaderType:32/?UN>>), 
+ case Bin of 
+	<<Ret:32/?UN>> -> 
+   Ret;
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    createProgramObjectARB 
+%% Args:    
+%% Returns: ?GL_UNSIGNED_INT
+%% C-API func: GLhandleARB glCreateProgramObjectARB()
+createProgramObjectARB() -> 
+ try createProgram()
+ catch error:undef -> glCreateProgramObjectARB_fallback() end.
+glCreateProgramObjectARB_fallback() -> 
+ Bin = call(?glCreateProgramObjectARB, []), 
+ case Bin of 
+	<<Ret:32/?UN>> -> 
+   Ret;
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    attachObjectARB 
+%% Args:    ContainerObj, Obj
+%% Returns: ok
+%% C-API func: void glAttachObjectARB(GLhandleARB containerObj, GLhandleARB obj)
+attachObjectARB(ContainerObj, Obj) -> 
+ try attachShader(ContainerObj, Obj)
+ catch error:undef -> glAttachObjectARB_fallback(ContainerObj, Obj) end.
+glAttachObjectARB_fallback(ContainerObj, Obj) -> 
+ cast(?glAttachObjectARB, <<ContainerObj:32/?UN, Obj:32/?UN>>).
+
+%% Func:    useProgramObjectARB 
+%% Args:    ProgramObj
+%% Returns: ok
+%% C-API func: void glUseProgramObjectARB(GLhandleARB programObj)
+useProgramObjectARB(ProgramObj) -> 
+ try useProgram(ProgramObj)
+ catch error:undef -> glUseProgramObjectARB_fallback(ProgramObj) end.
+glUseProgramObjectARB_fallback(ProgramObj) -> 
+ cast(?glUseProgramObjectARB, <<ProgramObj:32/?UN>>).
+
+%% Func:    getObjectParameterfvARB 
+%% Args:    Obj, Pname
+%% Returns: [Params]
+%% C-API func: void glGetObjectParameterfvARB(GLhandleARB obj, GLenum pname, GLfloat * params)
+getObjectParameterfvARB(Obj, Pname) -> 
+ getObjectParameterfv(Obj, Pname).
+getObjectParameterfv(Obj, Pname) -> 
+ Bin = call(?glGetObjectParameterfv, <<Obj:32/?UN, Pname:32/?UN>>), 
+ case Bin of 
+	<<Params:32/?FN>> -> 
+	 Params;
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    getObjectParameterivARB 
+%% Args:    Obj, Pname
+%% Returns: [Params]
+%% C-API func: void glGetObjectParameterivARB(GLhandleARB obj, GLenum pname, GLint * params)
+getObjectParameterivARB(Obj, Pname) -> 
+ getObjectParameteriv(Obj, Pname).
+getObjectParameteriv(Obj, Pname) -> 
+ Bin = call(?glGetObjectParameteriv, <<Obj:32/?UN, Pname:32/?UN>>), 
+ case Bin of 
+	<<Params:32/?SN>> -> 
+	 Params;
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    getInfoLogARB 
+%% Args:    Obj, MaxLength
+%% Returns: {[Length], [InfoLog]}
+%% C-API func: void glGetInfoLogARB(GLhandleARB obj, GLsizei maxLength, GLsizei * length, GLcharARB * infoLog)
+getInfoLogARB(Obj, MaxLength) -> 
+ getInfoLog(Obj, MaxLength).
+getInfoLog(Obj, MaxLength) -> 
+ Bin = call(?glGetInfoLog, <<Obj:32/?UN, MaxLength:32/?SN>>), 
+ case Bin of 
+	<<Length:32/?SN, InfoLog:Length/binary-unit:?GL_UNSIGNED_BYTE_SIZE>> -> 
+	 {Length, bin2list(Length, ?GL_UNSIGNED_BYTE, InfoLog)};
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
+%% Func:    getAttachedObjectsARB 
+%% Args:    ContainerObj, MaxCount
+%% Returns: {[Count], [Obj]}
+%% C-API func: void glGetAttachedObjectsARB(GLhandleARB containerObj, GLsizei maxCount, GLsizei * count, GLhandleARB * obj)
+getAttachedObjectsARB(ContainerObj, MaxCount) -> 
+ try getAttachedShaders(ContainerObj, MaxCount)
+ catch error:undef -> glGetAttachedObjectsARB_fallback(ContainerObj, MaxCount) end.
+glGetAttachedObjectsARB_fallback(ContainerObj, MaxCount) -> 
+ Bin = call(?glGetAttachedObjectsARB, <<ContainerObj:32/?UN, MaxCount:32/?SN>>), 
+ case Bin of 
+	<<Count:32/?SN, Obj:Count/binary-unit:?GL_UNSIGNED_INT_SIZE>> -> 
+	 {Count, bin2list(Count, ?GL_UNSIGNED_INT, Obj)};
+	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+ end.
+
 %% Func:    stencilOpSeparateATI 
 %% Args:    Face, Sfail, Dpfail, Dppass
 %% Returns: ok

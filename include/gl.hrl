@@ -2190,6 +2190,76 @@
 -define(GL_MAX_TEXTURE_IMAGE_UNITS_ARB, 16#8872).
 %-define(GL_MAX_TEXTURE_IMAGE_UNITS, 16#8872).
 -endif.
+-ifndef(GL_ARB_shader_objects).
+-define(GL_PROGRAM_OBJECT_ARB, 16#8B40).
+-define(GL_PROGRAM_OBJECT, 16#8B40).
+-define(GL_SHADER_OBJECT_ARB, 16#8B48).
+-define(GL_SHADER_OBJECT, 16#8B48).
+-define(GL_OBJECT_TYPE_ARB, 16#8B4E).
+-define(GL_OBJECT_TYPE, 16#8B4E).
+-define(GL_OBJECT_SUBTYPE_ARB, 16#8B4F).
+-define(GL_OBJECT_SUBTYPE, 16#8B4F).
+-define(GL_FLOAT_VEC2_ARB, 16#8B50).
+%-define(GL_FLOAT_VEC2, 16#8B50).
+-define(GL_FLOAT_VEC3_ARB, 16#8B51).
+%-define(GL_FLOAT_VEC3, 16#8B51).
+-define(GL_FLOAT_VEC4_ARB, 16#8B52).
+%-define(GL_FLOAT_VEC4, 16#8B52).
+-define(GL_INT_VEC2_ARB, 16#8B53).
+%-define(GL_INT_VEC2, 16#8B53).
+-define(GL_INT_VEC3_ARB, 16#8B54).
+%-define(GL_INT_VEC3, 16#8B54).
+-define(GL_INT_VEC4_ARB, 16#8B55).
+%-define(GL_INT_VEC4, 16#8B55).
+-define(GL_BOOL_ARB, 16#8B56).
+%-define(GL_BOOL, 16#8B56).
+-define(GL_BOOL_VEC2_ARB, 16#8B57).
+%-define(GL_BOOL_VEC2, 16#8B57).
+-define(GL_BOOL_VEC3_ARB, 16#8B58).
+%-define(GL_BOOL_VEC3, 16#8B58).
+-define(GL_BOOL_VEC4_ARB, 16#8B59).
+%-define(GL_BOOL_VEC4, 16#8B59).
+-define(GL_FLOAT_MAT2_ARB, 16#8B5A).
+%-define(GL_FLOAT_MAT2, 16#8B5A).
+-define(GL_FLOAT_MAT3_ARB, 16#8B5B).
+%-define(GL_FLOAT_MAT3, 16#8B5B).
+-define(GL_FLOAT_MAT4_ARB, 16#8B5C).
+%-define(GL_FLOAT_MAT4, 16#8B5C).
+-define(GL_SAMPLER_1D_ARB, 16#8B5D).
+%-define(GL_SAMPLER_1D, 16#8B5D).
+-define(GL_SAMPLER_2D_ARB, 16#8B5E).
+%-define(GL_SAMPLER_2D, 16#8B5E).
+-define(GL_SAMPLER_3D_ARB, 16#8B5F).
+%-define(GL_SAMPLER_3D, 16#8B5F).
+-define(GL_SAMPLER_CUBE_ARB, 16#8B60).
+%-define(GL_SAMPLER_CUBE, 16#8B60).
+-define(GL_SAMPLER_1D_SHADOW_ARB, 16#8B61).
+%-define(GL_SAMPLER_1D_SHADOW, 16#8B61).
+-define(GL_SAMPLER_2D_SHADOW_ARB, 16#8B62).
+%-define(GL_SAMPLER_2D_SHADOW, 16#8B62).
+-define(GL_SAMPLER_2D_RECT_ARB, 16#8B63).
+-define(GL_SAMPLER_2D_RECT, 16#8B63).
+-define(GL_SAMPLER_2D_RECT_SHADOW_ARB, 16#8B64).
+-define(GL_SAMPLER_2D_RECT_SHADOW, 16#8B64).
+-define(GL_OBJECT_DELETE_STATUS_ARB, 16#8B80).
+-define(GL_OBJECT_DELETE_STATUS, 16#8B80).
+-define(GL_OBJECT_COMPILE_STATUS_ARB, 16#8B81).
+-define(GL_OBJECT_COMPILE_STATUS, 16#8B81).
+-define(GL_OBJECT_LINK_STATUS_ARB, 16#8B82).
+-define(GL_OBJECT_LINK_STATUS, 16#8B82).
+-define(GL_OBJECT_VALIDATE_STATUS_ARB, 16#8B83).
+-define(GL_OBJECT_VALIDATE_STATUS, 16#8B83).
+-define(GL_OBJECT_INFO_LOG_LENGTH_ARB, 16#8B84).
+-define(GL_OBJECT_INFO_LOG_LENGTH, 16#8B84).
+-define(GL_OBJECT_ATTACHED_OBJECTS_ARB, 16#8B85).
+-define(GL_OBJECT_ATTACHED_OBJECTS, 16#8B85).
+-define(GL_OBJECT_ACTIVE_UNIFORMS_ARB, 16#8B86).
+-define(GL_OBJECT_ACTIVE_UNIFORMS, 16#8B86).
+-define(GL_OBJECT_ACTIVE_UNIFORM_MAX_LENGTH_ARB, 16#8B87).
+-define(GL_OBJECT_ACTIVE_UNIFORM_MAX_LENGTH, 16#8B87).
+-define(GL_OBJECT_SHADER_SOURCE_LENGTH_ARB, 16#8B88).
+-define(GL_OBJECT_SHADER_SOURCE_LENGTH, 16#8B88).
+-endif.
 -ifndef(GL_NV_depth_clamp).
 -define(GL_DEPTH_CLAMP_NV, 16#864F).
 -endif.
@@ -2252,6 +2322,9 @@
 -ifndef(GL_VERSION_1_5).
 %%%% GL types for handling large vertex buffer objects 
 -endif.
+-ifndef(GL_ARB_shader_objects).
+%%%% GL types for handling shader object handles and program/shader text 
+-endif.
 %%%% GL types for "half" precision lpar s10e5 rpar float data in host memory 
 -ifndef(GL_VERSION_1_2).
 -define(GL_VERSION_1_2, 1).
@@ -2283,6 +2356,9 @@
 -ifndef(GL_ARB_fragment_program).
 -define(GL_ARB_fragment_program, 1).
 %%%% All ARB_fragment_program entry points are shared with ARB_vertex_program. 
+-endif.
+-ifndef(GL_ARB_shader_objects).
+-define(GL_ARB_shader_objects, 1).
 -endif.
 -ifndef(GL_NV_depth_clamp).
 -define(GL_NV_depth_clamp, 1).

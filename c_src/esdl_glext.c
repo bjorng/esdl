@@ -3515,6 +3515,188 @@ void egl_getProgramStringARB(sdl_data *egl_sd, int egl_len, char *egl_buff)
 }
 
 
+void egl_deleteObjectARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLhandleARB * obj;
+ bp = egl_buff;
+ obj = (GLhandleARB *) bp; 
+ esdl_glDeleteObjectARB(*obj);
+}
+
+
+void egl_getHandleARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLhandleARB egl_res; 
+ GLenum * pname;
+ bp = egl_buff;
+ pname = (GLenum *) bp; 
+ egl_res =  esdl_glGetHandleARB(*pname);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLhandleARB) );
+ * (GLhandleARB *) bp = egl_res;
+ bp += sizeof(GLhandleARB);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_detachObjectARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLhandleARB * containerObj;
+ GLhandleARB * attachedObj;
+ bp = egl_buff;
+ containerObj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
+ attachedObj = (GLhandleARB *) bp; 
+ esdl_glDetachObjectARB(*containerObj, *attachedObj);
+}
+
+
+void egl_createShaderObjectARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLhandleARB egl_res; 
+ GLenum * shaderType;
+ bp = egl_buff;
+ shaderType = (GLenum *) bp; 
+ egl_res =  esdl_glCreateShaderObjectARB(*shaderType);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLhandleARB) );
+ * (GLhandleARB *) bp = egl_res;
+ bp += sizeof(GLhandleARB);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_createProgramObjectARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLhandleARB egl_res; 
+ bp = egl_buff;
+ egl_res =  esdl_glCreateProgramObjectARB();
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLhandleARB) );
+ * (GLhandleARB *) bp = egl_res;
+ bp += sizeof(GLhandleARB);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_attachObjectARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLhandleARB * containerObj;
+ GLhandleARB * obj;
+ bp = egl_buff;
+ containerObj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
+ obj = (GLhandleARB *) bp; 
+ esdl_glAttachObjectARB(*containerObj, *obj);
+}
+
+
+void egl_useProgramObjectARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ GLhandleARB * programObj;
+ bp = egl_buff;
+ programObj = (GLhandleARB *) bp; 
+ esdl_glUseProgramObjectARB(*programObj);
+}
+
+
+void egl_getObjectParameterfvARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLhandleARB * obj;
+ GLenum * pname;
+ GLfloat params[1]; 
+ bp = egl_buff;
+ obj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
+ pname = (GLenum *) bp; bp += sizeof(GLenum); 
+ esdl_glGetObjectParameterfvARB(*obj, *pname, params);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLfloat) *1);
+ * (GLfloat *)bp = params[0]; bp += sizeof(GLfloat);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_getObjectParameterivARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLhandleARB * obj;
+ GLenum * pname;
+ GLint params[1]; 
+ bp = egl_buff;
+ obj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
+ pname = (GLenum *) bp; bp += sizeof(GLenum); 
+ esdl_glGetObjectParameterivARB(*obj, *pname, params);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLint) *1);
+ * (GLint *)bp = params[0]; bp += sizeof(GLint);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_getInfoLogARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLhandleARB * obj;
+ GLsizei * maxLength;
+ GLsizei length[1]; 
+ GLcharARB * infoLog = NULL;
+ bp = egl_buff;
+ obj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
+ maxLength = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ infoLog = (GLcharARB*) malloc(sizeof(GLcharARB)*(*maxLength));
+ esdl_glGetInfoLogARB(*obj, *maxLength, length, infoLog);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLsizei) *1+ sizeof(GLcharARB) * (*length));
+ * (GLsizei *)bp = length[0]; bp += sizeof(GLsizei);
+ memcpy(bp, infoLog, sizeof(GLcharARB)*(*length));
+ bp += sizeof(GLcharARB)*(*length);
+ free(infoLog);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
+void egl_getAttachedObjectsARB(sdl_data *egl_sd, int egl_len, char *egl_buff) 
+{
+ char * bp; 
+ char * egl_start; 
+ int egl_sendlen; 
+ GLhandleARB * containerObj;
+ GLsizei * maxCount;
+ GLsizei count[1]; 
+ GLhandleARB * obj = NULL;
+ bp = egl_buff;
+ containerObj = (GLhandleARB *) bp; bp += sizeof(GLhandleARB); 
+ maxCount = (GLsizei *) bp; bp += sizeof(GLsizei); 
+ obj = (GLhandleARB*) malloc(sizeof(GLhandleARB)*(*maxCount));
+ esdl_glGetAttachedObjectsARB(*containerObj, *maxCount, count, obj);
+ bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLsizei) *1+ sizeof(GLhandleARB) * (*count));
+ * (GLsizei *)bp = count[0]; bp += sizeof(GLsizei);
+ memcpy(bp, obj, sizeof(GLhandleARB)*(*count));
+ bp += sizeof(GLhandleARB)*(*count);
+ free(obj);
+ egl_sendlen = bp - egl_start;
+ sdl_send(egl_sd, egl_sendlen);
+}
+
+
 void egl_stencilOpSeparateATI(sdl_data *egl_sd, int egl_len, char *egl_buff) 
 {
  char * bp; 
