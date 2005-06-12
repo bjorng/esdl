@@ -75,9 +75,9 @@ void es_getVideoInfo(sdl_data *sd, int len, char *buff)
 {
    char *bp, *start;
    int sendlen;
-   SDL_VideoInfo *vi;
+   const SDL_VideoInfo *vi;
    bp = start = sdl_get_temp_buff(sd, 9+2*4);
-   (const SDL_VideoInfo *) vi = SDL_GetVideoInfo();
+   vi = SDL_GetVideoInfo();
    if(vi->hw_available)   put8(bp, 1);
    else                   put8(bp, 0);
    if(vi->wm_available)   put8(bp, 1);
