@@ -48,7 +48,6 @@
 -import(sdl_util,  [bin2list/2,bin2list/3, term2bin/2, term2bin/3, matrix2bin/2]).
 
 %% Internal datatypes
--define(getPointer(REC), element(2, REC)).
 -record(quadricPtr, {ptr}).
 -record(nurbsPtr, {ptr}).
 -record(tessPtr, {ptr}).
@@ -89,7 +88,7 @@ convert_vtxdata([], Ops, Acc) -> [Acc,Ops].
 %% Returns: ok
 %% C-API func: void gluTessBeginPolygon(GLUtesselator *tobj)
 tessBeginPolygon(#tessPtr{ptr=Tobj}) ->
-    cast(?gluTessBeginPolygon, <<Tobj:32/native>>).
+    cast(?gluTessBeginPolygon, <<Tobj:?_PTR>>).
 
 %% Func:    tessCallback 
 %% Args:    Which, ESDL_TESSCB one of the callback functions defined in glu.hrl
@@ -100,7 +99,7 @@ tessBeginPolygon(#tessPtr{ptr=Tobj}) ->
 %%          implementations are welcomed.
 
 tessCallback(#tessPtr{ptr=Tobj}, Which, ESDL_TESSCB) -> 
-    cast(?gluTessCallback, <<Tobj:32/native,
+    cast(?gluTessCallback, <<Tobj:?_PTR,
 			    Which:32/unsigned-native, 
 			    ESDL_TESSCB:32/unsigned-native>>).
 
@@ -115,13 +114,13 @@ tessCallback(#tessPtr{ptr=Tobj}, Which, ESDL_TESSCB) ->
 
 tessVertex(#tessPtr{ptr=Tobj}, {X,Y,Z}) ->
     cast(?gluTessVertex,
-	 <<Tobj:32/native,X:64/native-float,Y:64/native-float,Z:64/native-float>>).
+	 <<Tobj:?_PTR,X:64/native-float,Y:64/native-float,Z:64/native-float>>).
 
 tessVertex(#tessPtr{ptr=Tobj}, {X,Y,Z}, VtxData0) ->
     %% Sort here so that we know that all data for all vertices
     %% come in the same order; the driver depends on it...
     VtxData = convert_vtxdata(lists:sort(VtxData0), 0, []),
-    Data =  [<<Tobj:32/native,
+    Data =  [<<Tobj:?_PTR,
 	      X:64/native-float,Y:64/native-float,
 	      Z:64/native-float>>|VtxData],
     cast(?gluTessVertex, Data).
@@ -131,21 +130,21 @@ tessVertex(#tessPtr{ptr=Tobj}, {X,Y,Z}, VtxData0) ->
 %% Returns: ok
 %% C-API func: void gluBeginCurve(GLUnurbs * nurb)
 beginCurve(Nurb=#nurbsPtr{}) -> 
- cast(?gluBeginCurve, <<(Nurb#nurbsPtr.ptr):32/unsigned-native>>).
+ cast(?gluBeginCurve, <<(Nurb#nurbsPtr.ptr):?_PTR>>).
 
 %% Func:    beginSurface 
 %% Args:    Nurb
 %% Returns: ok
 %% C-API func: void gluBeginSurface(GLUnurbs * nurb)
 beginSurface(Nurb=#nurbsPtr{}) -> 
- cast(?gluBeginSurface, <<(Nurb#nurbsPtr.ptr):32/unsigned-native>>).
+ cast(?gluBeginSurface, <<(Nurb#nurbsPtr.ptr):?_PTR>>).
 
 %% Func:    beginTrim 
 %% Args:    Nurb
 %% Returns: ok
 %% C-API func: void gluBeginTrim(GLUnurbs * nurb)
 beginTrim(Nurb=#nurbsPtr{}) -> 
- cast(?gluBeginTrim, <<(Nurb#nurbsPtr.ptr):32/unsigned-native>>).
+ cast(?gluBeginTrim, <<(Nurb#nurbsPtr.ptr):?_PTR>>).
 
 %% Func:    build1DMipmaps 
 %% Args:    Target, InternalFormat, Width, Format, Type, <<[Data]>>
@@ -199,56 +198,56 @@ build2DMipmaps(Target, InternalFormat, Width, Height, Format, Type, Data) ->
 %% Returns: ok
 %% C-API func: void gluCylinder(GLUquadric * quad, GLdouble base, GLdouble top, GLdouble height, GLint slices, GLint stacks)
 cylinder(Quad=#quadricPtr{}, Base, Top, Height, Slices, Stacks) -> 
- cast(?gluCylinder, <<(Quad#quadricPtr.ptr):32/unsigned-native, Base:64/float-native, Top:64/float-native, Height:64/float-native, Slices:32/signed-native, Stacks:32/signed-native>>).
+ cast(?gluCylinder, <<(Quad#quadricPtr.ptr):?_PTR, Base:64/float-native, Top:64/float-native, Height:64/float-native, Slices:32/signed-native, Stacks:32/signed-native>>).
 
 %% Func:    deleteNurbsRenderer 
 %% Args:    Nurb
 %% Returns: ok
 %% C-API func: void gluDeleteNurbsRenderer(GLUnurbs * nurb)
 deleteNurbsRenderer(Nurb=#nurbsPtr{}) -> 
- cast(?gluDeleteNurbsRenderer, <<(Nurb#nurbsPtr.ptr):32/unsigned-native>>).
+ cast(?gluDeleteNurbsRenderer, <<(Nurb#nurbsPtr.ptr):?_PTR>>).
 
 %% Func:    deleteQuadric 
 %% Args:    Quad
 %% Returns: ok
 %% C-API func: void gluDeleteQuadric(GLUquadric * quad)
 deleteQuadric(Quad=#quadricPtr{}) -> 
- cast(?gluDeleteQuadric, <<(Quad#quadricPtr.ptr):32/unsigned-native>>).
+ cast(?gluDeleteQuadric, <<(Quad#quadricPtr.ptr):?_PTR>>).
 
 %% Func:    deleteTess 
 %% Args:    Tess
 %% Returns: ok
 %% C-API func: void gluDeleteTess(GLUtesselator * tess)
 deleteTess(Tess=#tessPtr{}) -> 
- cast(?gluDeleteTess, <<(Tess#tessPtr.ptr):32/unsigned-native>>).
+ cast(?gluDeleteTess, <<(Tess#tessPtr.ptr):?_PTR>>).
 
 %% Func:    disk 
 %% Args:    Quad, Inner, Outer, Slices, Loops
 %% Returns: ok
 %% C-API func: void gluDisk(GLUquadric * quad, GLdouble inner, GLdouble outer, GLint slices, GLint loops)
 disk(Quad=#quadricPtr{}, Inner, Outer, Slices, Loops) -> 
- cast(?gluDisk, <<(Quad#quadricPtr.ptr):32/unsigned-native, Inner:64/float-native, Outer:64/float-native, Slices:32/signed-native, Loops:32/signed-native>>).
+ cast(?gluDisk, <<(Quad#quadricPtr.ptr):?_PTR, Inner:64/float-native, Outer:64/float-native, Slices:32/signed-native, Loops:32/signed-native>>).
 
 %% Func:    endCurve 
 %% Args:    Nurb
 %% Returns: ok
 %% C-API func: void gluEndCurve(GLUnurbs * nurb)
 endCurve(Nurb=#nurbsPtr{}) -> 
- cast(?gluEndCurve, <<(Nurb#nurbsPtr.ptr):32/unsigned-native>>).
+ cast(?gluEndCurve, <<(Nurb#nurbsPtr.ptr):?_PTR>>).
 
 %% Func:    endSurface 
 %% Args:    Nurb
 %% Returns: ok
 %% C-API func: void gluEndSurface(GLUnurbs * nurb)
 endSurface(Nurb=#nurbsPtr{}) -> 
- cast(?gluEndSurface, <<(Nurb#nurbsPtr.ptr):32/unsigned-native>>).
+ cast(?gluEndSurface, <<(Nurb#nurbsPtr.ptr):?_PTR>>).
 
 %% Func:    endTrim 
 %% Args:    Nurb
 %% Returns: ok
 %% C-API func: void gluEndTrim(GLUnurbs * nurb)
 endTrim(Nurb=#nurbsPtr{}) -> 
- cast(?gluEndTrim, <<(Nurb#nurbsPtr.ptr):32/unsigned-native>>).
+ cast(?gluEndTrim, <<(Nurb#nurbsPtr.ptr):?_PTR>>).
 
 %% Func:    errorString 
 %% Args:    Error
@@ -266,7 +265,7 @@ errorString(Error) ->
 %% Returns: [Data]
 %% C-API func: void gluGetNurbsProperty(GLUnurbs * nurb, GLenum property, GLfloat * data)
 getNurbsProperty(Nurb=#nurbsPtr{}, Property) -> 
- Bin = call(?gluGetNurbsProperty, <<(Nurb#nurbsPtr.ptr):32/unsigned-native, Property:32/unsigned-native>>), 
+ Bin = call(?gluGetNurbsProperty, <<(Nurb#nurbsPtr.ptr):?_PTR, Property:32/unsigned-native>>), 
  case Bin of 
 	<<Data:32/float-native>> -> 
 	 Data;
@@ -289,7 +288,7 @@ getString(Name) ->
 %% Returns: [Data]
 %% C-API func: void gluGetTessProperty(GLUtesselator * tess, GLenum which, GLdouble * data)
 getTessProperty(Tess=#tessPtr{}, Which) -> 
- Bin = call(?gluGetTessProperty, <<(Tess#tessPtr.ptr):32/unsigned-native, Which:32/unsigned-native>>), 
+ Bin = call(?gluGetTessProperty, <<(Tess#tessPtr.ptr):?_PTR, Which:32/unsigned-native>>), 
  case Bin of 
 	<<Data:64/float-native>> -> 
 	 Data;
@@ -316,7 +315,7 @@ loadSamplingMatrices(Nurb=#nurbsPtr{}, Model, Perspective, View) ->
 	binary(View) -> View;
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, View})
  end, 
- cast(?gluLoadSamplingMatrices, [<<(Nurb#nurbsPtr.ptr):32/unsigned-native>>,NewModel, NewPerspective, NewView]).
+ cast(?gluLoadSamplingMatrices, [<<(Nurb#nurbsPtr.ptr):?_PTR>>,NewModel, NewPerspective, NewView]).
 
 %% Func:    lookAt 
 %% Args:    EyeX, EyeY, EyeZ, CenterX, CenterY, CenterZ, UpX, UpY, UpZ
@@ -332,7 +331,7 @@ lookAt(EyeX, EyeY, EyeZ, CenterX, CenterY, CenterZ, UpX, UpY, UpZ) ->
 newNurbsRenderer() -> 
  Bin = call(?gluNewNurbsRenderer, []), 
  case Bin of 
-	<<Ret:32/unsigned-native>> -> 
+	<<Ret:?_PTR>> -> 
   #nurbsPtr{ptr=Ret};
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
@@ -344,7 +343,7 @@ newNurbsRenderer() ->
 newQuadric() -> 
  Bin = call(?gluNewQuadric, []), 
  case Bin of 
-	<<Ret:32/unsigned-native>> -> 
+	<<Ret:?_PTR>> -> 
   #quadricPtr{ptr=Ret};
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
@@ -356,9 +355,9 @@ newQuadric() ->
 newTess() -> 
  Bin = call(?gluNewTess, []), 
  case Bin of 
-	<<Ret:32/unsigned-native>> -> 
-  #tessPtr{ptr=Ret};
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+     <<Ret:?_PTR>> -> 
+	 #tessPtr{ptr=Ret};
+     Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% Func:    nurbsCurve 
@@ -372,7 +371,7 @@ nurbsCurve(Nurb=#nurbsPtr{}, KnotCount, Knots, Stride, Control, Order, Type) ->
 		   true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Knots})
 	       end, 
     sdl:send_bin(Control, ?MODULE, ?LINE),
-    cast(?gluNurbsCurve, [<<(Nurb#nurbsPtr.ptr):32/unsigned-native,
+    cast(?gluNurbsCurve, [<<(Nurb#nurbsPtr.ptr):?_PTR,
 			   KnotCount:32/signed-native>>,NewKnots,
 			  <<Stride:32/signed-native, Order:32/signed-native,
 			   Type:32/unsigned-native>>]).
@@ -382,7 +381,7 @@ nurbsCurve(Nurb=#nurbsPtr{}, KnotCount, Knots, Stride, Control, Order, Type) ->
 %% Returns: ok
 %% C-API func: void gluNurbsProperty(GLUnurbs * nurb, GLenum property, GLfloat value)
 nurbsProperty(Nurb=#nurbsPtr{}, Property, Value) -> 
- cast(?gluNurbsProperty, <<(Nurb#nurbsPtr.ptr):32/unsigned-native, Property:32/unsigned-native, Value:32/float-native>>).
+ cast(?gluNurbsProperty, <<(Nurb#nurbsPtr.ptr):?_PTR, Property:32/unsigned-native, Value:32/float-native>>).
 
 %% Func:    nurbsSurface 
 %% Args:    Nurb, SKnotCount, <<[SKnots]>>, TKnotCount, <<[TKnots]>>, SStride, TStride, <<[Control]>>, SOrder, TOrder, Type
@@ -401,7 +400,7 @@ nurbsSurface(Nurb=#nurbsPtr{}, SKnotCount, SKnots, TKnotCount, TKnots, SStride, 
 		end, 
     sdl:send_bin(Control, ?MODULE, ?LINE),
  cast(?gluNurbsSurface,
-      [<<(Nurb#nurbsPtr.ptr):32/unsigned-native,SKnotCount:32/signed-native>>,NewSKnots,
+      [<<(Nurb#nurbsPtr.ptr):?_PTR,SKnotCount:32/signed-native>>,NewSKnots,
        <<TKnotCount:32/signed-native>>,NewTKnots,
        <<SStride:32/signed-native, TStride:32/signed-native, SOrder:32/signed-native,
 	TOrder:32/signed-native, Type:32/unsigned-native>>]).
@@ -418,7 +417,7 @@ ortho2D(Left, Right, Bottom, Top) ->
 %% Returns: ok
 %% C-API func: void gluPartialDisk(GLUquadric * quad, GLdouble inner, GLdouble outer, GLint slices, GLint loops, GLdouble start, GLdouble sweep)
 partialDisk(Quad=#quadricPtr{}, Inner, Outer, Slices, Loops, Start, Sweep) -> 
- cast(?gluPartialDisk, <<(Quad#quadricPtr.ptr):32/unsigned-native, Inner:64/float-native, Outer:64/float-native, Slices:32/signed-native, Loops:32/signed-native, Start:64/float-native, Sweep:64/float-native>>).
+ cast(?gluPartialDisk, <<(Quad#quadricPtr.ptr):?_PTR, Inner:64/float-native, Outer:64/float-native, Slices:32/signed-native, Loops:32/signed-native, Start:64/float-native, Sweep:64/float-native>>).
 
 %% Func:    perspective 
 %% Args:    Fovy, Aspect, ZNear, ZFar
@@ -473,7 +472,7 @@ project(ObjX, ObjY, ObjZ, Model, Proj, View) ->
 pwlCurve(Nurb=#nurbsPtr{}, Count, Data, Stride, Type) -> 
     sdl:send_bin(Data, ?MODULE, ?LINE),
     cast(?gluPwlCurve,
-	 <<(Nurb#nurbsPtr.ptr):32/unsigned-native, Count:32/signed-native,
+	 <<(Nurb#nurbsPtr.ptr):?_PTR, Count:32/signed-native,
 	  Stride:32/signed-native, Type:32/unsigned-native>>).
 
 %% Func:    quadricDrawStyle 
@@ -481,28 +480,28 @@ pwlCurve(Nurb=#nurbsPtr{}, Count, Data, Stride, Type) ->
 %% Returns: ok
 %% C-API func: void gluQuadricDrawStyle(GLUquadric * quad, GLenum draw)
 quadricDrawStyle(Quad=#quadricPtr{}, Draw) -> 
- cast(?gluQuadricDrawStyle, <<(Quad#quadricPtr.ptr):32/unsigned-native, Draw:32/unsigned-native>>).
+ cast(?gluQuadricDrawStyle, <<(Quad#quadricPtr.ptr):?_PTR, Draw:32/unsigned-native>>).
 
 %% Func:    quadricNormals 
 %% Args:    Quad, Normal
 %% Returns: ok
 %% C-API func: void gluQuadricNormals(GLUquadric * quad, GLenum normal)
 quadricNormals(Quad=#quadricPtr{}, Normal) -> 
- cast(?gluQuadricNormals, <<(Quad#quadricPtr.ptr):32/unsigned-native, Normal:32/unsigned-native>>).
+ cast(?gluQuadricNormals, <<(Quad#quadricPtr.ptr):?_PTR, Normal:32/unsigned-native>>).
 
 %% Func:    quadricOrientation 
 %% Args:    Quad, Orientation
 %% Returns: ok
 %% C-API func: void gluQuadricOrientation(GLUquadric * quad, GLenum orientation)
 quadricOrientation(Quad=#quadricPtr{}, Orientation) -> 
- cast(?gluQuadricOrientation, <<(Quad#quadricPtr.ptr):32/unsigned-native, Orientation:32/unsigned-native>>).
+ cast(?gluQuadricOrientation, <<(Quad#quadricPtr.ptr):?_PTR, Orientation:32/unsigned-native>>).
 
 %% Func:    quadricTexture 
 %% Args:    Quad, Texture
 %% Returns: ok
 %% C-API func: void gluQuadricTexture(GLUquadric * quad, GLboolean texture)
 quadricTexture(Quad=#quadricPtr{}, Texture) -> 
- cast(?gluQuadricTexture, <<(Quad#quadricPtr.ptr):32/unsigned-native, Texture:8/unsigned>>).
+ cast(?gluQuadricTexture, <<(Quad#quadricPtr.ptr):?_PTR, Texture:8/unsigned>>).
 
 %% Func:    scaleImage 
 %% Args:    Format, WIn, HIn, TypeIn, <<[DataIn]>>, WOut, HOut, TypeOut, #sdlmem{} = DataOut
@@ -523,35 +522,35 @@ scaleImage(Format, WIn, HIn, TypeIn, DataIn, WOut, HOut, TypeOut, #sdlmem{bin=Da
 %% Returns: ok
 %% C-API func: void gluSphere(GLUquadric * quad, GLdouble radius, GLint slices, GLint stacks)
 sphere(Quad=#quadricPtr{}, Radius, Slices, Stacks) -> 
- cast(?gluSphere, <<(Quad#quadricPtr.ptr):32/unsigned-native, Radius:64/float-native, Slices:32/signed-native, Stacks:32/signed-native>>).
+ cast(?gluSphere, <<(Quad#quadricPtr.ptr):?_PTR, Radius:64/float-native, Slices:32/signed-native, Stacks:32/signed-native>>).
 
 %% Func:    tessBeginContour 
 %% Args:    Tess
 %% Returns: ok
 %% C-API func: void gluTessBeginContour(GLUtesselator * tess)
 tessBeginContour(#tessPtr{ptr=Ptr}) -> 
-    cast(?gluTessBeginContour, <<Ptr:32/unsigned-native>>).
+    cast(?gluTessBeginContour, <<Ptr:?_PTR>>).
 
 %% Func:    tessEndContour 
 %% Args:    Tess
 %% Returns: ok
 %% C-API func: void gluTessEndContour(GLUtesselator * tess)
 tessEndContour(#tessPtr{ptr=Ptr}) -> 
-    cast(?gluTessEndContour, <<Ptr:32/unsigned-native>>).
+    cast(?gluTessEndContour, <<Ptr:?_PTR>>).
 
 %% Func:    tessEndPolygon 
 %% Args:    Tess
 %% Returns: ok
 %% C-API func: void gluTessEndPolygon(GLUtesselator * tess)
 tessEndPolygon(#tessPtr{ptr=Ptr}) -> 
-    cast(?gluTessEndPolygon, <<Ptr:32/unsigned-native>>).
+    cast(?gluTessEndPolygon, <<Ptr:?_PTR>>).
 
 %% Func:    tessNormal 
 %% Args:    Tess, ValueX, ValueY, ValueZ
 %% Returns: ok
 %% C-API func: void gluTessNormal(GLUtesselator * tess, GLdouble valueX, GLdouble valueY, GLdouble valueZ)
 tessNormal(#tessPtr{ptr=Ptr}, ValueX, ValueY, ValueZ) -> 
-    cast(?gluTessNormal, <<Ptr:32/unsigned-native, ValueX:64/float-native,
+    cast(?gluTessNormal, <<Ptr:?_PTR, ValueX:64/float-native,
 			  ValueY:64/float-native, ValueZ:64/float-native>>).
 
 %% Func:    tessProperty 
@@ -559,7 +558,7 @@ tessNormal(#tessPtr{ptr=Ptr}, ValueX, ValueY, ValueZ) ->
 %% Returns: ok
 %% C-API func: void gluTessProperty(GLUtesselator * tess, GLenum which, GLdouble data)
 tessProperty(Tess=#tessPtr{}, Which, Data) -> 
- cast(?gluTessProperty, <<(Tess#tessPtr.ptr):32/unsigned-native, Which:32/unsigned-native, Data:64/float-native>>).
+ cast(?gluTessProperty, <<(Tess#tessPtr.ptr):?_PTR, Which:32/unsigned-native, Data:64/float-native>>).
 
 %% Func:    unProject 
 %% Args:    WinX, WinY, WinZ, <<[Model]>>, <<[Proj]>>, <<[View]>>

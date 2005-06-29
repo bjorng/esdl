@@ -12,11 +12,7 @@
  */
 
 #include "esdl.h"
-#ifdef WIN32
 #include <SDL_events.h>
-#else
-#include <SDL/SDL_events.h>
-#endif
 
 #define MAX_EVENT_SIZE 13
 
@@ -88,19 +84,20 @@ void es_waitEvent(sdl_data *sd, int len,char *buff)
 
 void es_eventState(sdl_data *sd, int len, char *bp) 
 {
-    Uint8 type, res;
-    int sendlen, state;
-    char *start;
+   Uint8 type, res;
+   int sendlen, state;
+   char *start;
     
-    type  = get8(bp);
-    state = get8(bp);
+   type  = get8(bp);
+   state = get8(bp);
 
-    res = SDL_EventState(type, state);
-    bp = start = sdl_get_temp_buff(sd, 1);
-    put8(bp, res);
-    sendlen = bp - start;
-    sdl_send(sd, sendlen);
+   res = SDL_EventState(type, state);
+   bp = start = sdl_get_temp_buff(sd, 1);
+   put8(bp, res);
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
 }
+
 
 /* API from the other files e.g. mouse keyboard active */ 
 
@@ -259,11 +256,11 @@ void es_createCursor(sdl_data *sd, int len, char *bp)
   hotx = * (unsigned short *) bp; bp += sizeof(unsigned short);
   hoty = * (unsigned short *) bp; bp += sizeof(unsigned short);
   ds = * (unsigned short *) bp; bp += sizeof(unsigned short);
-  data = bp;
+  data = (Uint8*) bp;
   mask = data + ds;
   cursor = SDL_CreateCursor(data, mask, w, h, hotx, hoty);
-  bp = start = sdl_get_temp_buff(sd, 4);
-  put32be(bp, (int) cursor);
+  bp = start = sdl_get_temp_buff(sd, 8);
+  PUSHGLPTR(cursor, bp);
   sendlen = bp - start;
   sdl_send(sd, sendlen);
 }
@@ -282,9 +279,9 @@ void es_getCursor(sdl_data *sd, int len,char *buff)
    SDL_Cursor *c;
    int sendlen;
    
-   bp = start = sdl_get_temp_buff(sd, 4);
+   bp = start = sdl_get_temp_buff(sd, 8);
    c = SDL_GetCursor();
-   put32be(bp, (int) c);
+   PUSHGLPTR(c, bp);
    sendlen = bp - start;
    sdl_send(sd, sendlen);
 }
@@ -293,7 +290,7 @@ void es_freeCursor(sdl_data *sd, int len, char *bp)
 {
   SDL_Cursor *c;
    
-  c = * (SDL_Cursor **) bp;
+  POPGLPTR(c, bp);
   SDL_FreeCursor(c);
 }
 
@@ -353,9 +350,9 @@ void es_joystick_open(sdl_data *sd, int len,char *buff)
    
    bp = buff;
    index = get8(bp);
-   bp = start = sdl_get_temp_buff(sd, 4);
+   bp = start = sdl_get_temp_buff(sd, 8);
    if((joy = SDL_JoystickOpen(index)) != NULL) {
-      putPointer(bp, joy);
+      PUSHGLPTR(joy, bp);
    }
    sendlen = bp - start;
    sdl_send(sd, sendlen);
@@ -384,7 +381,7 @@ void es_joystick_index(sdl_data *sd, int len,char *buff)
    int index;
 
    bp = buff;
-   joy = (SDL_Joystick *) get32be(bp);
+   POPGLPTR(joy, bp);
    bp = start = sdl_get_temp_buff(sd, 1);
    index = SDL_JoystickIndex(joy);
    put8(bp,index);
@@ -400,7 +397,7 @@ void es_joystick_numAxes(sdl_data *sd, int len,char *buff)
    int axes;
 
    bp = buff;
-   joy = (SDL_Joystick *) get32be(bp);
+   POPGLPTR(joy, bp);
    bp = start = sdl_get_temp_buff(sd, 1);
    axes = SDL_JoystickNumAxes(joy);
    put8(bp,axes);
@@ -416,7 +413,7 @@ void es_joystick_numBalls(sdl_data *sd, int len,char *buff)
    int balls;
 
    bp = buff;
-   joy = (SDL_Joystick *) get32be(bp);
+   POPGLPTR(joy, bp);
    bp = start = sdl_get_temp_buff(sd, 1);
    balls = SDL_JoystickNumBalls(joy);
    put8(bp,balls);
@@ -432,7 +429,7 @@ void es_joystick_numHats(sdl_data *sd, int len,char *buff)
    int hats;
 
    bp = buff;
-   joy = (SDL_Joystick *) get32be(bp);
+   POPGLPTR(joy, bp);
    bp = start = sdl_get_temp_buff(sd, 1);
    hats = SDL_JoystickNumHats(joy);
    put8(bp,hats);
@@ -448,7 +445,7 @@ void es_joystick_numButtons(sdl_data *sd, int len,char *buff)
    int buttons;
 
    bp = buff;
-   joy = (SDL_Joystick *) get32be(bp);
+   POPGLPTR(joy, bp);
    bp = start = sdl_get_temp_buff(sd, 1);
    buttons = SDL_JoystickNumButtons(joy);
    put8(bp,buttons);
@@ -482,7 +479,7 @@ void es_joystick_getAxis(sdl_data *sd, int len,char *buff)
    SDL_Joystick *joy;
    int state, axis;
    bp = buff;
-   joy = (SDL_Joystick *) get32be(bp);
+   POPGLPTR(joy, bp);
    axis = get8(bp);
    bp = start = sdl_get_temp_buff(sd, 4);
    state = SDL_JoystickGetAxis(joy, axis);
@@ -499,7 +496,7 @@ void es_joystick_getHat(sdl_data *sd, int len,char *buff)
    int state;
    Uint8 hat;
    bp = buff;
-   joy = (SDL_Joystick *) get32be(bp);
+   POPGLPTR(joy, bp);
    hat = get8(bp);
    bp = start = sdl_get_temp_buff(sd, 1);
    state = SDL_JoystickGetHat(joy, hat);
@@ -516,7 +513,7 @@ void es_joystick_getButton(sdl_data *sd, int len,char *buff)
    int state;
    Uint8 button;
    bp = buff;
-   joy = (SDL_Joystick *) get32be(bp);
+   POPGLPTR(joy, bp);
    button = get8(bp);
    bp = start = sdl_get_temp_buff(sd, 1);
    state = SDL_JoystickGetButton(joy, button);
@@ -534,7 +531,7 @@ void es_joystick_getBall(sdl_data *sd, int len,char *buff)
    Uint8 ball;
    
    bp = buff;
-   joy = (SDL_Joystick *) get32be(bp);
+   POPGLPTR(joy, bp);
    ball = get8(bp);
    bp = start = sdl_get_temp_buff(sd, 8);
    if(0 == SDL_JoystickGetBall(joy, ball, &dx, &dy)) {
@@ -550,7 +547,7 @@ void es_joystick_close(sdl_data *sd, int len,char *buff)
    char *bp;
    SDL_Joystick *joy;
    bp = buff;
-   joy = (SDL_Joystick *) get32be(bp);
+   POPGLPTR(joy, bp);
    SDL_JoystickClose(joy);
 }
 

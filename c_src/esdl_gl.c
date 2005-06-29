@@ -1311,7 +1311,7 @@ void egl_getPointerv(sdl_data *egl_sd, int egl_len, char *egl_buff)
  pname = (GLenum *) bp; bp += sizeof(GLenum); 
  glGetPointerv(*pname, &params);
  bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLvoid*));
- putPointer(bp, params);
+ /* putPointer(bp, params); BUGBUG not implemented */
  egl_sendlen = bp - egl_start;
  sdl_send(egl_sd, egl_sendlen);
 }

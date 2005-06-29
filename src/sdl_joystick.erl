@@ -17,6 +17,7 @@
 -compile(export_all).
 -include("esdl.hrl").
 -include("sdl_joystick.hrl").
+-include("sdl_util.hrl").
 -import(sdl, [call/2,cast/2]).
 
 -define(SDL_NumJoysticks,       ?SDL_JOYSTICK_HRL   + 1).
@@ -65,7 +66,7 @@ name(Index) ->
 %%       identify this joystick in future joystick events.
 %%       This function returns a joystick identifier, or NULL if an error occurred.
 open(Index) ->
-    <<ID:32>> = call(?SDL_JoystickOpen, [Index]),
+    <<ID:?_PTR>> = call(?SDL_JoystickOpen, [Index]),
     ID.
 
 %% Func: opened
@@ -74,7 +75,7 @@ open(Index) ->
 %% C-API func: int SDL_JoystickOpened(int device_index);
 %% Desc: Returns true if the joystick has been opened, or false if it has not. 
 opened(Index) ->
-    <<Bool:8>> = call(?SDL_JoystickOpened, <<Index:32>>),
+    <<Bool:8>> = call(?SDL_JoystickOpened, <<Index:?_PTR>>),
     Bool == 1.
 
 %% Func: index
@@ -83,7 +84,7 @@ opened(Index) ->
 %% C-API func: int SDL_JoystickIndex(SDL_Joystick *joystick);
 %% Desc: Get the device index of an opened joystick.
 index(Joystick) ->
-    <<Index:8>> = call(?SDL_JoystickIndex, <<Joystick:32>>),
+    <<Index:8>> = call(?SDL_JoystickIndex, <<Joystick:?_PTR>>),
     Index.
 
 %% Func: numAxes
@@ -92,7 +93,7 @@ index(Joystick) ->
 %% C-API func: int SDL_JoystickNumAxes(SDL_Joystick *joystick);
 %% Desc: Get the number of general axis controls on a joystick
 numAxes(Joystick) ->
-    <<Axes:8>> = call(?SDL_JoystickNumAxes, <<Joystick:32>>),
+    <<Axes:8>> = call(?SDL_JoystickNumAxes, <<Joystick:?_PTR>>),
     Axes.
 
 %% Func: numBalls
@@ -103,7 +104,7 @@ numAxes(Joystick) ->
 %%       Joystick trackballs have only relative motion events associated
 %%       with them and their state cannot be polled.
 numBalls(Joystick) ->
-    <<Balls:8>> = call(?SDL_JoystickNumBalls, <<Joystick:32>>),
+    <<Balls:8>> = call(?SDL_JoystickNumBalls, <<Joystick:?_PTR>>),
     Balls.
 
 %% Func: numHats
@@ -112,7 +113,7 @@ numBalls(Joystick) ->
 %% C-API func: int SDL_JoystickNumHats(SDL_Joystick *joystick);
 %% Desc:  Get the number of POV hats on a joystick
 numHats(Joystick) ->
-    <<Hats:8>> = call(?SDL_JoystickNumHats, <<Joystick:32>>),
+    <<Hats:8>> = call(?SDL_JoystickNumHats, <<Joystick:?_PTR>>),
     Hats.
 
 %% Func: numButtons
@@ -121,7 +122,7 @@ numHats(Joystick) ->
 %% C-API func: int SDL_JoystickNumButtons(SDL_Joystick *joystick);
 %% Desc: Get the number of buttons on a joystick
 numButtons(Joystick) ->
-    <<Buttons:8>> = call(?SDL_JoystickNumButtons, <<Joystick:32>>),
+    <<Buttons:8>> = call(?SDL_JoystickNumButtons, <<Joystick:?_PTR>>),
     Buttons.
 
 %% Func: update
@@ -133,19 +134,6 @@ numButtons(Joystick) ->
 %%       events are enabled.
 update() ->
     cast(?SDL_JoystickUpdate, []).
-
-%% Func: eventState
-%% Args: State
-%% Returns: NewState
-%% C-API func: int SDL_JoystickEventState(int state);
-%% Desc: Enable/disable joystick event polling.
-%%       If joystick events are disabled, you must call SDL_JoystickUpdate()
-%%       yourself and check the state of the joystick when you want joystick
-%%       information.
-%%       The state can be one of SDL_QUERY, SDL_ENABLE or SDL_IGNORE.
-eventState(State) ->
-    <<NewState:32>> = call(?SDL_JoystickEventState, <<State:32>>),
-    NewState.
 
 %% Func: getAxis
 %% Args: Joystick, Axis

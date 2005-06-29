@@ -16,6 +16,7 @@
 
 -include("esdl.hrl").
 -include("sdl_mouse.hrl").
+-include("sdl_util.hrl").
 
 -export([createCursor/6,
 	 freeCursor/1,
@@ -75,9 +76,9 @@ createCursor(Data, Mask, W, H, HotX, HotY) when binary(Data), binary(Mask) ->
     case call(?SDL_CreateCursor,
 	      <<W:16/native,H:16/native,HotX:16/native,HotY:16/native,
 	       (size(Data)):16/native,Data/binary,Mask/binary>>) of
-	<<0:32>> ->
+	<<0:64>> ->
 	    exit({createCursor, returned_null});
-	<<Ptr:32>> ->
+	<<Ptr:?_PTR>> ->
 	    {cursorp,Ptr}
     end.
 
@@ -86,7 +87,7 @@ createCursor(Data, Mask, W, H, HotX, HotY) when binary(Data), binary(Mask) ->
 %% Returns:  ok
 %% C-API func:  void SDL_SetCursor(SDL_Cursor *cursor);
 setCursor({cursorp,Ref}) -> 
-    cast(?SDL_SetCursor, <<Ref:32/native>>).
+    cast(?SDL_SetCursor, <<Ref:?_PTR>>).
 
 %% Func:  getCursor
 %% Args:  none
@@ -94,9 +95,9 @@ setCursor({cursorp,Ref}) ->
 %% C-API func:  void SDL_SetCursor(SDL_Cursor *cursor);
 getCursor() ->  
     case call(?SDL_GetCursor, []) of
-	<<0:32>> ->
+	<<0:64>> ->
 	    exit({getCursor, returned_null});
-	<<Ptr:32>> ->
+	<<Ptr:?_PTR>> ->
 	    {cursorp, Ptr}
     end.
 
@@ -105,7 +106,7 @@ getCursor() ->
 %% Returns:  ok
 %% C-API func:  void SDL_FreeCursor(SDL_Cursor *cursor);
 freeCursor({cursorp,Ref}) -> 
-    cast(?SDL_FreeCursor, <<Ref:32/native>>).
+    cast(?SDL_FreeCursor, <<Ref:?_PTR>>).
 
 %% Func:  showCursor
 %% Args:  true | false

@@ -318,7 +318,7 @@ copySdlImage2GLArray(Image, Mem, Bpp) when record(Image, sdl_surface) ->
 copySdlImage2GLArray({surfacep, Image}, #sdlmem{bin=Mem}, Bpp) 
   when Bpp == 3; Bpp == 4 ->
     sdl:send_bin(Mem),
-    <<1:8>> = call(?SDL_UTIL_copySdlImage2GLArray, <<Image:32,Bpp:8>>),
+    <<1:8>> = call(?SDL_UTIL_copySdlImage2GLArray, <<Image:?_PTR,Bpp:8>>),
     ok.
 
 mem_size(?GL_BYTE, Size) -> Size;

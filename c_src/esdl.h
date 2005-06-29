@@ -15,11 +15,8 @@
 
 #ifdef WIN32
 #include <windows.h>  /* needed by Windows' gl.h etc */
-#include <SDL.h>
-#else
-#include <SDL/SDL.h>
 #endif
-
+#include <SDL.h>
 
 #ifdef _OSX_COCOA
 #include <OpenGL/gl.h>

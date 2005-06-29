@@ -110,7 +110,7 @@ loadWAV(File) ->
     case Res of 
 	<<Freq:32/unsigned, Format:16/unsigned, Chs:8/unsigned, Sil:8/unsigned, 
 	 Samps:16/unsigned, Padding:16/unsigned, Size:32/unsigned, 
-	 BufferPtr:32/unsigned, BufferLen:32/unsigned>> ->
+	 BufferPtr:64/unsigned-native, BufferLen:32/unsigned>> ->
 	    {#audiospec{freq=Freq, format=Format, channels=Chs, silence=Sil, 
 			samples=Samps, padding=Padding, size=Size}, 
 	     #audiop{ptr=BufferPtr,size=BufferLen}};
@@ -123,7 +123,7 @@ loadWAV(File) ->
 %% Returns: ok
 %% C-API func: void SDL_FreeWAV(Uint8 *audio_buf);
 freeWAV(#audiop{ptr=Ptr}) ->
-    cast(?SDL_FreeWAV, <<Ptr:32/unsigned>>).
+    cast(?SDL_FreeWAV, <<Ptr:64/unsigned-native>>).
 
 %% Func:    play_audio
 %% Args:    AudioWavRef, SampleLen, Repeat (integer or infinity)
@@ -133,7 +133,7 @@ play_audio(#audiop{ptr=Ptr,size=Size}, Repeat)  ->
     R = if Repeat == infinity -> -1;
 	   true -> Repeat
 	end,
-    <<>> = call(?PLAY_AUDIO, <<Ptr:32/unsigned, Size:32/unsigned, R:32/signed>>).
+    <<>> = call(?PLAY_AUDIO, <<Ptr:64/unsigned-native, Size:32/unsigned, R:32/signed>>).
 
 %  %% Func:    buildAudioCVT
 %  %% Args:    Src_format, Src_channels, Src_rate,
@@ -160,10 +160,10 @@ convertAudio(FromAS, ToAS, #audiop{ptr=Ptr,size=Size}) ->
 		(ToAS#audiospec.format):16, 
 		(ToAS#audiospec.channels):8, 
 		(ToAS#audiospec.freq):32,
-		Ptr:32,
+		Ptr:?_PTR,
 		Size:32>>),
     case Res of 
-	<<NBufferPtr:32/unsigned, NBufferLen:32/unsigned>> when NBufferPtr /= 0 ->
+	<<NBufferPtr:64/unsigned-native, NBufferLen:32/unsigned>> when NBufferPtr /= 0 ->
 	    #audiop{ptr=NBufferPtr,size=NBufferLen};
 	_ ->
 	    erlang:fault({error, Res})

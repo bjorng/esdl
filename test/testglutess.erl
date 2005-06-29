@@ -27,6 +27,7 @@ go() ->
 go(Config) ->
     %% Init 
     sdl:init(?SDL_INIT_VIDEO bor ?SDL_INIT_ERLDRIVER bor ?SDL_INIT_NOPARACHUTE),
+    sdl_util:debug(1),
     sdl_video:gl_setAttribute(?SDL_GL_DOUBLEBUFFER, 1),
     SR = sdl_video:setVideoMode(640, 480, 16, ?SDL_OPENGL),
     sdl_events:eventState(?SDL_ALLEVENTS ,?SDL_IGNORE),
@@ -43,14 +44,6 @@ go(Config) ->
 	    { -1,  1,      0},
 	    {-0.5, 0.5,   0},
 	    { 0,   -0.5,     0}],
-
-    Colors = [{ 1.0,  1.0,  0.0}, 
-	      { 0.5,  0.0,  0.0},
-	      { 1.0,  0.0,  0.0},
-	      { 1,    -1,      0},
-	      { 0.0,  -0.0,  0.0},
-	      { -1,  0,      0},
-	      { -1.0,  1.0,  0.0}],
     
     {Time, N} = timer:tc(?MODULE, drawBox, [Cube, 0]),
     erlang:display(N),
@@ -129,22 +122,22 @@ check_event() ->
 	    ok;
 	Quit when record(Quit, keyboard) -> 
 	    if 
-		(Quit#keyboard.keysym)#keysym.sym == ?SDLK_ESCAPE ->
+		Quit#keyboard.sym == ?SDLK_ESCAPE ->
 		    quit;
-		(Quit#keyboard.keysym)#keysym.sym == ?SDLK_q ->
+		Quit#keyboard.sym == ?SDLK_q ->
 		    quit;
 		true -> 
 		    io:format("Got event ~p~n", [Quit]),
 		    ok
 	    end;		    
-	Event -> 
-	    io:format("Got event ~p~n", [Event]),
-	    ok;
 	{0, []} -> 
 	    io:format(".", []),
 	    ok;
 	{NE, Evs} ->
 	    io:format("Got ~p events: ~p~n", [NE, Evs]),
+	    ok;
+	Event -> 
+	    io:format("Got event ~p~n", [Event]),
 	    ok
     end.
     

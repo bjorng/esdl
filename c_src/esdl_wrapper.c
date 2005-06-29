@@ -11,7 +11,7 @@
 */
 
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
 
 #include "esdl.h"
 #include "esdl_gl.h"

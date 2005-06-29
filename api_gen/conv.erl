@@ -551,7 +551,7 @@ genf_c(Type, FuncName, Args0, _Last, Fd) ->
 					 [V1,T1,Val,T1,Val])
 			      end;
 			 ({V1,pointer,_T1}) ->
-			      ?W(" putPointer(bp, ~s);~n", [V1])
+			      ?W(" PUSHGLPTR(~s,bp);~n", [V1])
 		      end,
 	    lists:foreach(Forloop, Rets),
 	    free_mem(Args0, FuncName, Fd),
@@ -1024,8 +1024,10 @@ write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
 		    pointer -> 
 			Cnt = get(arg_cnt),
 %%%%			?W(" ~s = (~s *) egl_sd->bin[~w].base; ~n", [V,T,Cnt]),
-			?W(" if(egl_sd->next_bin == ~p) {~n  ~s = (~s *) *(GLint *)bp;~n",
-			   [Cnt,V,T]),
+ 			?W(" if(egl_sd->next_bin == ~p) {~n  ~s = (~s *) *(GLint *)bp;~n",
+ 			   [Cnt,V,T]),
+%% 			?W(" if(egl_sd->next_bin == ~p) {~n  POPGLPTR(~s,bp);~n",
+%% 			   [Cnt,V]),
 			?W(" } else {~n  ~s = (~s *) egl_sd->bin[~w].base;~n };~n",
 			   [V,T,Cnt]),
 			?W(" bp += sizeof(GLint);~n", []),
@@ -1417,6 +1419,9 @@ bintype("GLsizeiptr") ->
     ":32/?UN";
 bintype("GLintptr") ->
     ":32/?UN";
+%% bintype("?_PTR") ->
+%%     ":?_PTR";
+
 
 %% GLU types
 bintype("GLUnurbs") ->  %%  a pointer
@@ -1505,6 +1510,7 @@ byteSz(TYPE) ->
 	"GLsizeiptr" ++ _ ->    ?GL_UNSIGNED_INT_SIZE div 8; % long ?
 	"GLchar" ++ _ ->        ?GL_BYTE_SIZE div 8;
 	"GLhandle" ++ _ ->      ?GL_UNSIGNED_INT_SIZE div 8;
+	"?_PTR" ++ _ ->         8;  %% Always 8
 	binary ->  4  %% Ignore binariers are always 32 aligned.
     end.            
 
@@ -1646,6 +1652,8 @@ skip_extensions("GL_REND_screen_coordinates" ++ _, R) ->
 skip_extensions("GL_APPLE_" ++ _, R) ->
     skip_to_endif(R,0);
 skip_extensions("GL_SUN_" ++ _, R) ->
+    skip_to_endif(R,0);
+skip_extensions("GL_GREMEDY_" ++ _, R) ->
     skip_to_endif(R,0);
 skip_extensions("GL_SUNX_" ++ _, R) ->
     skip_to_endif(R,0);

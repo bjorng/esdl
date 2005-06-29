@@ -13,6 +13,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+
 struct {
    Uint8   *sound;		/* Pointer to wave data */
    Uint32  soundlen;		/* Length of wave data */
@@ -31,7 +32,7 @@ void play_audio(sdl_data *sd, int len, char *buff)
    
    SDL_LockAudio();   
    
-   sbuff = getPointer(bp);
+   POPGLPTR(sbuff, bp);
    wave.sound    = sbuff;
    wave.soundlen = get32be(bp);
    wave.repeat   = get32be(bp);
@@ -170,7 +171,7 @@ void es_loadWAV(sdl_data *sd, int len, char *bp)
     Uint32 blen;
 
     name = bp;
-    bp = start = sdl_get_temp_buff(sd, 24);
+    bp = start = sdl_get_temp_buff(sd, 28);
     if(NULL != SDL_LoadWAV(name, &obtained, &ptr, &blen)) {
        put32be(bp, obtained.freq);
        put16be(bp, obtained.format);
@@ -179,7 +180,7 @@ void es_loadWAV(sdl_data *sd, int len, char *bp)
        put16be(bp, obtained.samples);
        put16be(bp, obtained.padding);
        put32be(bp, obtained.size);
-       putPointer(bp, ptr);
+       PUSHGLPTR(ptr, bp);
        put32be(bp, blen);
     }
     sendlen = bp - start;
@@ -196,7 +197,7 @@ void es_freeWAV(sdl_data *sd, int len, char *buff)
    char *bp;
    void *ptr;
    bp = buff;
-   ptr = getPointer(bp);
+   POPGLPTR(ptr, bp);
    SDL_FreeWAV(ptr);
 }
 
@@ -222,10 +223,10 @@ void es_convertAudio(sdl_data *sd, int len, char *buff)
    nformat = get16be(bp);
    nchannels = get8(bp);
    nfreq = get32be(bp);
-   mptr = getPointer(bp);
+   POPGLPTR(mptr, bp);
    osize = get32be(bp);
 
-   bp = start = sdl_getbuff(sd, 8);
+   bp = start = sdl_getbuff(sd, 12);
    
    /* Build AudioCVT */
    if(SDL_BuildAudioCVT(&wav_cvt,oformat, ochannels, ofreq,
@@ -237,7 +238,7 @@ void es_convertAudio(sdl_data *sd, int len, char *buff)
 	 wav_cvt.len=osize;
 	 memcpy(wav_cvt.buf, mptr, osize);
 	 if (SDL_ConvertAudio(&wav_cvt) >= 0) {
-	   putPointer(bp, wav_cvt.buf);
+	   PUSHGLPTR(wav_cvt.buf, bp);
 	   put32be(bp, nsize);	 	
 	 }
       }

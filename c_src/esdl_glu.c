@@ -26,9 +26,6 @@
 #endif
 #define ASIZE(a) (sizeof(a)/sizeof(a[0]))
 
-#define GetNativePtr(res, T, s) \
-do { res = T *(void **)(s); s += sizeof(void *); } while (0)
-
 typedef struct _tessdata3 * eglu_tessdata_ptr;
 
 typedef struct _tessdata3 {
@@ -177,10 +174,9 @@ void eglu_newTess (sdl_data *sd, int len, char * buff)
    /*
     * Send back result.
     */
-   bp = start = sdl_get_temp_buff(sd, 4);
+   bp = start = sdl_get_temp_buff(sd, 8);
    /* putPointer(bp, eobj); */
-   * (eglu_tessobj **) bp = eobj;
-   bp += sizeof(eglu_tessobj *);
+   PUSHGLPTR(eobj, bp);
 
    sendlen = bp - start;
    sdl_send(sd, sendlen);
@@ -191,7 +187,7 @@ void eglu_deleteTess (sdl_data *sd, int len, char * buff)
    char *bp;
    eglu_tessobj *eobj;
    bp = buff;
-   GetNativePtr(eobj, (eglu_tessobj *), bp);
+   POPGLPTR(eobj, bp);
    gluDeleteTess(eobj->tess);
    free(eobj);
 /*    fprintf(stderr, "Deleting tess: %d\r\n", (int) eobj); */
@@ -201,7 +197,7 @@ void eglu_tessBeginPolygon (sdl_data *sd, int len, char* bp)
 {
    eglu_tessobj *eobj;
 
-   GetNativePtr(eobj, (eglu_tessobj *), bp);
+   POPGLPTR(eobj, bp);
    gluTessBeginPolygon(eobj->tess, (void *) eobj);
 }
 
@@ -214,8 +210,8 @@ void eglu_tessVertex(sdl_data *sd, int len, char* bp)
    size_t nbytes;
    char* extrap;
 
-   GetNativePtr(eobj, (eglu_tessobj *), bp);
-   size = len - sizeof(void *);
+   POPGLPTR(eobj, bp);
+   size = len - 8;
    nbytes = sizeof(GLdouble) + sizeof(eglu_tessdata) + size;
    ndoubles = (nbytes-1)/sizeof(GLdouble) + 1;
    if (ndoubles <= eobj->def_heap+ASIZE(eobj->def_heap)-eobj->freep) {
@@ -245,7 +241,7 @@ void eglu_tessEndPolygon (sdl_data *sd, int len, char * buff)
    eglu_tessdata *remove, *temp;
 
    bp = buff;
-   GetNativePtr(eobj, (eglu_tessobj *), bp);
+   POPGLPTR(eobj, bp);
    gluTessEndPolygon(eobj->tess);
    remove = eobj->data;
    while (remove != NULL) {
@@ -268,7 +264,7 @@ void eglu_tessCallback(sdl_data *sd, int len, char * buff)
    GLint cbId;
    GLvoid (CALLBACK *cbfn)();
    bp = buff;
-   GetNativePtr(eobj, (eglu_tessobj *), bp);
+   POPGLPTR(eobj, bp);
    which = (GLenum *) bp; bp += sizeof(GLenum); 
    cbId = * (GLint *) bp; bp += sizeof(GLint); 
 
@@ -320,7 +316,7 @@ void eglu_beginCurve(sdl_data *egl_sd, int egl_len, char *egl_buff)
    char * bp; 
    GLUnurbs * nurb;
    bp = egl_buff;
-   GetNativePtr(nurb, (GLUnurbs *),bp);
+   POPGLPTR(nurb,bp);
    gluBeginCurve(nurb);
 
 }
@@ -330,7 +326,7 @@ void eglu_beginSurface(sdl_data *egl_sd, int egl_len, char *egl_buff)
    char * bp; 
    GLUnurbs * nurb;
    bp = egl_buff;
-   GetNativePtr(nurb, (GLUnurbs *),bp);
+   POPGLPTR(nurb, bp);
    gluBeginSurface(nurb);
 
 }
@@ -340,7 +336,7 @@ void eglu_beginTrim(sdl_data *egl_sd, int egl_len, char *egl_buff)
    char * bp; 
    GLUnurbs * nurb;
    bp = egl_buff;
-   GetNativePtr(nurb, (GLUnurbs *),bp);
+   POPGLPTR(nurb, bp);
    gluBeginTrim(nurb);
 
 }
@@ -351,20 +347,20 @@ void eglu_build1DMipmaps(sdl_data *egl_sd, int egl_len, char *egl_buff)
   char * egl_start; 
   int egl_sendlen; 
   GLint egl_res; 
-  GLenum * target;
-  GLint * internalFormat;
-  GLsizei * width;
-  GLenum * format;
-  GLenum * type;
+  GLenum target;
+  GLint internalFormat;
+  GLsizei width;
+  GLenum format;
+  GLenum type;
   bp = egl_buff;
-  target = (GLenum *) bp; bp += sizeof(GLenum); 
-  internalFormat = (GLint *) bp; bp += sizeof(GLint); 
-  width = (GLsizei *) bp; bp += sizeof(GLsizei); 
-  format = (GLenum *) bp; bp += sizeof(GLenum); 
-  type = (GLenum *) bp; bp += sizeof(GLenum); 
+  target = *(GLenum *) bp; bp += sizeof(GLenum); 
+  internalFormat = *(GLint *) bp; bp += sizeof(GLint); 
+  width = *(GLsizei *) bp; bp += sizeof(GLsizei); 
+  format = *(GLenum *) bp; bp += sizeof(GLenum); 
+  type = *(GLenum *) bp; bp += sizeof(GLenum); 
   if (egl_sd->next_bin == 1) {
     GLvoid* data = egl_sd->bin[0].base;
-    egl_res =  gluBuild1DMipmaps(*target, *internalFormat, *width, *format, *type, data);
+    egl_res =  gluBuild1DMipmaps(target, internalFormat, width, format, type, data);
     sdl_free_binaries(egl_sd);
     bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLint));
     * (GLint *) bp = egl_res;
@@ -414,7 +410,7 @@ void eglu_cylinder(sdl_data *egl_sd, int egl_len, char *egl_buff)
    GLint * slices;
    GLint * stacks;
    bp = egl_buff;
-   GetNativePtr(quad, (GLUquadric *),bp);
+   POPGLPTR(quad, bp);
    memcpy(arg, bp, sizeof(arg)); bp += sizeof(arg);
    slices = (GLint *) bp; bp += sizeof(GLint); 
    stacks = (GLint *) bp;
@@ -426,7 +422,7 @@ void eglu_deleteNurbsRenderer(sdl_data *egl_sd, int egl_len, char *egl_buff)
    char * bp; 
    GLUnurbs * nurb;
    bp = egl_buff;
-   GetNativePtr(nurb, (GLUnurbs *),bp);
+   POPGLPTR(nurb, bp);
    gluDeleteNurbsRenderer(nurb);
 }
 
@@ -435,7 +431,7 @@ void eglu_deleteQuadric(sdl_data *egl_sd, int egl_len, char *egl_buff)
    char * bp; 
    GLUquadric * quad;
    bp = egl_buff;
-   GetNativePtr(quad, (GLUquadric *),bp);
+   POPGLPTR(quad, bp);
    gluDeleteQuadric(quad);
 }
 
@@ -448,7 +444,7 @@ void eglu_disk(sdl_data *egl_sd, int egl_len, char *egl_buff)
    GLint * slices;
    GLint * loops;
    bp = egl_buff;
-   GetNativePtr(quad, (GLUquadric *),bp);
+   POPGLPTR(quad, bp);
    memcpy(&inner, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
    memcpy(&outer, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
    slices = (GLint *) bp; bp += sizeof(GLint); 
@@ -461,7 +457,7 @@ void eglu_endCurve(sdl_data *egl_sd, int egl_len, char *egl_buff)
    char * bp; 
    GLUnurbs * nurb;
    bp = egl_buff;
-   GetNativePtr(nurb, (GLUnurbs *),bp);
+   POPGLPTR(nurb, bp);
    gluEndCurve(nurb);
 }
 
@@ -470,7 +466,7 @@ void eglu_endSurface(sdl_data *egl_sd, int egl_len, char *egl_buff)
    char * bp; 
    GLUnurbs * nurb;
    bp = egl_buff;
-   GetNativePtr(nurb, (GLUnurbs *),bp);
+   POPGLPTR(nurb, bp);
    gluEndSurface(nurb);
 }
 
@@ -479,7 +475,7 @@ void eglu_endTrim(sdl_data *egl_sd, int egl_len, char *egl_buff)
    char * bp; 
    GLUnurbs * nurb;
    bp = egl_buff;
-   GetNativePtr(nurb, (GLUnurbs *),bp);
+   POPGLPTR(nurb, bp);
    gluEndTrim(nurb);
 }
 
@@ -509,7 +505,7 @@ void eglu_getNurbsProperty(sdl_data *egl_sd, int egl_len, char *egl_buff)
    GLenum * property;
    GLfloat data[1]; 
    bp = egl_buff;
-   GetNativePtr(nurb, (GLUnurbs *),bp);
+   POPGLPTR(nurb,bp);
    property = (GLenum *) bp; bp += sizeof(GLenum); 
    gluGetNurbsProperty(nurb, *property, data);
    bp = egl_start = sdl_getbuff(egl_sd, sizeof(GLfloat) *1);
@@ -544,11 +540,11 @@ void eglu_getTessProperty(sdl_data *egl_sd, int egl_len, char *egl_buff)
    GLenum * which;
    GLdouble data[1]; 
    bp = egl_buff;
-   GetNativePtr(tess, (eglu_tessobj *),bp);
+   POPGLPTR(tess,bp);
    which = (GLenum *) bp; bp += sizeof(GLenum); 
    gluGetTessProperty(tess->tess, *which, data);
    bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLdouble) *1);
-   * (GLdouble *)bp = data[0]; bp += sizeof(GLdouble);
+   memcpy(bp,data,sizeof(GLdouble)); bp += sizeof(GLdouble),
    egl_sendlen = bp - egl_start;
    sdl_send(egl_sd, egl_sendlen);
 }
@@ -561,7 +557,7 @@ void eglu_loadSamplingMatrices(sdl_data *egl_sd, int egl_len, char *egl_buff)
    GLfloat * perspective;
    GLint * view;
    bp = egl_buff;
-   GetNativePtr(nurb, (GLUnurbs *),bp);
+   POPGLPTR(nurb, bp);
    model = (GLfloat *) bp; bp += sizeof(GLfloat)*16; 
    perspective = (GLfloat *) bp; bp += sizeof(GLfloat)*16; 
    view = (GLint *) bp; bp += sizeof(GLint)*16; 
@@ -587,9 +583,8 @@ void eglu_newNurbsRenderer(sdl_data *egl_sd, int egl_len, char *egl_buff)
    GLUnurbs *egl_res; 
    bp = egl_buff;
    egl_res =  gluNewNurbsRenderer();
-   bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLUnurbs*));
-   * (GLUnurbs **) bp = egl_res;
-   bp += sizeof(GLUnurbs *);
+   bp = egl_start = sdl_get_temp_buff(egl_sd, 8);
+   PUSHGLPTR(egl_res, bp);
    egl_sendlen = bp - egl_start;
    sdl_send(egl_sd, egl_sendlen);
 }
@@ -602,9 +597,8 @@ void eglu_newQuadric(sdl_data *egl_sd, int egl_len, char *egl_buff)
    GLUquadric *egl_res; 
    bp = egl_buff;
    egl_res =  gluNewQuadric();
-   bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLUquadric*));
-   * (GLUquadric **) bp = egl_res;
-   bp += sizeof(GLUquadric *);
+   bp = egl_start = sdl_get_temp_buff(egl_sd, 8);
+   PUSHGLPTR(egl_res, bp);
    egl_sendlen = bp - egl_start;
    sdl_send(egl_sd, egl_sendlen);
 }
@@ -620,7 +614,7 @@ void eglu_nurbsCurve(sdl_data *egl_sd, int egl_len, char *egl_buff)
   GLint * order;
   GLenum * type;
   bp = egl_buff;
-  GetNativePtr(nurb, (GLUnurbs *),bp);
+  POPGLPTR(nurb, bp);
   knotCount = * (GLint *) bp; bp += sizeof(GLint); 
   knots = (GLfloat *) bp; bp += sizeof(GLfloat)*(knotCount); 
   stride = (GLint *) bp; bp += sizeof(GLint); 
@@ -640,7 +634,7 @@ void eglu_nurbsProperty(sdl_data *egl_sd, int egl_len, char *egl_buff)
    GLenum * property;
    GLfloat * value;
    bp = egl_buff;
-   GetNativePtr(nurb, (GLUnurbs *),bp);
+   POPGLPTR(nurb, bp);
    property = (GLenum *) bp; bp += sizeof(GLenum); 
    value = (GLfloat *) bp; bp += sizeof(GLfloat); 
    gluNurbsProperty(nurb, *property, *value);
@@ -661,7 +655,7 @@ void eglu_nurbsSurface(sdl_data *egl_sd, int egl_len, char *egl_buff)
   GLint * tOrder;
   GLenum * type;
   bp = egl_buff;
-  GetNativePtr(nurb, (GLUnurbs *),bp);
+  POPGLPTR(nurb, bp);
   sKnotCount = * (GLint *) bp; bp += sizeof(GLint); 
   sKnots = (GLfloat *) bp; bp += sizeof(GLfloat)*(sKnotCount);
   tKnotCount = *(GLint *) bp; bp += sizeof(GLint); 
@@ -697,7 +691,7 @@ void eglu_partialDisk(sdl_data *egl_sd, int egl_len, char *egl_buff)
    GLdouble start;
    GLdouble sweep;
    bp = egl_buff;
-   GetNativePtr(quad, (GLUquadric *),bp);
+   POPGLPTR(quad, bp);
    memcpy(&inner, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
    memcpy(&outer, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
    slices = (GLint *) bp; bp += sizeof(GLint); 
@@ -752,7 +746,7 @@ void eglu_pwlCurve(sdl_data *egl_sd, int egl_len, char *egl_buff)
   GLint * stride;
   GLenum * type;
   bp = egl_buff;
-  GetNativePtr(nurb, (GLUnurbs *),bp);
+  POPGLPTR(nurb, bp);
   count = (GLint *) bp; bp += sizeof(GLint); 
   stride = (GLint *) bp; bp += sizeof(GLint); 
   type = (GLenum *) bp; bp += sizeof(GLenum); 
@@ -770,7 +764,7 @@ void eglu_quadricDrawStyle(sdl_data *egl_sd, int egl_len, char *egl_buff)
    GLUquadric * quad;
    GLenum * draw;
    bp = egl_buff;
-   GetNativePtr(quad, (GLUquadric *),bp);
+   POPGLPTR(quad, bp);
    draw = (GLenum *) bp; bp += sizeof(GLenum); 
    gluQuadricDrawStyle(quad, *draw);
 }
@@ -781,7 +775,7 @@ void eglu_quadricNormals(sdl_data *egl_sd, int egl_len, char *egl_buff)
    GLUquadric * quad;
    GLenum * normal;
    bp = egl_buff;
-   GetNativePtr(quad, (GLUquadric *),bp);
+   POPGLPTR(quad, bp);
    normal = (GLenum *) bp; bp += sizeof(GLenum); 
    gluQuadricNormals(quad, *normal);
 }
@@ -792,7 +786,7 @@ void eglu_quadricOrientation(sdl_data *egl_sd, int egl_len, char *egl_buff)
    GLUquadric * quad;
    GLenum * orientation;
    bp = egl_buff;
-   GetNativePtr(quad, (GLUquadric *),bp);
+   POPGLPTR(quad, bp);
    orientation = (GLenum *) bp; bp += sizeof(GLenum); 
    gluQuadricOrientation(quad, *orientation);
 }
@@ -803,7 +797,7 @@ void eglu_quadricTexture(sdl_data *egl_sd, int egl_len, char *egl_buff)
    GLUquadric * quad;
    GLboolean * texture;
    bp = egl_buff;
-   GetNativePtr(quad, (GLUquadric *),bp);
+   POPGLPTR(quad, bp);
    texture = (GLboolean *) bp; bp += sizeof(GLboolean); 
    gluQuadricTexture(quad, *texture);
 }
@@ -851,7 +845,7 @@ void eglu_sphere(sdl_data *egl_sd, int egl_len, char *egl_buff)
    GLint * slices;
    GLint * stacks;
    bp = egl_buff;
-   GetNativePtr(quad, (GLUquadric *),bp);
+   POPGLPTR(quad, bp);
    memcpy(&radius, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
    slices = (GLint *) bp; bp += sizeof(GLint); 
    stacks = (GLint *) bp; bp += sizeof(GLint); 
@@ -863,7 +857,7 @@ void eglu_tessBeginContour(sdl_data *egl_sd, int egl_len, char *egl_buff)
    char * bp; 
    eglu_tessobj * tess;
    bp = egl_buff;
-   GetNativePtr(tess, (eglu_tessobj *),bp);
+   POPGLPTR(tess, bp);
    gluTessBeginContour(tess->tess);
 }
 
@@ -872,7 +866,7 @@ void eglu_tessEndContour(sdl_data *egl_sd, int egl_len, char *egl_buff)
    char * bp; 
    eglu_tessobj * tess;
    bp = egl_buff;
-   GetNativePtr(tess, (eglu_tessobj *),bp);
+   POPGLPTR(tess, bp);
    gluTessEndContour(tess->tess);
 /*    fprintf(stderr, "Begin Contour: %d\r\n", (int) tess); */
 }
@@ -883,7 +877,7 @@ void eglu_tessNormal(sdl_data *egl_sd, int egl_len, char *bp)
    eglu_tessobj* tess;
    GLdouble values[3];
 
-   GetNativePtr(tess, (eglu_tessobj *), bp);
+   POPGLPTR(tess, bp);
    memcpy(values, bp, sizeof(values));
    gluTessNormal(tess->tess, values[0], values[1], values[2]);
 }
@@ -895,7 +889,7 @@ void eglu_tessProperty(sdl_data *egl_sd, int egl_len, char *egl_buff)
    GLenum * which;
    GLdouble data;
    bp = egl_buff;
-   GetNativePtr(tess, (eglu_tessobj *),bp);
+   POPGLPTR(tess, bp);
    which = (GLenum *) bp; bp += sizeof(GLenum); 
    memcpy(&data, bp, sizeof(GLdouble)); bp += sizeof(GLdouble); 
    gluTessProperty(tess->tess, *which, data);

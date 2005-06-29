@@ -17,6 +17,7 @@
 -include("sdl_video.hrl").
 -include("sdl_video_funcs.hrl").
 -include("gl.hrl").
+-include("sdl_util.hrl").
 
 %%% ERL_SDL functions
 -export([getSurface/1, 
@@ -104,9 +105,9 @@
 getSurface(Surface) when record(Surface, sdl_surface) ->
     getSurface(Surface#sdl_surface.self);
 getSurface({surfacep, Ptr} = Ref) ->
-    <<Flags:32, Format:32, W:32, H:32, Pitch:16, Pixels:32,
+    <<Flags:32, Format:?_PTR, W:32, H:32, Pitch:16, Pixels:?_PTR,
     Offset:32>> %% Cminx:32, Cmaxx:32, Cminy :32, Cmaxy:32>> 
-	= call(?ESDL_getSurface, <<Ptr:32>>),
+	= call(?ESDL_getSurface, <<Ptr:?_PTR>>),
     #sdl_surface{self = Ref,
 		 flags = Flags,
 		 format = if 
@@ -129,8 +130,8 @@ getSurface({surfacep, Ptr} = Ref) ->
 getPixelFormat(Surface) when record(Surface, sdl_surface) ->
     getPixelFormat(Surface#sdl_surface.self);
 getPixelFormat({surfacep, Ptr} = Ref) ->
-    Bin = call(?ESDL_getPixelFormat, <<Ptr:32>>),
-    <<Palette:32, BitsPP:8, BytesPP:8,  
+    Bin = call(?ESDL_getPixelFormat, <<Ptr:?_PTR>>),
+    <<Palette:?_PTR, BitsPP:8, BytesPP:8,  
       Rloss:8,  Gloss:8, Bloss:8, Aloss:8, 
       Rshift:8, Gshift:8, Bshift:8, Ashift:8, 
       Rmask:32, Gmask:32, Bmask:32, Amask:32, 
@@ -157,7 +158,7 @@ getPixelFormat({surfacep, Ptr} = Ref) ->
 getPalette(Surface) when record(Surface, sdl_surface) ->
     getPalette(Surface#sdl_surface.self);
 getPalette({surfacep, Ptr}) ->
-    <<Length:16, Tail/binary>> = call(?ESDL_getPalette, <<Ptr:32>>),
+    <<Length:16, Tail/binary>> = call(?ESDL_getPalette, <<Ptr:?_PTR>>),
     getColors(Tail, Length, []).
 
 % local functions
@@ -175,7 +176,7 @@ getColors(<<R:8, G:8, B:8, Tail/binary>>, N, Acc) ->
 getPixels(Surface, Size) when record(Surface, sdl_surface) ->
     getPixels(Surface#sdl_surface.self, Size);
 getPixels({surfacep, Ref}, Size) ->
-    Bin = call(?ESDL_getPixels, <<Ref:32, ?mk_rectbin(Size)>>),
+    Bin = call(?ESDL_getPixels, <<Ref:?_PTR, ?mk_rectbin(Size)>>),
     Bin.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -188,8 +189,8 @@ getPixels({surfacep, Ref}, Size) ->
 %%                                            int bpp, Uint32 flags);
 setVideoMode(W, H, Bpp, Type) ->
     case call(?SDL_SetVideoMode, <<W:16,H:16,Bpp:16,Type:32>>) of
-	<<0:32>> -> error;
-	<<Res:32>> -> {surfacep, Res}
+	<<0:64>> -> error;
+	<<Res:?_PTR>> -> {surfacep, Res}
     end.
 
 %% Func: videoDriverName
@@ -204,14 +205,14 @@ videoDriverName() ->
 %% Returns: surface ref to the current display 
 %% C-API func:  SDL_Surface * SDL_GetVideoSurface(void);
 getVideoSurface() ->
-    <<Bin:32>> = call(?SDL_GetVideoSurface, []),
+    <<Bin:?_PTR>> = call(?SDL_GetVideoSurface, []),
     {surfacep, Bin}.
 
 getVideoinfo() ->
     <<HW:8,WM:8, 
     BHW:8, BHWCC:8, BHWA:8, 
     BSW:8, BSWCC:8, BSWA:8, 
-    BF:8,  VM:32, VF:32>> = call(?SDL_GetVideoInfo, []),
+    BF:8,  VM:32, VF:?_PTR>> = call(?SDL_GetVideoInfo, []),
     #sdl_videoinfo{hw_available = HW  /= 0,
 		   wm_available = WM  /= 0,
 		   blit_hw      = BHW /= 0,
@@ -238,10 +239,10 @@ videoModeOK(W, H, Bpp, Type) ->
 %% Returns: [AvailableDimensions (in sdl_rect)] | all
 %% C-API func: SDL_Rect ** SDL_ListModes(SDL_PixelFormat *format, Uint32 flags);
 listModes({formatp, Ref}, Flags) ->
-    <<M:8, Bin/binary>> = call(?SDL_ListModes,<<Flags:32, 0:8, Ref:32>>),
+    <<M:8, Bin/binary>> = call(?SDL_ListModes,<<Flags:32, 0:8, Ref:?_PTR>>),
     listModesRet(M, Bin);
 listModes(null, Flags) ->
-    <<M:8, Bin/binary>> = call(?SDL_ListModes, <<Flags:32, 0:8, 0:32>>),
+    <<M:8, Bin/binary>> = call(?SDL_ListModes, <<Flags:32, 0:8, 0:?_PTR>>),
     listModesRet(M, Bin);
 listModes(PF, Flags) when record(PF, sdl_pixelformat) ->
     <<M:8, Bin/binary>>	= call(?SDL_ListModes,
@@ -249,7 +250,7 @@ listModes(PF, Flags) when record(PF, sdl_pixelformat) ->
 				(case PF#sdl_pixelformat.palette of
 				     null ->  0;
 				     {palettep, Ref} -> Ref
-				 end):32,
+				 end):?_PTR,
 	       (PF#sdl_pixelformat.bitsPerPixel):8,
 	       (PF#sdl_pixelformat.bytesPerPixel):8,
 	       (PF#sdl_pixelformat.rloss):8,        
@@ -281,7 +282,7 @@ listModesRet(0, <<X:16, Y:16, W:16, H:16, Rest/binary>>) ->
 displayFormat(Surface) when record(Surface, sdl_surface) ->
     displayFormat(Surface#sdl_surface.self);
 displayFormat({surfacep, Ref}) ->
-    <<Res:32>> = call(?SDL_DisplayFormat, <<Ref:32>>),
+    <<Res:?_PTR>> = call(?SDL_DisplayFormat, <<Ref:?_PTR>>),
     case Res of
 	0 -> exit({sdl_displayformat, returned_null_pointer});
 	_ -> {surfacep, Res}
@@ -300,14 +301,14 @@ blitSurface(SSurf, SRect, DSurf, DRect)
   when record(DSurf, sdl_surface) ->
     blitSurface(SSurf, SRect, DSurf#sdl_surface.self, DRect);
 blitSurface({surfacep, SrcRef}, null, {surfacep, DestRef}, null) ->
-    blitSurface2(<<SrcRef:32, DestRef:32, 0:8>>);	       
+    blitSurface2(<<SrcRef:?_PTR, DestRef:?_PTR, 0:8>>);	       
 blitSurface({surfacep, SrcRef}, SrcRect, {surfacep, DestRef}, null) ->
-    blitSurface2(<<SrcRef:32, DestRef:32, 1:8, ?mk_rectbin(SrcRect)>>);
+    blitSurface2(<<SrcRef:?_PTR, DestRef:?_PTR, 1:8, ?mk_rectbin(SrcRect)>>);
 blitSurface({surfacep, SrcRef}, null, {surfacep, DestRef}, DestRect) ->
-    blitSurface2(<<SrcRef:32, DestRef:32, 2:8, ?mk_rectbin(DestRect)>>);
+    blitSurface2(<<SrcRef:?_PTR, DestRef:?_PTR, 2:8, ?mk_rectbin(DestRect)>>);
 blitSurface({surfacep, SrcRef}, SRect, %{sdl_rect, SX,SY,SW,SH}, 
 	    {surfacep, DestRef}, DRect) -> %{sdl_rect, DX,DY,DW,DH}) ->
-    blitSurface2(<<SrcRef:32, DestRef:32, 3:8, 
+    blitSurface2(<<SrcRef:?_PTR, DestRef:?_PTR, 3:8, 
 		 ?mk_rectbin(SRect),    %SX:16, SY:16, SW:16, SH:16,
 		 ?mk_rectbin(DRect)>>). %DX:16, DY:16, DW:16, DH:16>>).
 
@@ -343,9 +344,9 @@ blitSurface2(Bin) ->
 fillRect(S, R, C) when record(S, sdl_surface) ->
     fillRect(S#sdl_surface.self, R, C);
 fillRect({surfacep, SRef}, null, Color) ->
-    fillRect2(<<SRef:32, Color:32, 0:8>>);
+    fillRect2(<<SRef:?_PTR, Color:32, 0:8>>);
 fillRect({surfacep, SRef}, {sdl_rect, X, Y, W, H}, Color) ->
-    fillRect2(<<SRef:32, Color:32, 1:8, X:16, Y:16, W:16, H:16>>).
+    fillRect2(<<SRef:?_PTR, Color:32, 1:8, X:16, Y:16, W:16, H:16>>).
 
 fillRect2(Bin) ->
     <<Res:8>> = call(?SDL_FillRect, Bin),
@@ -367,7 +368,7 @@ updateRects(S, R) when record(S, sdl_surface) ->
 updateRects({surfacep, Ref}, Rects) when list(Rects) ->
     Length   = length(Rects),
     BinRects = list_to_binary(mk_rectbins(Rects)), 
-    cast(?SDL_UpdateRects, <<Ref:32, Length:16, BinRects/binary>>).
+    cast(?SDL_UpdateRects, <<Ref:?_PTR, Length:16, BinRects/binary>>).
 
 mk_rectbins([]) ->
     [] ;
@@ -379,7 +380,7 @@ mk_rectbins([H|T]) ->
 %% Returns: true | false (if error)
 %% C-API func: int SDL_Flip(SDL_Surface *screen);
 flip({surfacep, Ref}) ->
-    <<Res:8>> = call(?SDL_Flip, <<Ref:32>>),
+    <<Res:8>> = call(?SDL_Flip, <<Ref:?_PTR>>),
     Res == 0;
 flip(S) when record(S, sdl_surface) ->
     flip(S#sdl_surface.self).
@@ -393,7 +394,7 @@ setColors(S, Colors, FirstColor, Ncolors) when record(S, sdl_surface) ->
 setColors({surfacep, Ref}, Colors, FirstColor, Ncolors) when list(Colors) ->
     BinC = list_to_binary(mkbin_colors(Colors, Ncolors)),
     Length = size(BinC) div 3,
-    <<Res:8>> = call(?SDL_SetColors, <<Ref:32, FirstColor:32, Length:32, BinC/binary>>),
+    <<Res:8>> = call(?SDL_SetColors, <<Ref:?_PTR, FirstColor:32, Length:32, BinC/binary>>),
     Res == 1.
 
 mkbin_colors([], _) ->    <<>> ;
@@ -409,7 +410,7 @@ mkbin_colors([H|R], N) ->
 setColorKey(Surface, Flag, Key) when record(Surface, sdl_surface) ->
     setColorKey(Surface#sdl_surface.self, Flag, Key);
 setColorKey({surfacep, Ref}, Flag, Key) ->
-    <<Res:8>> = call(?SDL_SetColorKey, <<Ref:32, Flag:32, Key:32>>),
+    <<Res:8>> = call(?SDL_SetColorKey, <<Ref:?_PTR, Flag:32, Key:32>>),
     Res == 0.
 
 %% Func: mapRGB
@@ -419,7 +420,7 @@ setColorKey({surfacep, Ref}, Flag, Key) ->
 mapRGB(Surface, R, G, B) when record(Surface, sdl_surface) -> 
     mapRGB(Surface#sdl_surface.self, R, G, B);
 mapRGB({surfacep, Ref}, R, G, B) ->
-    <<Pixel:32>> = call(?SDL_MapRGB, <<Ref:32, R:8, G:8, B:8>>),
+    <<Pixel:32>> = call(?SDL_MapRGB, <<Ref:?_PTR, R:8, G:8, B:8>>),
     Pixel.
 
 %% Func: createRGBsurface
@@ -427,7 +428,7 @@ mapRGB({surfacep, Ref}, R, G, B) ->
 %% Returns: A surface ref
 %% C-API func: SDL_Surface *SDL_CreateRGBSurface(Uint32 flags, int width, int height, int depth, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask);
 createRGBsurface(Flags, W, H, D, RM, GM, BM, AM) ->
-    <<Ref:32>> = call(?SDL_CreateRGBSurface,
+    <<Ref:?_PTR>> = call(?SDL_CreateRGBSurface,
 		      <<Flags:32, W:16, H:16, D:8, 1:8,
 		       RM:32, GM:32, BM:32, AM:32>>),
     case Ref of
@@ -436,7 +437,7 @@ createRGBsurface(Flags, W, H, D, RM, GM, BM, AM) ->
     end.
 
 createRGBsurface(Flags, W, H, D) ->
-    <<Ref:32>> = call(?SDL_CreateRGBSurface,
+    <<Ref:?_PTR>> = call(?SDL_CreateRGBSurface,
 		      <<Flags:32, W:16, H:16, D:8, 0:8>>),
     case Ref of
 	0 -> exit({createRGBsurface, returned_null_pointer});
@@ -451,17 +452,17 @@ createRGBsurface(Flags, W, H, D) ->
 %% C-API func: SDL_Surface *SDL_CreateRGBSurfaceFrom(void *pixels, int width, int height, int depth, int pitch,	Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask);
 createRGBsurfaceFrom(Pixels, W, H, D, P, RM, GM, BM, AM) 
   when binary(Pixels) ->
-    <<Ref:32>> = call(?SDL_CreateRGBSurface,
-		      <<W:16, H:16, D:8, P:16,
-		       RM:32, GM:32, BM:32, AM:32, (size(Pixels)):32, Pixels/binary>>),
+    <<Ref:?_PTR>> = call(?SDL_CreateRGBSurface,
+			 <<W:16, H:16, D:8, P:16,
+			  RM:32, GM:32, BM:32, AM:32, (size(Pixels)):32, Pixels/binary>>),
     case Ref of
 	0 -> exit({createRGBsurface, returned_null_pointer});
 	_ -> {surfacep, Ref}
     end;
 createRGBsurfaceFrom({pixelp, PixelRef}, W, H, D, P, RM, GM, BM, AM)  ->
-    <<Ref:32>> = call(?SDL_CreateRGBSurface,
-		      <<W:16, H:16, D:8, P:16,
-		       RM:32, GM:32, BM:32, AM:32, -1:32,  PixelRef:32>>),
+    <<Ref:?_PTR>> = call(?SDL_CreateRGBSurface,
+			 <<W:16, H:16, D:8, P:16,
+			  RM:32, GM:32, BM:32, AM:32, -1:32,  PixelRef:?_PTR>>),
     case Ref of
 	0 -> exit({createRGBsurface, returned_null_pointer});
 	_ -> {surfacep, Ref}
@@ -474,7 +475,7 @@ createRGBsurfaceFrom({pixelp, PixelRef}, W, H, D, P, RM, GM, BM, AM)  ->
 freeSurface(Surface) when record(Surface, sdl_surface) ->
     freeSurface(Surface#sdl_surface.self);
 freeSurface({surfacep, Ref}) ->
-    cast(?SDL_FreeSurface, <<Ref:32>>).
+    cast(?SDL_FreeSurface, <<Ref:?_PTR>>).
 
 %% Func: mustLock  
 %% Args: surfaceRef
@@ -494,7 +495,7 @@ mustLock(Surface) when record(Surface, sdl_surface) ->
 lockSurface(Surface) when record(Surface, sdl_surface) ->
     lockSurface(Surface#sdl_surface.self);
 lockSurface({surfacep, Ref}) ->
-    <<Res:8>> = call(?SDL_LockSurface, <<Ref:32>>),
+    <<Res:8>> = call(?SDL_LockSurface, <<Ref:?_PTR>>),
     Res == 0.
 
 %% Func:    unLockSurface (I don't have any hardware to test this function on)
@@ -504,14 +505,14 @@ lockSurface({surfacep, Ref}) ->
 unlockSurface(Surface) when record(Surface, sdl_surface) ->
     unlockSurface(Surface#sdl_surface.self);
 unlockSurface({surfacep, Ref}) ->
-    cast(?SDL_UnlockSurface, <<Ref:32>>).
+    cast(?SDL_UnlockSurface, <<Ref:?_PTR>>).
 
 %% Func: loadBMP
 %% Args: Name of the BMP file (string)
 %% Returns: a surface ref or null
 %% C-API func: SDL_Surface * SDL_LoadBMP(char * file);
 loadBMP(File) when is_list(File) ->
-    <<Res:32>> = call(?SDL_LoadBMP, [File,0]),
+    <<Res:?_PTR>> = call(?SDL_LoadBMP, [File,0]),
     case Res of 
 	0 -> 
 	    null;
@@ -526,7 +527,7 @@ loadBMP(File) when is_list(File) ->
 saveBMP(Surface, File) when record(Surface, sdl_surface) ->
     saveBMP(Surface#sdl_surface.self, File);
 saveBMP({surfacep, Ref}, File) when is_list(File) ->
-    <<Res:8>> = call(?SDL_SaveBMP, [<<Ref:32>>,File,0]),
+    <<Res:8>> = call(?SDL_SaveBMP, [<<Ref:?_PTR>>,File,0]),
     Res == 0.
 
 %% Func: setAlpha  
@@ -536,7 +537,7 @@ saveBMP({surfacep, Ref}, File) when is_list(File) ->
 setAlpha(Surface, Flag, Alpha) when record(Surface, sdl_surface) ->
     setAlpha(Surface#sdl_surface.self, Flag, Alpha);
 setAlpha({surfacep, Ref}, Flag, Alpha)->
-    <<Res:32>> = call(?SDL_SetAlpha, <<Ref:32, Flag:32, Alpha:32>>),
+    <<Res:32>> = call(?SDL_SetAlpha, <<Ref:?_PTR, Flag:32, Alpha:32>>),
     Res.
 
 %% Func:  setClipping 
@@ -548,7 +549,7 @@ setClipping(Surface, Top, Left, Botton, Right)
   when record(Surface, sdl_surface) ->
     setClipping(Surface#sdl_surface.self, Top, Left, Botton, Right);
 setClipping({surfacep, SRef}, Top, Left, Botton, Right) ->
-    cast(?SDL_SetClipping, <<SRef:32, Top:16, Left:16, Botton:16, Right:16>>).
+    cast(?SDL_SetClipping, <<SRef:?_PTR, Top:16, Left:16, Botton:16, Right:16>>).
 
 %% Func:  setGamma
 %% Args:  red, green, blue 
@@ -608,9 +609,9 @@ wm_getCaption() ->
 wm_setIcon(Icon, Mask) when record(Icon, sdl_surface) ->
     wm_setIcon(Icon#sdl_surface.self, Mask);
 wm_setIcon({surfacep, Ref}, null) ->
-    cast(?SDL_WM_SetIcon, <<Ref:32,0:16>>);
+    cast(?SDL_WM_SetIcon, <<Ref:?_PTR,0:16>>);
 wm_setIcon({surfacep, Ref}, Mask) when list(Mask) ->
-    cast(?SDL_WM_SetIcon, <<Ref:32, (length(Mask)):16, Mask>>).
+    cast(?SDL_WM_SetIcon, <<Ref:?_PTR, (length(Mask)):16, Mask>>).
 
 %% Func:    WM_IconifyWindow
 %% Args:    
@@ -626,7 +627,7 @@ wm_iconifyWindow() ->
 wm_toggleFullScreen(Surface) when record(Surface, sdl_surface) ->
     wm_toggleFullScreen(Surface#sdl_surface.self);
 wm_toggleFullScreen({surfacep, Ref}) ->
-    <<Res:8>> = call(?SDL_WM_ToggleFullScreen, <<Ref:32>>),
+    <<Res:8>> = call(?SDL_WM_ToggleFullScreen, <<Ref:?_PTR>>),
     Res == 1.
 
 %% Func:   wm_grabInput
@@ -690,7 +691,7 @@ gl_swapBuffers() ->
 mapRGBA(Surface, R, G, B, A) when record(Surface, sdl_surface) -> 
     mapRGBA(Surface#sdl_surface.self, R, G, B, A);
 mapRGBA({surfacep, Ref}, R, G, B, A) ->
-    <<Pixel:32>> = call(?SDL_MapRGBA, <<Ref:32, R:8, G:8, B:8, A:8>>),
+    <<Pixel:32>> = call(?SDL_MapRGBA, <<Ref:?_PTR, R:8, G:8, B:8, A:8>>),
     Pixel.
 
 %% Func: getClipRect
@@ -700,7 +701,7 @@ mapRGBA({surfacep, Ref}, R, G, B, A) ->
 getClipRect(Surface) when record(Surface, sdl_surface) ->
     getClipRect(Surface#sdl_surface.self);
 getClipRect({surfacep, Ref}) ->
-    <<X:16, Y:16, W:16, H:16>> = call(?SDL_GetClipRect, <<Ref:32>>),
+    <<X:16, Y:16, W:16, H:16>> = call(?SDL_GetClipRect, <<Ref:?_PTR>>),
     #sdl_rect{x=X, y=Y, w=W, h=H}.
     
 
@@ -711,7 +712,7 @@ getClipRect({surfacep, Ref}) ->
 setClipRect(Surface, Rect)  when record(Surface, sdl_surface) ->
     setClipRect(Surface#sdl_surface.self, Rect);
 setClipRect({surfacep, Ref}, #sdl_rect{x=X, y=Y, w=W, h=H}) ->
-    cast(?SDL_SetClipRect, <<Ref:32, X:16, Y:16, W:16, H:16>>).
+    cast(?SDL_SetClipRect, <<Ref:?_PTR, X:16, Y:16, W:16, H:16>>).
 
 %% Func: displayFormatAlpha
 %% Args: Surface Ref 
@@ -720,7 +721,7 @@ setClipRect({surfacep, Ref}, #sdl_rect{x=X, y=Y, w=W, h=H}) ->
 displayFormatAlpha(Surface) when record(Surface, sdl_surface) ->
     displayFormat(Surface#sdl_surface.self);
 displayFormatAlpha({surfacep, Ref}) ->
-    <<Res:32>> = call(?SDL_DisplayFormatAlpha, <<Ref:32>>),
+    <<Res:?_PTR>> = call(?SDL_DisplayFormatAlpha, <<Ref:?_PTR>>),
     case Res of
 	0 -> exit({sdl_displayformatalpha, returned_null_pointer});
 	_ -> {surfacep, Res}

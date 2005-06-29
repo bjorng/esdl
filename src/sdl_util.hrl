@@ -14,5 +14,5 @@
 
 
 -record(sdlmem, {type, bin, size}).
-
+-define(_PTR, 64/unsigned-native).
 

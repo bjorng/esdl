@@ -51,7 +51,7 @@ void copySdlImage2GLArray(sdl_data *sd, int len, char * buff)
   Uint8  rs,bs,gs,as;
 
   bp = buff;
-  image = (SDL_Surface *) get32be(bp);
+  POPGLPTR(image, bp);
   type = *bp;
   if (sd->next_bin == 1) {
     mem = (GLubyte *) sd->bin[0].base;

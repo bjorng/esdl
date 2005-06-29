@@ -15,21 +15,19 @@ void es_getSurface(sdl_data *sd, int len, char * buff)
     char *bp, *start;
     int sendlen;
     SDL_Surface *screen;
-    int sptr;
     
     bp = buff;
-    sptr = get32be(bp);
-    screen = (SDL_Surface *) sptr;
+    POPGLPTR(screen, bp);
     if(screen == NULL) {
 	error();
     }
-    bp = start = sdl_getbuff(sd, 6*4+2);
+    bp = start = sdl_getbuff(sd, 4*4+2+8*2);
     put32be(bp, screen->flags);
-    put32be(bp, (int) screen->format);
+    PUSHGLPTR(screen->format, bp);
     put32be(bp, screen->w);
     put32be(bp, screen->h);
     put16be(bp, screen->pitch);
-    put32be(bp, (int) screen->pixels);
+    PUSHGLPTR(screen->pixels, bp);
     put32be(bp, screen->offset);
 /*     put32be(bp, screen->clip_minx); */
 /*     put32be(bp, screen->clip_maxx); */
@@ -49,15 +47,15 @@ void es_getPixelFormat(sdl_data *sd, int len, char * buff)
     
     bp = buff;
 
-    sptr = (SDL_Surface *) get32be(bp);
+    POPGLPTR(sptr, bp);
     if(sptr == NULL) 
        error();
     format = sptr->format;
     if(format == NULL) 
        error();
     
-    bp = start = sdl_get_temp_buff(sd, 6*4+11);
-    put32be(bp, (int) format->palette);
+    bp = start = sdl_get_temp_buff(sd, 8+5*4+11);
+    PUSHGLPTR(format->palette, bp);
     put8(bp, format->BitsPerPixel);
     put8(bp, format->BytesPerPixel);
     put8(bp, format->Rloss);
@@ -88,7 +86,7 @@ void es_getPalette(sdl_data *sd, int len, char * buff)
     int i;
 
     bp = buff;
-    sptr = (SDL_Surface *) get32be(bp);
+    POPGLPTR(sptr, bp);
     palette = sptr->format->palette;    
     
     if(palette == NULL) {
@@ -121,7 +119,7 @@ void es_getPixels(sdl_data *sd, int len, char * buff)
    Uint8 *row;
 
    bp = buff;
-   sptr = (SDL_Surface *) get32be(bp);
+   POPGLPTR(sptr, bp);
    
    if(sptr == NULL) 
       error();
