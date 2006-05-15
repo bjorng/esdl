@@ -47,6 +47,9 @@
 -define(GL_UNSIGNED_INT_SIZE, 32).
 -define(GL_FLOAT_SIZE, 32).
 -define(GL_DOUBLE_SIZE, 64).
+
+-define(SEARCH, "http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+").
+
 gl_type_size(TYPE) -> 
     case (TYPE) of 
 	"boolean" ->            hd(io_lib:format("~p", [?GL_BYTE_SIZE div 8]));
@@ -400,12 +403,15 @@ genf_erl(Type, FuncName, Args0, _Last, Fd) ->
     EFN = format_func2erl(FuncName),
     {Rets,Args1} = find_returns(Args0, FuncName),
     Args = fixArgsOrder(FuncName, Args1),
-    ?W("%% Func:    ~s ~n", [EFN]),
-    ?W("%% Args:    ",[]), write_args(FuncName, erlcom, Args1, Fd),
-    ?W("~n%% Returns: ",[]), write_returns(FuncName, erlcom, Type, Rets, Fd),
+    ?W("%% @spec ~s(", [EFN]), write_args(FuncName, erlcom, Args1, Fd), 
+    ?W(") -> ",[]), write_returns(FuncName, erlcom, Type, Rets, Fd),
+%    ?W("%% Func:    ~s ~n", [EFN]),
+%    ?W("%% Args:    ",[]), write_args(FuncName, erlcom, Args1, Fd),
+%    ?W("~n%% Returns: ",[]), write_returns(FuncName, erlcom, Type, Rets, Fd),
+    ?W("~n%% @doc <a href=\"~s~s\">External manpage: ~s</a>", [?SEARCH,strip_types(FuncName),EFN]),
     ?W("~n%% C-API func: ~s ~s(", 
-	      if element(2,Type) == pointer -> [element(1,Type)++"*", FuncName]; 
-		 true -> [Type, FuncName] end),
+       if element(2,Type) == pointer -> [element(1,Type)++"*", FuncName]; 
+	  true -> [Type, FuncName] end),
     write_args(FuncName, c, Args0, Fd),
     Cfunc = case skip(FuncName) of call_vector -> call_vector(FuncName); _ -> FuncName end,
     ?W(")~n~s(", [EFN]), write_args(FuncName, erl, Args1, Fd), ?W(") -> ~n", []),
@@ -417,6 +423,7 @@ genf_erl(Type, FuncName, Args0, _Last, Fd) ->
 	    ?W(")~n catch error:_ -> ~s_fallback(", [FuncName]), 
 	    write_args(FuncName, erl, Args1, Fd),
 	    ?W(") end.~n",[]),
+	    ?W("%% @hidden~n",[]),
 	    ?W("~s_fallback(", [FuncName]), write_args(FuncName, erl, Args1, Fd),
 	    ?W(") -> ~n", []);
 	{true,NoArb0} ->
@@ -598,29 +605,29 @@ free_mem([], _,Fd) ->
 
 maybe_build_erlbinaries(Func,[Arg={_,const,pointer,_}|R],Fd) ->
     case is_vector(Func) of
-	false ->
-	    case build_erlbinaries(Func, Arg, R == [], Fd) of
+	N when is_number(N) ->
+	    [Arg | maybe_build_erlbinaries(Func, R, Fd)];
+	Vec ->
+	    case build_erlbinaries(Func, Arg, Vec, R == [], Fd) of
 		already_sent -> 
 		    maybe_build_erlbinaries(Func, R, Fd);
 		New ->
 		    put({binary_arg, Func}, Arg),
 		    [New | maybe_build_erlbinaries(Func, R, Fd)]
-	    end;
-	_ ->
-	    [Arg | maybe_build_erlbinaries(Func, R, Fd)]
+	    end
     end;    
 maybe_build_erlbinaries(Func,[Arg={_,const,pointer,pointer,_}|R],Fd) ->
     case is_vector(Func) of
-	false ->
-	    case build_erlbinaries(Func, Arg, R == [], Fd) of
+	N when is_integer(N) ->
+	    [Arg | maybe_build_erlbinaries(Func, R, Fd)];
+	Vector ->
+	    case build_erlbinaries(Func, Arg, Vector, R == [], Fd) of
 		already_sent -> 
 		    maybe_build_erlbinaries(Func, R, Fd);
 		New ->
 		    put({binary_arg, Func}, Arg),
 		    [New | maybe_build_erlbinaries(Func, R, Fd)]
-	    end;
-	_ ->
-	    [Arg | maybe_build_erlbinaries(Func, R, Fd)]
+	    end
     end;
 maybe_build_erlbinaries(Func, [V={_T,pointer,Var}|R], Fd) ->
     case getdef(Func, Var) of
@@ -638,12 +645,24 @@ maybe_build_erlbinaries(Func, [V|R], Fd) ->
 maybe_build_erlbinaries(_F, [], _Fd) ->
     [].
 
-build_erlbinaries(_Func, {_T, const, pointer, pointer,V}, _IsLast, Fd) ->
+build_erlbinaries(_Func, {_T, const, pointer, pointer,V}, _IsTuple, _IsLast, Fd) ->
     ?W(" lists:foreach(fun(Values) -> sdl:send_bin(list_to_binary([Values,0]), ?MODULE, ?LINE) end, ~s),~n", 
        [uppercase(V)]),
     already_sent;
 
-build_erlbinaries(Func, {T, const, pointer,V}, IsLast, Fd) ->
+build_erlbinaries(Func,{T,const,pointer,V},{tuplelist,1}, _IsLast, Fd) ->
+    N = case getdef(Func, V) of 
+	    What when is_list(What) -> uppercase(What);
+	    What when is_integer(What) -> integer_to_list(What)
+	end,	
+    ?W(" sdl:send_bin(sdl_util:term2bin(~s,~s,~s), ?MODULE, ?LINE),~n",
+       [uppercase(V),N,type_to_enum(T)]),
+    already_sent;
+build_erlbinaries(_Func,{T,const,pointer,V},{tuplelist,N}, _IsLast, Fd) ->
+    ?W(" sdl:send_bin(sdl_util:tuplelist2bin(~p,~s,~s), ?MODULE, ?LINE),~n",
+       [N,type_to_enum(T),uppercase(V)]),
+    already_sent;
+build_erlbinaries(Func, {T, const, pointer,V}, _IsTuple, IsLast, Fd) ->
     Var = uppercase(V),
     Type = case type_to_enum(T) of
 	       Unknown = "GeneraterUnknownType:" ++ _ ->
@@ -833,7 +852,7 @@ write_arg(_FuncName, Type, {T,V}, Fd, Prev0, IsLast, Align0) ->
 		?W("~s~s", [Cont, element(1, erlVar(V))]), 
 		no;
 	    erlcom ->
-		?W("~s~s", [Cont, element(1, erlVar(V))]), 
+		?W("~s~s::~s", [Cont, element(1, erlVar(V)),erltype(T)]), 
 		no;
 	    binerl ->
 		Next = write_binarg(Prev0, T, Fd),
@@ -918,10 +937,10 @@ write_arg(FuncName, Type, {T,pointer, V}, Fd, Prev0, _IsLast, Align0) ->
 	    erlcom -> 
 		case getdef(FuncName, V) of 
 		    sdlmem ->
-			?W("~s#sdlmem{} = ~s", 
-			   [Cont, element(1, erlVar(V))]);
+			?W("~s~s::~s", 
+			   [Cont, element(1, erlVar(V)), erltype(sdlmem)]);
 		    _ when ?GLUTYPE(T) ->
-			?W("~s~s", [Cont,element(1, erlVar(V))]);
+			?W("~s~s::~s", [Cont,element(1, erlVar(V)), erltype(T)]);
 		    _ ->
 			ignore
 		end;
@@ -988,7 +1007,8 @@ write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
 		     %% ?W(" oglmem * ~s = NULL;~n", [V]);
 		    Variable when list(Variable) ->
 			?W(" ~s * ~s = NULL; ~n", [T,V]);
-
+		    {tuplelist,_N} -> 
+			?W(" ~s * ~s = NULL;~n", [T,V]);
 		    Error ->
 			erlang:fault({?MODULE, ?LINE, Error})
 		end;
@@ -1038,6 +1058,11 @@ write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
 			?W(" ~s = (~s *) egl_sd->bin[~w].base; ~n", [V,T,Cnt]),
 			put(free_args, true),
 			put(arg_cnt, Cnt+1);
+		    {tuplelist,_N} -> 
+			Cnt = get(arg_cnt),
+			?W(" ~s = (~s *) egl_sd->bin[~w].base; ~n", [V,T,Cnt]),
+			put(free_args, true),
+			put(arg_cnt, Cnt+1);
 		    Str when list(Str), ((T=="GLdouble") or (T=="GLclampd")) ->
 			?W(" ~s = (~s*) malloc(sizeof(~s)*(*~s));~n",
 			   [V,T,T,Str]),
@@ -1056,16 +1081,20 @@ write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
 	    erlcom ->
 		case is_vector(FuncName) of
 		    false ->
-			?W("~s<<[~s]>>", [Cont, element(1, erlVar(V))]);
+			?W("~s~s::binary() | [~s]", [Cont, element(1, erlVar(V)),erltype(T)]);
+		    {tuplelist, 1} ->
+			write_tuple(erlVar(V), 1, Cont++"[","::"++erltype(T),"]",Fd);
+		    {tuplelist, Int} ->
+			write_tuple(erlVar(V), Int, Cont++"[{","::"++erltype(T),"}]",Fd);
 		    Int ->
-			write_tuple(erlVar(V), Int, Cont++"{", "", "}",Fd)
+			write_tuple(erlVar(V), Int, Cont++"{","::"++erltype(T),"}",Fd)
 		end;
 	    erl ->
 		case is_vector(FuncName) of
-		    false ->
-			?W("~s~s", [Cont, element(1, erlVar(V))]);
-		    Int ->
-			write_tuple(erlVar(V), Int, Cont++"{", "", "}",Fd)
+		    Int when is_integer(Int) ->
+			write_tuple(erlVar(V), Int, Cont++"{", "", "}",Fd);
+		    _ ->
+			?W("~s~s", [Cont, element(1, erlVar(V))])
 		end;
 	    binerl ->
 		case is_vector(FuncName) of
@@ -1073,6 +1102,8 @@ write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
 			write_binarg(Prev0, T, Fd),
 			write_tuple(erlVar(V), Int, "", bintype(T), "", Fd),
 			buildbin;
+		    {tuplelist, _Int} ->
+			exit({?MODULE,?LINE});
 		    _ ->
 			Prev0
 		end
@@ -1129,11 +1160,12 @@ write_arg(FuncName,Type,{T,const,pointer,pointer,V},Fd,First, _IsLast,Align)
 	    ?W("~s~s", [Cont, remCarray(V)]);
 	erl ->
 	    ?W("~s~s", [Cont, element(1, erlVar(V))]);
+	erlcom ->
+	    ?W("~s~s::[binary()]", [Cont, element(1, erlVar(V))]);
 	_ ->
 	    ignore
     end,
     {no, Align};
-
 
 
 write_arg(_FuncName, _Type, {_T, callback, _V}, Fd, _First, _, Align) ->
@@ -1193,21 +1225,21 @@ write_returns(_FuncName, erlcom, Type, Rets, Fd) ->
     case {Type, Rets} of
 	{"void", []} -> ?W("ok", []);
 	{"void", [{D,_}]} ->
-	    ?W("[~s]", [uppercase(D)]);
+	    ?W("~s::[~s]", [uppercase(D),erltype(Type)]);
 	{"void", [{D,pointer,_}]} ->
-	    ?W("~s=#sdlmem{}", [uppercase(D)]);
-	{"void", [{V1, _}|R]} ->
-	    ?W("{[~s]", [uppercase(V1)]),
-	    [?W(", [~s]", [uppercase(V)]) || {V, _T} <- R],
+	    ?W("~s::sdlmem()", [uppercase(D)]);
+	{"void", [{V1, T1}|R]} ->
+	    ?W("{[~s::~s]", [uppercase(V1),erltype(T1)]),
+	    [?W(", [~s::~s]", [uppercase(V),erltype(T2)]) || {V, T2} <- R],
 	    ?W("}", []);	    
 	{{RType, pointer}, []} when ?GLUTYPE(RType) ->
 	    ?W("[~s]", [uppercase(eglutype(RType))]);
 	{{RT,pointer}, []} -> 
-	    ?W("[~s]", [uppercase(type_to_enum(RT))]);
-	{Type, []} -> ?W("~s", [uppercase(type_to_enum(Type))]);	
+	    ?W("[~s]", [erltype(RT)]);
+	{Type, []} -> ?W("~s", [erltype(Type)]);	
 	{Type, _} -> 
-	    ?W("{~s", [uppercase(type_to_enum(Type))]),
-	    [?W(", [~s]", [uppercase(V)]) || {V, _T} <- Rets],
+	    ?W("{~s", [erltype(Type)]),
+	    [?W(", [~s::~s]", [uppercase(V),erltype(T)]) || {V,T} <- Rets],
 	    ?W("}", [])
     end;
 write_returns(FuncName, erl, Type, Rets, Fd) ->
@@ -1440,48 +1472,55 @@ eglutype("GLUquadric") ->
 eglutype("GLUnurbs") ->
     "nurbsPtr".
 
-type_to_enum("GLboolean") ->
-    "?GL_BYTE";
-type_to_enum("GLbyte") ->
-    "?GL_BYTE";
-type_to_enum("GLshort") ->
-    "?GL_SHORT";
-type_to_enum("GLint") ->
-    "?GL_INT";
-type_to_enum("GLubyte") ->
-    "?GL_UNSIGNED_BYTE";
-type_to_enum("GLcharARB") ->
-    "?GL_UNSIGNED_BYTE";
-type_to_enum("GLchar") ->
-    "?GL_UNSIGNED_BYTE";
-type_to_enum("GLushort") ->
-    "?GL_UNSIGNED_SHORT";
-type_to_enum("GLuint") ->
-    "?GL_UNSIGNED_INT";
-type_to_enum("GLsizei") ->
-    "?GL_UNSIGNED_INT";
-type_to_enum("GLfloat") ->
-    "?GL_FLOAT";
-type_to_enum("GLclampf") ->
-    "?GL_FLOAT";
-type_to_enum("GLdouble") ->
-    "?GL_DOUBLE";
-type_to_enum("GLclampd") ->
-    "?GL_DOUBLE";
-type_to_enum("GLbitfield") ->
-    "?GL_INT";
-type_to_enum("GLenum") ->
-    "?GL_INT";  %% hmm
-type_to_enum("GLhandleARB") ->
-    "?GL_UNSIGNED_INT";
-type_to_enum("GLsizeiptr") ->
-    "?GL_UNSIGNED_INT";  %% hmm
-type_to_enum("GLintptr") ->
-    "?GL_UNSIGNED_INT";  %% hmm
+type_to_enum("GLboolean") ->    "?GL_BYTE";
+type_to_enum("GLbyte") ->       "?GL_BYTE";
+type_to_enum("GLshort") ->      "?GL_SHORT";
+type_to_enum("GLint") ->        "?GL_INT";
+type_to_enum("GLubyte") ->      "?GL_UNSIGNED_BYTE";
+type_to_enum("GLcharARB") ->    "?GL_UNSIGNED_BYTE";
+type_to_enum("GLchar") ->       "?GL_UNSIGNED_BYTE";
+type_to_enum("GLushort") ->     "?GL_UNSIGNED_SHORT";
+type_to_enum("GLuint") ->       "?GL_UNSIGNED_INT";
+type_to_enum("GLsizei") ->      "?GL_UNSIGNED_INT";
+type_to_enum("GLfloat") ->      "?GL_FLOAT";
+type_to_enum("GLclampf") ->     "?GL_FLOAT";
+type_to_enum("GLdouble") ->     "?GL_DOUBLE";
+type_to_enum("GLclampd") ->     "?GL_DOUBLE";
+type_to_enum("GLbitfield") ->   "?GL_INT";
+type_to_enum("GLenum") ->       "?GL_INT";  %% hmm
+type_to_enum("GLhandleARB") ->  "?GL_UNSIGNED_INT";
+type_to_enum("GLsizeiptr") ->   "?GL_UNSIGNED_INT";  %% hmm
+type_to_enum("GLintptr") ->     "?GL_UNSIGNED_INT";  %% hmm
     
-
 type_to_enum(What) ->
     "GeneraterUnknownType: " ++ What.
+
+erltype("GLboolean") ->    "bool()";
+erltype("GLbyte") ->       "integer()";
+erltype("GLshort") ->      "integer()";
+erltype("GLint") ->        "integer()";
+erltype("GLubyte") ->      "integer()";
+erltype("GLcharARB") ->    "integer()";
+erltype("GLchar") ->       "integer()";
+erltype("GLushort") ->     "integer()";
+erltype("GLuint") ->       "integer()";
+erltype("GLsizei") ->      "integer()";
+erltype("GLfloat") ->      "float()";
+erltype("GLclampf") ->     "float()";
+erltype("GLdouble") ->     "float()";
+erltype("GLclampd") ->     "float()";
+erltype("GLbitfield") ->   "integer()";
+erltype("GLenum") ->       "integer()";  %% hmm
+erltype("GLhandleARB") ->  "integer()";
+erltype("GLsizeiptr") ->   "integer()";  %% hmm
+erltype("GLintptr") ->     "integer()";  %% hmm
+erltype("GLvoid") ->       "number()";      %% hmm
+erltype(sdlmem) ->         "sdlmem()";  %% hmm
+%%erltype({binORlist,T}) ->      "::binary()";  %% hmm
+erltype(T) when ?GLUTYPE(T) ->  "::"++ eglutype(T) ++"()";  %% hmm
+
+erltype(T) -> "term()".
+     
 
 typeSz(T) ->
     case type_to_enum(T) of
@@ -1773,31 +1812,59 @@ has_vector("BRA" ++ Rest) -> %% ARB
 has_vector(_) ->
     false.
 
+strip_types(Func) ->
+    RFunc = lists:reverse(Func),
+    case (has_vector(RFunc) /= false) orelse is_vector(Func) /= false of
+	false -> Func;
+	true ->  strip_func(RFunc) 
+    end.
+
+strip_func("BRA" ++ Name) ->    strip_func(Name) ++ "ARB";
+strip_func("TXE" ++ Name) ->    strip_func(Name) ++ "EXT";
+strip_func("v" ++ Name) ->      strip_func(Name);
+strip_func("f" ++ Name) ->      strip_func(Name);
+strip_func("d" ++ Name) ->      strip_func(Name);
+strip_func("s" ++ Name) ->      strip_func(Name);
+strip_func("i" ++ Name) ->      strip_func(Name);
+strip_func("u" ++ Name) ->      strip_func(Name);
+strip_func("b" ++ Name) ->      strip_func(Name);
+strip_func([N|Name]) when N > 47, N < 58 ->
+    lists:reverse(Name);
+strip_func(Name) -> lists:reverse(Name).
+	    
 is_vector(Func) ->
     case get({is_vector, Func}) of
 	undefined ->
-	    Res = is_vector2(lists:reverse(Func)),
+	    Res0 = is_vector2(lists:reverse(Func)),
+	    Res = case Func of 
+		      "glUniform" ++ _ when Res0 /= false -> 
+			  {tuplelist, Res0};
+		      _ -> Res0
+		  end,
 	    put({is_vector, Func}, Res),
 	    Res;
 	Else ->
 	    Else
     end.
 
+is_vector2([$v,$f,N,$x,$i,$r,$t,$a|_]) when N > 47, N < 58 ->
+    I=N-$0, 
+    I*I;
 is_vector2([$v,$b, N|_]) when N > 47, N < 58 ->
     N-$0;
-is_vector2([$v,$i, N|_]) when N > 47, N < 58 ->
+is_vector2([$v,$i, N|_])   ->
     N-$0;
-is_vector2([$v,$s, N|_]) when N > 47, N < 58 ->
+is_vector2([$v,$s, N|_])   ->
     N-$0;
-is_vector2([$v,$b,$u,N|_]) when N > 47, N < 58 ->
+is_vector2([$v,$b,$u,N|_]) ->
     N-$0;
-is_vector2([$v,$i,$u,N|_]) when N > 47, N < 58 ->
+is_vector2([$v,$i,$u,N|_]) ->
     N-$0;
-is_vector2([$v,$s,$u,N|_]) when N > 47, N < 58 ->
+is_vector2([$v,$s,$u,N|_]) ->
     N-$0;
-is_vector2([$v,$d, N|_]) when N > 47, N < 58 ->
+is_vector2([$v,$d, N|_])  ->
     N-$0;
-is_vector2([$v,$f, N|_]) when N > 47, N < 58 ->
+is_vector2([$v,$f, N|_])  ->
     N-$0;
 is_vector2(_) ->
     false.

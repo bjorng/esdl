@@ -15,6 +15,7 @@
 -module(sdl_util).
 
 -export([term2bin/3,matrix2bin/2,bin2list/3,
+	 tuplelist2bin/3, tuplelist2bin2/2, tuplelist2bin3/2, tuplelist2bin4/2,
 	 alloc/2,getBin/1,
 	 read/2,write/2,write/3,readBin/2,
 	 copySdlImage2GLArray/3,
@@ -29,6 +30,7 @@
 -include("esdl.hrl").
 
 -import(sdl, [call/2,cast/2]).
+-import(lists, [reverse/1]).
 
 -define(SDL_UTIL_copySdlImage2GLArray, (?SDL_UTIL_HRL+1)).
 -define(SDL_UTIL_debug, (?SDL_UTIL_HRL+2)).
@@ -224,6 +226,73 @@ bool_tuple2bin(Tuple, I, Acc0) ->
 	      Bool -> [Bool|Acc0]
 	  end,
     bool_tuple2bin(Tuple, I-1, Acc).
+
+%% Func:    tuplelist2bin[TupleSize]
+%% Args:    [TupleSize,] Type, List
+%% Returns: Binary
+%% Desc:    Converts a tupleList [{X,Y,..}..] to binary.
+
+tuplelist2bin(2,Type,List) -> 
+    tuplelist2bin2(Type,List);
+tuplelist2bin(3,Type,List) -> 
+    tuplelist2bin3(Type,List);
+tuplelist2bin(4,Type,List) -> 
+    tuplelist2bin4(Type,List);
+tuplelist2bin(16,Type,List) ->  %% A special case.
+    list_to_binary([matrix2bin(Tuple,Type)|| Tuple <- List]);
+tuplelist2bin(Other,Type,List) ->
+    list_to_binary([term2bin(Tuple,Other,Type)|| Tuple <- List]).
+
+tuplelist2bin2(?GL_FLOAT,List) ->
+    tuplelist2bin2_float(List,32,[]);
+tuplelist2bin2(?GL_DOUBLE,List) ->
+    tuplelist2bin2_float(List,64,[]);
+tuplelist2bin2(?GL_INT,List) ->
+    tuplelist2bin2_int(List,32,[]);
+tuplelist2bin2(?GL_UNSIGNED_INT,List) ->
+    tuplelist2bin2_int(List,32,[]).
+
+tuplelist2bin3(?GL_FLOAT,List) ->
+    tuplelist2bin3_float(List,32,[]);
+tuplelist2bin3(?GL_DOUBLE,List) ->
+    tuplelist2bin3_float(List,64,[]);
+tuplelist2bin3(?GL_INT,List) ->
+    tuplelist2bin3_int(List,32,[]);
+tuplelist2bin3(?GL_UNSIGNED_INT,List) ->
+    tuplelist2bin3_int(List,32,[]).
+
+tuplelist2bin4(?GL_FLOAT,List) ->
+    tuplelist2bin4_float(List,32,[]);
+tuplelist2bin4(?GL_DOUBLE,List) ->
+    tuplelist2bin4_float(List,64,[]);
+tuplelist2bin4(?GL_INT,List) ->
+    tuplelist2bin4_int(List,32,[]);
+tuplelist2bin4(?GL_UNSIGNED_INT,List) ->
+    tuplelist2bin4_int(List,32,[]).
+
+tuplelist2bin2_float([{X,Y}|List],N,Acc) ->
+    tuplelist2bin2_float(List,N,[<<X:N/float-native,Y:N/float-native>>|Acc]);
+tuplelist2bin2_float([],_,Acc) -> list_to_binary(reverse(Acc)).
+tuplelist2bin3_float([{X,Y,Z}|List],N,Acc) ->
+    tuplelist2bin3_float(List,N,[<<X:N/float-native,Y:N/float-native,
+				  Z:N/float-native>>|Acc]);
+tuplelist2bin3_float([],_,Acc) -> list_to_binary(reverse(Acc)).
+tuplelist2bin4_float([{X,Y,Z,W}|List],N,Acc) ->
+    tuplelist2bin4_float(List,N,[<<X:N/float-native,Y:N/float-native,
+				  Z:N/float-native,W:N/float-native>>|Acc]);
+tuplelist2bin4_float([],_,Acc) -> list_to_binary(reverse(Acc)).
+
+tuplelist2bin2_int([{X,Y}|List],N,Acc) ->
+    tuplelist2bin2_int(List,N,[<<X:N/native,Y:N/native>>|Acc]);
+tuplelist2bin2_int([],_,Acc) -> list_to_binary(reverse(Acc)).
+tuplelist2bin3_int([{X,Y,Z}|List],N,Acc) ->
+    tuplelist2bin3_int(List,N,[<<X:N/native,Y:N/native,
+				Z:N/native>>|Acc]);
+tuplelist2bin3_int([],_,Acc) -> list_to_binary(reverse(Acc)).
+tuplelist2bin4_int([{X,Y,Z,W}|List],N,Acc) ->
+    tuplelist2bin4_int(List,N,[<<X:N/native,Y:N/native,
+				Z:N/native,W:N/native>>|Acc]);
+tuplelist2bin4_int([],_,Acc) -> list_to_binary(reverse(Acc)).
 
 %% Func:    bin2list
 %% Args:    No, Type, Binary

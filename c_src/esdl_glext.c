@@ -2625,12 +2625,13 @@ void egl_uniform2fv(sdl_data *egl_sd, int egl_len, char *egl_buff)
  char * bp; 
  GLint * location;
  GLsizei * count;
- GLfloat * value = NULL; 
+ GLfloat * value = NULL;
  bp = egl_buff;
  location = (GLint *) bp; bp += sizeof(GLint); 
  count = (GLsizei *) bp; bp += sizeof(GLsizei); 
- value = (GLfloat *) bp;
+ value = (GLfloat *) egl_sd->bin[0].base; 
  esdl_glUniform2fv(*location, *count, value);
+ sdl_free_binaries(egl_sd);
 }
 
 
@@ -2639,12 +2640,13 @@ void egl_uniform3fv(sdl_data *egl_sd, int egl_len, char *egl_buff)
  char * bp; 
  GLint * location;
  GLsizei * count;
- GLfloat * value = NULL; 
+ GLfloat * value = NULL;
  bp = egl_buff;
  location = (GLint *) bp; bp += sizeof(GLint); 
  count = (GLsizei *) bp; bp += sizeof(GLsizei); 
- value = (GLfloat *) bp;
+ value = (GLfloat *) egl_sd->bin[0].base; 
  esdl_glUniform3fv(*location, *count, value);
+ sdl_free_binaries(egl_sd);
 }
 
 
@@ -2653,12 +2655,13 @@ void egl_uniform4fv(sdl_data *egl_sd, int egl_len, char *egl_buff)
  char * bp; 
  GLint * location;
  GLsizei * count;
- GLfloat * value = NULL; 
+ GLfloat * value = NULL;
  bp = egl_buff;
  location = (GLint *) bp; bp += sizeof(GLint); 
  count = (GLsizei *) bp; bp += sizeof(GLsizei); 
- value = (GLfloat *) bp;
+ value = (GLfloat *) egl_sd->bin[0].base; 
  esdl_glUniform4fv(*location, *count, value);
+ sdl_free_binaries(egl_sd);
 }
 
 
@@ -2681,12 +2684,13 @@ void egl_uniform2iv(sdl_data *egl_sd, int egl_len, char *egl_buff)
  char * bp; 
  GLint * location;
  GLsizei * count;
- GLint * value = NULL; 
+ GLint * value = NULL;
  bp = egl_buff;
  location = (GLint *) bp; bp += sizeof(GLint); 
  count = (GLsizei *) bp; bp += sizeof(GLsizei); 
- value = (GLint *) bp;
+ value = (GLint *) egl_sd->bin[0].base; 
  esdl_glUniform2iv(*location, *count, value);
+ sdl_free_binaries(egl_sd);
 }
 
 
@@ -2695,12 +2699,13 @@ void egl_uniform3iv(sdl_data *egl_sd, int egl_len, char *egl_buff)
  char * bp; 
  GLint * location;
  GLsizei * count;
- GLint * value = NULL; 
+ GLint * value = NULL;
  bp = egl_buff;
  location = (GLint *) bp; bp += sizeof(GLint); 
  count = (GLsizei *) bp; bp += sizeof(GLsizei); 
- value = (GLint *) bp;
+ value = (GLint *) egl_sd->bin[0].base; 
  esdl_glUniform3iv(*location, *count, value);
+ sdl_free_binaries(egl_sd);
 }
 
 
@@ -2709,12 +2714,13 @@ void egl_uniform4iv(sdl_data *egl_sd, int egl_len, char *egl_buff)
  char * bp; 
  GLint * location;
  GLsizei * count;
- GLint * value = NULL; 
+ GLint * value = NULL;
  bp = egl_buff;
  location = (GLint *) bp; bp += sizeof(GLint); 
  count = (GLsizei *) bp; bp += sizeof(GLsizei); 
- value = (GLint *) bp;
+ value = (GLint *) egl_sd->bin[0].base; 
  esdl_glUniform4iv(*location, *count, value);
+ sdl_free_binaries(egl_sd);
 }
 
 
@@ -2724,14 +2730,15 @@ void egl_uniformMatrix2fv(sdl_data *egl_sd, int egl_len, char *egl_buff)
  GLint * location;
  GLsizei * count;
  GLboolean * transpose;
- GLfloat * value;
+ GLfloat * value = NULL;
  bp = egl_buff;
  location = (GLint *) bp; bp += sizeof(GLint); 
  count = (GLsizei *) bp; bp += sizeof(GLsizei); 
  transpose = (GLboolean *) bp; bp += sizeof(GLboolean); 
  bp += 3;
- value = (GLfloat *) bp;
+ value = (GLfloat *) egl_sd->bin[0].base; 
  esdl_glUniformMatrix2fv(*location, *count, *transpose, value);
+ sdl_free_binaries(egl_sd);
 }
 
 
@@ -2741,14 +2748,15 @@ void egl_uniformMatrix3fv(sdl_data *egl_sd, int egl_len, char *egl_buff)
  GLint * location;
  GLsizei * count;
  GLboolean * transpose;
- GLfloat * value;
+ GLfloat * value = NULL;
  bp = egl_buff;
  location = (GLint *) bp; bp += sizeof(GLint); 
  count = (GLsizei *) bp; bp += sizeof(GLsizei); 
  transpose = (GLboolean *) bp; bp += sizeof(GLboolean); 
  bp += 3;
- value = (GLfloat *) bp;
+ value = (GLfloat *) egl_sd->bin[0].base; 
  esdl_glUniformMatrix3fv(*location, *count, *transpose, value);
+ sdl_free_binaries(egl_sd);
 }
 
 
@@ -2758,14 +2766,15 @@ void egl_uniformMatrix4fv(sdl_data *egl_sd, int egl_len, char *egl_buff)
  GLint * location;
  GLsizei * count;
  GLboolean * transpose;
- GLfloat * value;
+ GLfloat * value = NULL;
  bp = egl_buff;
  location = (GLint *) bp; bp += sizeof(GLint); 
  count = (GLsizei *) bp; bp += sizeof(GLsizei); 
  transpose = (GLboolean *) bp; bp += sizeof(GLboolean); 
  bp += 3;
- value = (GLfloat *) bp;
+ value = (GLfloat *) egl_sd->bin[0].base; 
  esdl_glUniformMatrix4fv(*location, *count, *transpose, value);
+ sdl_free_binaries(egl_sd);
 }
 
 

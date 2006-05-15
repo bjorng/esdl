@@ -5062,81 +5062,92 @@ uniform4i(Location, V0, V1, V2, V3) ->
  cast(?glUniform4i, <<Location:32/?SN, V0:32/?SN, V1:32/?SN, V2:32/?SN, V3:32/?SN>>).
 
 %% Func:    uniform1fv 
-%% Args:    Location, Count, {Value1}
+%% Args:    Location, Count, [Value1]
 %% Returns: ok
 %% C-API func: void glUniform1fv(GLint location, GLsizei count,  const GLfloat * value)
-uniform1fv(Location, Count, {Value1}) -> 
- cast(?glUniform1fv, <<Location:32/?SN, Count:32/?SN, Value1:32/?FN>>).
+uniform1fv(Location, Count, Value) -> 
+ sdl:send_bin(sdl_util:term2bin(Value,Count,?GL_FLOAT), ?MODULE, ?LINE),
+ cast(?glUniform1fv, <<Location:32/?SN, Count:32/?SN>>).
 
 %% Func:    uniform2fv 
-%% Args:    Location, Count, {Value1,Value2}
+%% Args:    Location, Count, [{Value1,Value2}]
 %% Returns: ok
 %% C-API func: void glUniform2fv(GLint location, GLsizei count,  const GLfloat * value)
-uniform2fv(Location, Count, {Value1,Value2}) -> 
- cast(?glUniform2fv, <<Location:32/?SN, Count:32/?SN, Value1:32/?FN,Value2:32/?FN>>).
+uniform2fv(Location, Count, Value) -> 
+ sdl:send_bin(sdl_util:tuplelist2bin(2,?GL_FLOAT,Value), ?MODULE, ?LINE),
+ cast(?glUniform2fv, <<Location:32/?SN, Count:32/?SN>>).
 
 %% Func:    uniform3fv 
-%% Args:    Location, Count, {Value1,Value2,Value3}
+%% Args:    Location, Count, [{Value1,Value2,Value3}]
 %% Returns: ok
 %% C-API func: void glUniform3fv(GLint location, GLsizei count,  const GLfloat * value)
-uniform3fv(Location, Count, {Value1,Value2,Value3}) -> 
- cast(?glUniform3fv, <<Location:32/?SN, Count:32/?SN, Value1:32/?FN,Value2:32/?FN,Value3:32/?FN>>).
+uniform3fv(Location, Count, Value) -> 
+ sdl:send_bin(sdl_util:tuplelist2bin(3,?GL_FLOAT,Value), ?MODULE, ?LINE),
+ cast(?glUniform3fv, <<Location:32/?SN, Count:32/?SN>>).
 
 %% Func:    uniform4fv 
-%% Args:    Location, Count, {Value1,Value2,Value3,Value4}
+%% Args:    Location, Count, [{Value1,Value2,Value3,Value4}]
 %% Returns: ok
 %% C-API func: void glUniform4fv(GLint location, GLsizei count,  const GLfloat * value)
-uniform4fv(Location, Count, {Value1,Value2,Value3,Value4}) -> 
- cast(?glUniform4fv, <<Location:32/?SN, Count:32/?SN, Value1:32/?FN,Value2:32/?FN,Value3:32/?FN,Value4:32/?FN>>).
+uniform4fv(Location, Count, Value) -> 
+ sdl:send_bin(sdl_util:tuplelist2bin(4,?GL_FLOAT,Value), ?MODULE, ?LINE),
+ cast(?glUniform4fv, <<Location:32/?SN, Count:32/?SN>>).
 
 %% Func:    uniform1iv 
-%% Args:    Location, Count, {Value1}
+%% Args:    Location, Count, [Value1]
 %% Returns: ok
 %% C-API func: void glUniform1iv(GLint location, GLsizei count,  const GLint * value)
-uniform1iv(Location, Count, {Value1}) -> 
- cast(?glUniform1iv, <<Location:32/?SN, Count:32/?SN, Value1:32/?SN>>).
+uniform1iv(Location, Count, Value) -> 
+ sdl:send_bin(sdl_util:term2bin(Value,Count,?GL_INT), ?MODULE, ?LINE),
+ cast(?glUniform1iv, <<Location:32/?SN, Count:32/?SN>>).
 
 %% Func:    uniform2iv 
-%% Args:    Location, Count, {Value1,Value2}
+%% Args:    Location, Count, [{Value1,Value2}]
 %% Returns: ok
 %% C-API func: void glUniform2iv(GLint location, GLsizei count,  const GLint * value)
-uniform2iv(Location, Count, {Value1,Value2}) -> 
- cast(?glUniform2iv, <<Location:32/?SN, Count:32/?SN, Value1:32/?SN,Value2:32/?SN>>).
+uniform2iv(Location, Count, Value) -> 
+ sdl:send_bin(sdl_util:tuplelist2bin(2,?GL_INT,Value), ?MODULE, ?LINE),
+ cast(?glUniform2iv, <<Location:32/?SN, Count:32/?SN>>).
 
 %% Func:    uniform3iv 
-%% Args:    Location, Count, {Value1,Value2,Value3}
+%% Args:    Location, Count, [{Value1,Value2,Value3}]
 %% Returns: ok
 %% C-API func: void glUniform3iv(GLint location, GLsizei count,  const GLint * value)
-uniform3iv(Location, Count, {Value1,Value2,Value3}) -> 
- cast(?glUniform3iv, <<Location:32/?SN, Count:32/?SN, Value1:32/?SN,Value2:32/?SN,Value3:32/?SN>>).
+uniform3iv(Location, Count, Value) -> 
+ sdl:send_bin(sdl_util:tuplelist2bin(3,?GL_INT,Value), ?MODULE, ?LINE),
+ cast(?glUniform3iv, <<Location:32/?SN, Count:32/?SN>>).
 
 %% Func:    uniform4iv 
-%% Args:    Location, Count, {Value1,Value2,Value3,Value4}
+%% Args:    Location, Count, [{Value1,Value2,Value3,Value4}]
 %% Returns: ok
 %% C-API func: void glUniform4iv(GLint location, GLsizei count,  const GLint * value)
-uniform4iv(Location, Count, {Value1,Value2,Value3,Value4}) -> 
- cast(?glUniform4iv, <<Location:32/?SN, Count:32/?SN, Value1:32/?SN,Value2:32/?SN,Value3:32/?SN,Value4:32/?SN>>).
+uniform4iv(Location, Count, Value) -> 
+ sdl:send_bin(sdl_util:tuplelist2bin(4,?GL_INT,Value), ?MODULE, ?LINE),
+ cast(?glUniform4iv, <<Location:32/?SN, Count:32/?SN>>).
 
 %% Func:    uniformMatrix2fv 
-%% Args:    Location, Count, Transpose, {Value1,Value2}
+%% Args:    Location, Count, Transpose, [{Value1,Value2,Value3,Value4}]
 %% Returns: ok
 %% C-API func: void glUniformMatrix2fv(GLint location, GLsizei count, GLboolean transpose,  const GLfloat * value)
-uniformMatrix2fv(Location, Count, Transpose, {Value1,Value2}) -> 
- cast(?glUniformMatrix2fv, <<Location:32/?SN, Count:32/?SN, Transpose:8/unsigned, 0:24, Value1:32/?FN,Value2:32/?FN>>).
+uniformMatrix2fv(Location, Count, Transpose, Value) -> 
+ sdl:send_bin(sdl_util:tuplelist2bin(4,?GL_FLOAT,Value), ?MODULE, ?LINE),
+ cast(?glUniformMatrix2fv, <<Location:32/?SN, Count:32/?SN, Transpose:8/unsigned>>).
 
 %% Func:    uniformMatrix3fv 
-%% Args:    Location, Count, Transpose, {Value1,Value2,Value3}
+%% Args:    Location, Count, Transpose, [{Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8,Value9}]
 %% Returns: ok
 %% C-API func: void glUniformMatrix3fv(GLint location, GLsizei count, GLboolean transpose,  const GLfloat * value)
-uniformMatrix3fv(Location, Count, Transpose, {Value1,Value2,Value3}) -> 
- cast(?glUniformMatrix3fv, <<Location:32/?SN, Count:32/?SN, Transpose:8/unsigned, 0:24, Value1:32/?FN,Value2:32/?FN,Value3:32/?FN>>).
+uniformMatrix3fv(Location, Count, Transpose, Value) -> 
+ sdl:send_bin(sdl_util:tuplelist2bin(9,?GL_FLOAT,Value), ?MODULE, ?LINE),
+ cast(?glUniformMatrix3fv, <<Location:32/?SN, Count:32/?SN, Transpose:8/unsigned>>).
 
 %% Func:    uniformMatrix4fv 
-%% Args:    Location, Count, Transpose, {Value1,Value2,Value3,Value4}
+%% Args:    Location, Count, Transpose, [{Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8,Value9,Value10,Value11,Value12,Value13,Value14,Value15,Value16}]
 %% Returns: ok
 %% C-API func: void glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose,  const GLfloat * value)
-uniformMatrix4fv(Location, Count, Transpose, {Value1,Value2,Value3,Value4}) -> 
- cast(?glUniformMatrix4fv, <<Location:32/?SN, Count:32/?SN, Transpose:8/unsigned, 0:24, Value1:32/?FN,Value2:32/?FN,Value3:32/?FN,Value4:32/?FN>>).
+uniformMatrix4fv(Location, Count, Transpose, Value) -> 
+ sdl:send_bin(sdl_util:tuplelist2bin(16,?GL_FLOAT,Value), ?MODULE, ?LINE),
+ cast(?glUniformMatrix4fv, <<Location:32/?SN, Count:32/?SN, Transpose:8/unsigned>>).
 
 %% Func:    validateProgram 
 %% Args:    Program

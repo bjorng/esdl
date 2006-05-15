@@ -224,7 +224,7 @@ char* sdl_get_temp_buff(sdl_data* sd, int size)
     return sdl_getbuff(sd, size);
   } else {
     ErlDrvBinary* bin = (ErlDrvBinary *) sd->temp_bin;
-    bin->refc++;
+    driver_binary_inc_refc(bin);
     sd->buff = bin;
     sd->len = size;
     return bin->orig_bytes;
@@ -253,7 +253,7 @@ standard_outputv(ErlDrvData drv_data, ErlIOVec* ev)
     sd->bin[i].base = ev->iov[1].iov_base;
     sd->bin[i].size = ev->iov[1].iov_len;
     bin = ev->binv[1];
-    bin->refc++;		/* Otherwise it could get deallocated */
+    driver_binary_inc_refc(bin); /* Otherwise it could get deallocated */
     sd->bin[i].bin = bin;
     sd->next_bin++;
   }
