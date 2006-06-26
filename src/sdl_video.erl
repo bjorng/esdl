@@ -189,7 +189,7 @@ getPixels({surfacep, Ref}, Size) ->
 %%                                            int bpp, Uint32 flags);
 setVideoMode(W, H, Bpp, Type) ->
     case call(?SDL_SetVideoMode, <<W:16,H:16,Bpp:16,Type:32>>) of
-	<<0:64>> -> error;
+	<<0:?_PTR>> -> error;
 	<<Res:?_PTR>> -> {surfacep, Res}
     end.
 

@@ -16,14 +16,12 @@
 #define putPointer(bp, ptr)  put32be((bp), ((int) (ptr)))
 
 
-
 /* We always use 8 bytes to store pointers */
 
 #define POPGLPTR(dstp, srcp) \
   do { memcpy(&dstp,srcp,sizeof(void *)); srcp += 8; } while (0)
 #define PUSHGLPTR(srcp,dstp) \
-  do { memcpy(dstp,&srcp,sizeof(void *)); dstp += 8; } while (0)
-
+  do { memset(dstp,0,8);memcpy(dstp,&srcp,sizeof(void *)); dstp += 8; } while (0)
 
 #define SDL_UTIL_copySdlImage2GLArrayFunc (SDL_UTIL_H+1)
 void copySdlImage2GLArray(sdl_data *, int, char *);
