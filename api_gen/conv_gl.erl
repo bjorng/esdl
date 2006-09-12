@@ -19,7 +19,7 @@ add() ->
      {"glClipPlane", {[{"equation", 4}], []}},
 
      {"glDeleteTextures", {[{"textures", "n"}], []}},
-     {"glDrawElements", {[{"indices", "count", "type"}], []}},
+     {"glDrawElements", {[{"indices", {index_or_list,"count"}, "type"}], []}},
      {"glDrawPixels", {[{"pixels", pointer, "type"}], []}},
      {"glEdgeFlagv", {[{"flag", 1}], []}},
 

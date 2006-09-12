@@ -8,7 +8,7 @@
 SUBDIRS = c_src src test doc
 
 DATE    = $(shell date +%m%d)
-REL     = esdl-0.95.$(DATE)
+REL     = esdl-0.96.$(DATE)
 RELDIR  = /tmp/$(REL)
 
 ifeq ($(OS_FLAG),mingw)

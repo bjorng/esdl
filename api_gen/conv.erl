@@ -654,8 +654,8 @@ build_erlbinaries(Func,{T,const,pointer,V},{tuplelist,1}, _IsLast, Fd) ->
     N = case getdef(Func, V) of 
 	    What when is_list(What) -> uppercase(What);
 	    What when is_integer(What) -> integer_to_list(What)
-	end,	
-    ?W(" sdl:send_bin(sdl_util:term2bin(~s,~s,~s), ?MODULE, ?LINE),~n",
+	end,
+    ?W(" sdl:send_bin(list_to_binary(term2bin(~s,~s,~s)), ?MODULE, ?LINE),~n",
        [uppercase(V),N,type_to_enum(T)]),
     already_sent;
 build_erlbinaries(_Func,{T,const,pointer,V},{tuplelist,N}, _IsLast, Fd) ->
@@ -690,6 +690,17 @@ build_erlbinaries(Func, {T, const, pointer,V}, _IsTuple, IsLast, Fd) ->
 	sdlmem ->
 	    ?W(" sdl:send_bin(~s, ?MODULE, ?LINE),~n", [Var]),
 	    already_sent;
+	{index_or_list, Val} ->
+	    ?W("%% Maybe NULL or offset sometimes2~n",[]),
+	    ?W(" New~s = if is_integer(~s) -> ~s; ~n", [Var,Var,Var]),
+	    ?W("\tis_list(~s) ; is_tuple(~s) -> ", [Var, Var]),
+	    ?W("sdl:send_bin(list_to_binary(term2bin(~s, ~s, ~s)),?MODULE,?LINE),0;~n", 
+	       [Var, uppercase(Val), Type]),
+	    ?W("\tis_binary(~s) -> sdl:send_bin(~s, ?MODULE, ?LINE),0;~n",[Var,Var]),
+	    ?W("\ttrue -> erlang:fault({?MODULE, ?LINE, unsupported_type, ~s})~n", 
+	       [Var]),
+	    ?W(" end, ~n", []),
+	    {"GLint", "new" ++ Var};
 	Val when integer(Val) ->
 	    case Val == 16 andalso is_matrixOp(Func) of
 		true ->
@@ -1009,6 +1020,8 @@ write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
 			?W(" ~s * ~s = NULL; ~n", [T,V]);
 		    {tuplelist,_N} -> 
 			?W(" ~s * ~s = NULL;~n", [T,V]);
+		    {index_or_list,_} ->
+			?W(" ~s * ~s = NULL;~n", [T,V]);
 		    Error ->
 			erlang:fault({?MODULE, ?LINE, Error})
 		end;
@@ -1043,11 +1056,17 @@ write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
 			?W("{not_implemented, ~p}", [?LINE]);
 		    pointer -> 
 			Cnt = get(arg_cnt),
-%%%%			?W(" ~s = (~s *) egl_sd->bin[~w].base; ~n", [V,T,Cnt]),
  			?W(" if(egl_sd->next_bin == ~p) {~n  ~s = (~s *) *(GLint *)bp;~n",
  			   [Cnt,V,T]),
-%% 			?W(" if(egl_sd->next_bin == ~p) {~n  POPGLPTR(~s,bp);~n",
-%% 			   [Cnt,V]),
+			?W(" } else {~n  ~s = (~s *) egl_sd->bin[~w].base;~n };~n",
+			   [V,T,Cnt]),
+			?W(" bp += sizeof(GLint);~n", []),
+			put(free_args, true),
+			put(arg_cnt, Cnt+1);
+		    {index_or_list,_} -> 
+			Cnt = get(arg_cnt),
+ 			?W(" if(egl_sd->next_bin == ~p) {~n  ~s = (~s *) *(GLint *)bp;~n",
+ 			   [Cnt,V,T]),
 			?W(" } else {~n  ~s = (~s *) egl_sd->bin[~w].base;~n };~n",
 			   [V,T,Cnt]),
 			?W(" bp += sizeof(GLint);~n", []),
@@ -1519,7 +1538,7 @@ erltype(sdlmem) ->         "sdlmem()";  %% hmm
 %%erltype({binORlist,T}) ->      "::binary()";  %% hmm
 erltype(T) when ?GLUTYPE(T) ->  "::"++ eglutype(T) ++"()";  %% hmm
 
-erltype(T) -> "term()".
+erltype(_T) -> "term()".
      
 
 typeSz(T) ->
@@ -1852,19 +1871,19 @@ is_vector2([$v,$f,N,$x,$i,$r,$t,$a|_]) when N > 47, N < 58 ->
     I*I;
 is_vector2([$v,$b, N|_]) when N > 47, N < 58 ->
     N-$0;
-is_vector2([$v,$i, N|_])   ->
+is_vector2([$v,$i, N|_]) when N > 47, N < 58 ->
     N-$0;
-is_vector2([$v,$s, N|_])   ->
+is_vector2([$v,$s, N|_]) when N > 47, N < 58  ->
     N-$0;
-is_vector2([$v,$b,$u,N|_]) ->
+is_vector2([$v,$b,$u,N|_]) when N > 47, N < 58 ->
     N-$0;
-is_vector2([$v,$i,$u,N|_]) ->
+is_vector2([$v,$i,$u,N|_]) when N > 47, N < 58 ->
     N-$0;
-is_vector2([$v,$s,$u,N|_]) ->
+is_vector2([$v,$s,$u,N|_]) when N > 47, N < 58 ->
     N-$0;
-is_vector2([$v,$d, N|_])  ->
+is_vector2([$v,$d, N|_]) when N > 47, N < 58 ->
     N-$0;
-is_vector2([$v,$f, N|_])  ->
+is_vector2([$v,$f, N|_]) when N > 47, N < 58 ->
     N-$0;
 is_vector2(_) ->
     false.

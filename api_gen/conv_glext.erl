@@ -11,7 +11,7 @@
 
 add() ->
     [
-     {"glDrawRangeElements", {[{"indices", "count","type"}], []}},
+     {"glDrawRangeElements", {[{"indices",{index_or_list,"count"},"type"}], []}},
      {"glColorTable", {[{"table", pointer, "type"}], []}},
      {"glColorTableParameterfv", {[{"params", 4}], []}},
      {"glColorTableParameteriv", {[{"params", 4}], []}},

@@ -53,15 +53,21 @@ void egl_drawRangeElements(sdl_data *egl_sd, int egl_len, char *egl_buff)
  GLuint * end;
  GLsizei * count;
  GLenum * type;
- GLvoid * indices = NULL; 
+ GLvoid * indices = NULL;
  bp = egl_buff;
  mode = (GLenum *) bp; bp += sizeof(GLenum); 
  start = (GLuint *) bp; bp += sizeof(GLuint); 
  end = (GLuint *) bp; bp += sizeof(GLuint); 
  count = (GLsizei *) bp; bp += sizeof(GLsizei); 
  type = (GLenum *) bp; bp += sizeof(GLenum); 
- indices = (GLvoid *) bp;
+ if(egl_sd->next_bin == 0) {
+  indices = (GLvoid *) *(GLint *)bp;
+ } else {
+  indices = (GLvoid *) egl_sd->bin[0].base;
+ };
+ bp += sizeof(GLint);
  esdl_glDrawRangeElements(*mode, *start, *end, *count, *type, indices);
+ sdl_free_binaries(egl_sd);
 }
 
 
@@ -1853,7 +1859,7 @@ void egl_getBufferPointerv(sdl_data *egl_sd, int egl_len, char *egl_buff)
  pname = (GLenum *) bp; bp += sizeof(GLenum); 
  esdl_glGetBufferPointerv(*target, *pname, &params);
  bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLvoid*));
- putPointer(bp, params);
+ PUSHGLPTR(params,bp);
  egl_sendlen = bp - egl_start;
  sdl_send(egl_sd, egl_sendlen);
 }
@@ -2404,7 +2410,7 @@ void egl_getVertexAttribPointerv(sdl_data *egl_sd, int egl_len, char *egl_buff)
  pname = (GLenum *) bp; bp += sizeof(GLenum); 
  esdl_glGetVertexAttribPointerv(*index, *pname, &pointer);
  bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLvoid*));
- putPointer(bp, pointer);
+ PUSHGLPTR(pointer,bp);
  egl_sendlen = bp - egl_start;
  sdl_send(egl_sd, egl_sendlen);
 }

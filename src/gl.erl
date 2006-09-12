@@ -369,23 +369,20 @@ glBegin(Arg) -> 'begin'(Arg).
 glEnd() -> 'end'().    
 swapBuffers() -> sdl_video:gl_swapBuffers().
 
-%% Func:    accum 
-%% Args:    Op, Value
-%% Returns: ok
+%% @spec accum(Op::integer(), Value::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glAccum">External manpage: accum</a>
 %% C-API func: void glAccum(GLenum op, GLfloat value)
 accum(Op, Value) -> 
  cast(?glAccum, <<Op:32/?UN, Value:32/?FN>>).
 
-%% Func:    alphaFunc 
-%% Args:    Func, Ref
-%% Returns: ok
+%% @spec alphaFunc(Func::integer(), Ref::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glAlphaFunc">External manpage: alphaFunc</a>
 %% C-API func: void glAlphaFunc(GLenum func, GLclampf ref)
 alphaFunc(Func, Ref) -> 
  cast(?glAlphaFunc, <<Func:32/?UN, Ref:32/?FN>>).
 
-%% Func:    areTexturesResident 
-%% Args:    N, <<[Textures]>>
-%% Returns: {?GL_BYTE, [Residences]}
+%% @spec areTexturesResident(N::integer(), Textures::binary() | [integer()]) -> {bool(), [Residences::bool()]}
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glAreTexturesResident">External manpage: areTexturesResident</a>
 %% C-API func: GLboolean glAreTexturesResident(GLsizei n,  const GLuint * textures, GLboolean * residences)
 areTexturesResident(N, Textures) -> 
  NewTextures = if
@@ -400,30 +397,26 @@ areTexturesResident(N, Textures) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    arrayElement 
-%% Args:    I
-%% Returns: ok
+%% @spec arrayElement(I::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glArrayElement">External manpage: arrayElement</a>
 %% C-API func: void glArrayElement(GLint i)
 arrayElement(I) -> 
  cast(?glArrayElement, <<I:32/?SN>>).
 
-%% Func:    'begin' 
-%% Args:    Mode
-%% Returns: ok
+%% @spec 'begin'(Mode::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glBegin">External manpage: 'begin'</a>
 %% C-API func: void glBegin(GLenum mode)
 'begin'(Mode) -> 
  cast(?glBegin, <<Mode:32/?UN>>).
 
-%% Func:    bindTexture 
-%% Args:    Target, Texture
-%% Returns: ok
+%% @spec bindTexture(Target::integer(), Texture::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glBindTexture">External manpage: bindTexture</a>
 %% C-API func: void glBindTexture(GLenum target, GLuint texture)
 bindTexture(Target, Texture) -> 
  cast(?glBindTexture, <<Target:32/?UN, Texture:32/?UN>>).
 
-%% Func:    bitmap 
-%% Args:    Width, Height, Xorig, Yorig, Xmove, Ymove, <<[Bitmap]>>
-%% Returns: ok
+%% @spec bitmap(Width::integer(), Height::integer(), Xorig::float(), Yorig::float(), Xmove::float(), Ymove::float(), Bitmap::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glBitmap">External manpage: bitmap</a>
 %% C-API func: void glBitmap(GLsizei width, GLsizei height, GLfloat xorig, GLfloat yorig, GLfloat xmove, GLfloat ymove,  const GLubyte * bitmap)
 bitmap(Width, Height, Xorig, Yorig, Xmove, Ymove, Bitmap) -> 
 %% Maybe NULL or offset sometimes
@@ -435,23 +428,20 @@ bitmap(Width, Height, Xorig, Yorig, Xmove, Ymove, Bitmap) ->
    end,
  cast(?glBitmap, [<<Width:32/?SN, Height:32/?SN, Xorig:32/?FN, Yorig:32/?FN, Xmove:32/?FN, Ymove:32/?FN, NewBitmap:32/?SN>>]).
 
-%% Func:    blendFunc 
-%% Args:    Sfactor, Dfactor
-%% Returns: ok
+%% @spec blendFunc(Sfactor::integer(), Dfactor::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glBlendFunc">External manpage: blendFunc</a>
 %% C-API func: void glBlendFunc(GLenum sfactor, GLenum dfactor)
 blendFunc(Sfactor, Dfactor) -> 
  cast(?glBlendFunc, <<Sfactor:32/?UN, Dfactor:32/?UN>>).
 
-%% Func:    callList 
-%% Args:    List
-%% Returns: ok
+%% @spec callList(List::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCallList">External manpage: callList</a>
 %% C-API func: void glCallList(GLuint list)
 callList(List) -> 
  cast(?glCallList, <<List:32/?UN>>).
 
-%% Func:    callLists 
-%% Args:    N, Type, <<[Lists]>>
-%% Returns: ok
+%% @spec callLists(N::integer(), Type::integer(), Lists::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCallLists">External manpage: callLists</a>
 %% C-API func: void glCallLists(GLsizei n, GLenum type,  const GLvoid * lists)
 callLists(N, Type, Lists) -> 
  NewLists = if
@@ -461,51 +451,44 @@ callLists(N, Type, Lists) ->
  end, 
  cast(?glCallLists, [<<N:32/?SN, Type:32/?UN>>,NewLists]).
 
-%% Func:    clear 
-%% Args:    Mask
-%% Returns: ok
+%% @spec clear(Mask::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glClear">External manpage: clear</a>
 %% C-API func: void glClear(GLbitfield mask)
 clear(Mask) -> 
  cast(?glClear, <<Mask:32/?UN>>).
 
-%% Func:    clearAccum 
-%% Args:    Red, Green, Blue, Alpha
-%% Returns: ok
+%% @spec clearAccum(Red::float(), Green::float(), Blue::float(), Alpha::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glClearAccum">External manpage: clearAccum</a>
 %% C-API func: void glClearAccum(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
 clearAccum(Red, Green, Blue, Alpha) -> 
  cast(?glClearAccum, <<Red:32/?FN, Green:32/?FN, Blue:32/?FN, Alpha:32/?FN>>).
 
-%% Func:    clearColor 
-%% Args:    Red, Green, Blue, Alpha
-%% Returns: ok
+%% @spec clearColor(Red::float(), Green::float(), Blue::float(), Alpha::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glClearColor">External manpage: clearColor</a>
 %% C-API func: void glClearColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha)
 clearColor(Red, Green, Blue, Alpha) -> 
  cast(?glClearColor, <<Red:32/?FN, Green:32/?FN, Blue:32/?FN, Alpha:32/?FN>>).
 
-%% Func:    clearDepth 
-%% Args:    Depth
-%% Returns: ok
+%% @spec clearDepth(Depth::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glClearDepth">External manpage: clearDepth</a>
 %% C-API func: void glClearDepth(GLclampd depth)
 clearDepth(Depth) -> 
  cast(?glClearDepth, <<Depth:64/?FN>>).
 
-%% Func:    clearIndex 
-%% Args:    C
-%% Returns: ok
+%% @spec clearIndex(C::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glClearIndex">External manpage: clearIndex</a>
 %% C-API func: void glClearIndex(GLfloat c)
 clearIndex(C) -> 
  cast(?glClearIndex, <<C:32/?FN>>).
 
-%% Func:    clearStencil 
-%% Args:    S
-%% Returns: ok
+%% @spec clearStencil(S::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glClearStencil">External manpage: clearStencil</a>
 %% C-API func: void glClearStencil(GLint s)
 clearStencil(S) -> 
  cast(?glClearStencil, <<S:32/?SN>>).
 
-%% Func:    clipPlane 
-%% Args:    Plane, <<[Equation]>>
-%% Returns: ok
+%% @spec clipPlane(Plane::integer(), Equation::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glClipPlane">External manpage: clipPlane</a>
 %% C-API func: void glClipPlane(GLenum plane,  const GLdouble * equation)
 clipPlane(Plane, Equation) -> 
  NewEquation = if
@@ -515,247 +498,212 @@ clipPlane(Plane, Equation) ->
  end, 
  cast(?glClipPlane, [<<Plane:32/?UN>>,NewEquation]).
 
-%% Func:    color3b 
-%% Args:    Red, Green, Blue
-%% Returns: ok
+%% @spec color3b(Red::integer(), Green::integer(), Blue::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color3b</a>
 %% C-API func: void glColor3b(GLbyte red, GLbyte green, GLbyte blue)
 color3b(Red, Green, Blue) -> 
  cast(?glColor3bv, <<Red:8/signed, Green:8/signed, Blue:8/signed>>).
 
-%% Func:    color3bv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec color3bv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color3bv</a>
 %% C-API func: void glColor3bv( const GLbyte * v)
 color3bv({V1,V2,V3}) -> 
  cast(?glColor3bv, <<V1:8/signed,V2:8/signed,V3:8/signed>>).
 
-%% Func:    color3d 
-%% Args:    Red, Green, Blue
-%% Returns: ok
+%% @spec color3d(Red::float(), Green::float(), Blue::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color3d</a>
 %% C-API func: void glColor3d(GLdouble red, GLdouble green, GLdouble blue)
 color3d(Red, Green, Blue) -> 
  cast(?glColor3dv, <<Red:64/?FN, Green:64/?FN, Blue:64/?FN>>).
 
-%% Func:    color3dv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec color3dv({V1::float(),V2::float(),V3::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color3dv</a>
 %% C-API func: void glColor3dv( const GLdouble * v)
 color3dv({V1,V2,V3}) -> 
  cast(?glColor3dv, <<V1:64/?FN,V2:64/?FN,V3:64/?FN>>).
 
-%% Func:    color3f 
-%% Args:    Red, Green, Blue
-%% Returns: ok
+%% @spec color3f(Red::float(), Green::float(), Blue::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color3f</a>
 %% C-API func: void glColor3f(GLfloat red, GLfloat green, GLfloat blue)
 color3f(Red, Green, Blue) -> 
  cast(?glColor3fv, <<Red:32/?FN, Green:32/?FN, Blue:32/?FN>>).
 
-%% Func:    color3fv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec color3fv({V1::float(),V2::float(),V3::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color3fv</a>
 %% C-API func: void glColor3fv( const GLfloat * v)
 color3fv({V1,V2,V3}) -> 
  cast(?glColor3fv, <<V1:32/?FN,V2:32/?FN,V3:32/?FN>>).
 
-%% Func:    color3i 
-%% Args:    Red, Green, Blue
-%% Returns: ok
+%% @spec color3i(Red::integer(), Green::integer(), Blue::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color3i</a>
 %% C-API func: void glColor3i(GLint red, GLint green, GLint blue)
 color3i(Red, Green, Blue) -> 
  cast(?glColor3iv, <<Red:32/?SN, Green:32/?SN, Blue:32/?SN>>).
 
-%% Func:    color3iv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec color3iv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color3iv</a>
 %% C-API func: void glColor3iv( const GLint * v)
 color3iv({V1,V2,V3}) -> 
  cast(?glColor3iv, <<V1:32/?SN,V2:32/?SN,V3:32/?SN>>).
 
-%% Func:    color3s 
-%% Args:    Red, Green, Blue
-%% Returns: ok
+%% @spec color3s(Red::integer(), Green::integer(), Blue::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color3s</a>
 %% C-API func: void glColor3s(GLshort red, GLshort green, GLshort blue)
 color3s(Red, Green, Blue) -> 
  cast(?glColor3sv, <<Red:16/?SN, Green:16/?SN, Blue:16/?SN>>).
 
-%% Func:    color3sv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec color3sv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color3sv</a>
 %% C-API func: void glColor3sv( const GLshort * v)
 color3sv({V1,V2,V3}) -> 
  cast(?glColor3sv, <<V1:16/?SN,V2:16/?SN,V3:16/?SN>>).
 
-%% Func:    color3ub 
-%% Args:    Red, Green, Blue
-%% Returns: ok
+%% @spec color3ub(Red::integer(), Green::integer(), Blue::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color3ub</a>
 %% C-API func: void glColor3ub(GLubyte red, GLubyte green, GLubyte blue)
 color3ub(Red, Green, Blue) -> 
  cast(?glColor3ubv, <<Red:8/unsigned, Green:8/unsigned, Blue:8/unsigned>>).
 
-%% Func:    color3ubv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec color3ubv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color3ubv</a>
 %% C-API func: void glColor3ubv( const GLubyte * v)
 color3ubv({V1,V2,V3}) -> 
  cast(?glColor3ubv, <<V1:8/unsigned,V2:8/unsigned,V3:8/unsigned>>).
 
-%% Func:    color3ui 
-%% Args:    Red, Green, Blue
-%% Returns: ok
+%% @spec color3ui(Red::integer(), Green::integer(), Blue::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color3ui</a>
 %% C-API func: void glColor3ui(GLuint red, GLuint green, GLuint blue)
 color3ui(Red, Green, Blue) -> 
  cast(?glColor3uiv, <<Red:32/?UN, Green:32/?UN, Blue:32/?UN>>).
 
-%% Func:    color3uiv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec color3uiv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color3uiv</a>
 %% C-API func: void glColor3uiv( const GLuint * v)
 color3uiv({V1,V2,V3}) -> 
  cast(?glColor3uiv, <<V1:32/?UN,V2:32/?UN,V3:32/?UN>>).
 
-%% Func:    color3us 
-%% Args:    Red, Green, Blue
-%% Returns: ok
+%% @spec color3us(Red::integer(), Green::integer(), Blue::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color3us</a>
 %% C-API func: void glColor3us(GLushort red, GLushort green, GLushort blue)
 color3us(Red, Green, Blue) -> 
  cast(?glColor3usv, <<Red:16/?UN, Green:16/?UN, Blue:16/?UN>>).
 
-%% Func:    color3usv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec color3usv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color3usv</a>
 %% C-API func: void glColor3usv( const GLushort * v)
 color3usv({V1,V2,V3}) -> 
  cast(?glColor3usv, <<V1:16/?UN,V2:16/?UN,V3:16/?UN>>).
 
-%% Func:    color4b 
-%% Args:    Red, Green, Blue, Alpha
-%% Returns: ok
+%% @spec color4b(Red::integer(), Green::integer(), Blue::integer(), Alpha::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color4b</a>
 %% C-API func: void glColor4b(GLbyte red, GLbyte green, GLbyte blue, GLbyte alpha)
 color4b(Red, Green, Blue, Alpha) -> 
  cast(?glColor4bv, <<Red:8/signed, Green:8/signed, Blue:8/signed, Alpha:8/signed>>).
 
-%% Func:    color4bv 
-%% Args:    {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec color4bv({V1::integer(),V2::integer(),V3::integer(),V4::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color4bv</a>
 %% C-API func: void glColor4bv( const GLbyte * v)
 color4bv({V1,V2,V3,V4}) -> 
  cast(?glColor4bv, <<V1:8/signed,V2:8/signed,V3:8/signed,V4:8/signed>>).
 
-%% Func:    color4d 
-%% Args:    Red, Green, Blue, Alpha
-%% Returns: ok
+%% @spec color4d(Red::float(), Green::float(), Blue::float(), Alpha::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color4d</a>
 %% C-API func: void glColor4d(GLdouble red, GLdouble green, GLdouble blue, GLdouble alpha)
 color4d(Red, Green, Blue, Alpha) -> 
  cast(?glColor4dv, <<Red:64/?FN, Green:64/?FN, Blue:64/?FN, Alpha:64/?FN>>).
 
-%% Func:    color4dv 
-%% Args:    {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec color4dv({V1::float(),V2::float(),V3::float(),V4::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color4dv</a>
 %% C-API func: void glColor4dv( const GLdouble * v)
 color4dv({V1,V2,V3,V4}) -> 
  cast(?glColor4dv, <<V1:64/?FN,V2:64/?FN,V3:64/?FN,V4:64/?FN>>).
 
-%% Func:    color4f 
-%% Args:    Red, Green, Blue, Alpha
-%% Returns: ok
+%% @spec color4f(Red::float(), Green::float(), Blue::float(), Alpha::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color4f</a>
 %% C-API func: void glColor4f(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
 color4f(Red, Green, Blue, Alpha) -> 
  cast(?glColor4fv, <<Red:32/?FN, Green:32/?FN, Blue:32/?FN, Alpha:32/?FN>>).
 
-%% Func:    color4fv 
-%% Args:    {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec color4fv({V1::float(),V2::float(),V3::float(),V4::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color4fv</a>
 %% C-API func: void glColor4fv( const GLfloat * v)
 color4fv({V1,V2,V3,V4}) -> 
  cast(?glColor4fv, <<V1:32/?FN,V2:32/?FN,V3:32/?FN,V4:32/?FN>>).
 
-%% Func:    color4i 
-%% Args:    Red, Green, Blue, Alpha
-%% Returns: ok
+%% @spec color4i(Red::integer(), Green::integer(), Blue::integer(), Alpha::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color4i</a>
 %% C-API func: void glColor4i(GLint red, GLint green, GLint blue, GLint alpha)
 color4i(Red, Green, Blue, Alpha) -> 
  cast(?glColor4iv, <<Red:32/?SN, Green:32/?SN, Blue:32/?SN, Alpha:32/?SN>>).
 
-%% Func:    color4iv 
-%% Args:    {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec color4iv({V1::integer(),V2::integer(),V3::integer(),V4::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color4iv</a>
 %% C-API func: void glColor4iv( const GLint * v)
 color4iv({V1,V2,V3,V4}) -> 
  cast(?glColor4iv, <<V1:32/?SN,V2:32/?SN,V3:32/?SN,V4:32/?SN>>).
 
-%% Func:    color4s 
-%% Args:    Red, Green, Blue, Alpha
-%% Returns: ok
+%% @spec color4s(Red::integer(), Green::integer(), Blue::integer(), Alpha::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color4s</a>
 %% C-API func: void glColor4s(GLshort red, GLshort green, GLshort blue, GLshort alpha)
 color4s(Red, Green, Blue, Alpha) -> 
  cast(?glColor4sv, <<Red:16/?SN, Green:16/?SN, Blue:16/?SN, Alpha:16/?SN>>).
 
-%% Func:    color4sv 
-%% Args:    {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec color4sv({V1::integer(),V2::integer(),V3::integer(),V4::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color4sv</a>
 %% C-API func: void glColor4sv( const GLshort * v)
 color4sv({V1,V2,V3,V4}) -> 
  cast(?glColor4sv, <<V1:16/?SN,V2:16/?SN,V3:16/?SN,V4:16/?SN>>).
 
-%% Func:    color4ub 
-%% Args:    Red, Green, Blue, Alpha
-%% Returns: ok
+%% @spec color4ub(Red::integer(), Green::integer(), Blue::integer(), Alpha::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color4ub</a>
 %% C-API func: void glColor4ub(GLubyte red, GLubyte green, GLubyte blue, GLubyte alpha)
 color4ub(Red, Green, Blue, Alpha) -> 
  cast(?glColor4ubv, <<Red:8/unsigned, Green:8/unsigned, Blue:8/unsigned, Alpha:8/unsigned>>).
 
-%% Func:    color4ubv 
-%% Args:    {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec color4ubv({V1::integer(),V2::integer(),V3::integer(),V4::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color4ubv</a>
 %% C-API func: void glColor4ubv( const GLubyte * v)
 color4ubv({V1,V2,V3,V4}) -> 
  cast(?glColor4ubv, <<V1:8/unsigned,V2:8/unsigned,V3:8/unsigned,V4:8/unsigned>>).
 
-%% Func:    color4ui 
-%% Args:    Red, Green, Blue, Alpha
-%% Returns: ok
+%% @spec color4ui(Red::integer(), Green::integer(), Blue::integer(), Alpha::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color4ui</a>
 %% C-API func: void glColor4ui(GLuint red, GLuint green, GLuint blue, GLuint alpha)
 color4ui(Red, Green, Blue, Alpha) -> 
  cast(?glColor4uiv, <<Red:32/?UN, Green:32/?UN, Blue:32/?UN, Alpha:32/?UN>>).
 
-%% Func:    color4uiv 
-%% Args:    {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec color4uiv({V1::integer(),V2::integer(),V3::integer(),V4::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color4uiv</a>
 %% C-API func: void glColor4uiv( const GLuint * v)
 color4uiv({V1,V2,V3,V4}) -> 
  cast(?glColor4uiv, <<V1:32/?UN,V2:32/?UN,V3:32/?UN,V4:32/?UN>>).
 
-%% Func:    color4us 
-%% Args:    Red, Green, Blue, Alpha
-%% Returns: ok
+%% @spec color4us(Red::integer(), Green::integer(), Blue::integer(), Alpha::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color4us</a>
 %% C-API func: void glColor4us(GLushort red, GLushort green, GLushort blue, GLushort alpha)
 color4us(Red, Green, Blue, Alpha) -> 
  cast(?glColor4usv, <<Red:16/?UN, Green:16/?UN, Blue:16/?UN, Alpha:16/?UN>>).
 
-%% Func:    color4usv 
-%% Args:    {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec color4usv({V1::integer(),V2::integer(),V3::integer(),V4::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColor">External manpage: color4usv</a>
 %% C-API func: void glColor4usv( const GLushort * v)
 color4usv({V1,V2,V3,V4}) -> 
  cast(?glColor4usv, <<V1:16/?UN,V2:16/?UN,V3:16/?UN,V4:16/?UN>>).
 
-%% Func:    colorMask 
-%% Args:    Red, Green, Blue, Alpha
-%% Returns: ok
+%% @spec colorMask(Red::bool(), Green::bool(), Blue::bool(), Alpha::bool()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColorMask">External manpage: colorMask</a>
 %% C-API func: void glColorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha)
 colorMask(Red, Green, Blue, Alpha) -> 
  cast(?glColorMask, <<Red:8/unsigned, Green:8/unsigned, Blue:8/unsigned, Alpha:8/unsigned>>).
 
-%% Func:    colorMaterial 
-%% Args:    Face, Mode
-%% Returns: ok
+%% @spec colorMaterial(Face::integer(), Mode::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColorMaterial">External manpage: colorMaterial</a>
 %% C-API func: void glColorMaterial(GLenum face, GLenum mode)
 colorMaterial(Face, Mode) -> 
  cast(?glColorMaterial, <<Face:32/?UN, Mode:32/?UN>>).
 
-%% Func:    colorPointer 
-%% Args:    Size, Type, Stride, <<[Pointer]>>
-%% Returns: ok
+%% @spec colorPointer(Size::integer(), Type::integer(), Stride::integer(), Pointer::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColorPointer">External manpage: colorPointer</a>
 %% C-API func: void glColorPointer(GLint size, GLenum type, GLsizei stride,  const GLvoid * pointer)
 colorPointer(Size, Type, Stride, Pointer) -> 
 %% Maybe NULL or offset sometimes
@@ -767,58 +715,50 @@ colorPointer(Size, Type, Stride, Pointer) ->
    end,
  cast(?glColorPointer, [<<Size:32/?SN, Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
-%% Func:    copyPixels 
-%% Args:    X, Y, Width, Height, Type
-%% Returns: ok
+%% @spec copyPixels(X::integer(), Y::integer(), Width::integer(), Height::integer(), Type::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCopyPixels">External manpage: copyPixels</a>
 %% C-API func: void glCopyPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum type)
 copyPixels(X, Y, Width, Height, Type) -> 
  cast(?glCopyPixels, <<X:32/?SN, Y:32/?SN, Width:32/?SN, Height:32/?SN, Type:32/?UN>>).
 
-%% Func:    copyTexImage1D 
-%% Args:    Target, Level, Internalformat, X, Y, Width, Border
-%% Returns: ok
+%% @spec copyTexImage1D(Target::integer(), Level::integer(), Internalformat::integer(), X::integer(), Y::integer(), Width::integer(), Border::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCopyTexImage1D">External manpage: copyTexImage1D</a>
 %% C-API func: void glCopyTexImage1D(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLint border)
 copyTexImage1D(Target, Level, Internalformat, X, Y, Width, Border) -> 
  cast(?glCopyTexImage1D, <<Target:32/?UN, Level:32/?SN, Internalformat:32/?UN, X:32/?SN, Y:32/?SN, Width:32/?SN, Border:32/?SN>>).
 
-%% Func:    copyTexImage2D 
-%% Args:    Target, Level, Internalformat, X, Y, Width, Height, Border
-%% Returns: ok
+%% @spec copyTexImage2D(Target::integer(), Level::integer(), Internalformat::integer(), X::integer(), Y::integer(), Width::integer(), Height::integer(), Border::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCopyTexImage2D">External manpage: copyTexImage2D</a>
 %% C-API func: void glCopyTexImage2D(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border)
 copyTexImage2D(Target, Level, Internalformat, X, Y, Width, Height, Border) -> 
  cast(?glCopyTexImage2D, <<Target:32/?UN, Level:32/?SN, Internalformat:32/?UN, X:32/?SN, Y:32/?SN, Width:32/?SN, Height:32/?SN, Border:32/?SN>>).
 
-%% Func:    copyTexSubImage1D 
-%% Args:    Target, Level, Xoffset, X, Y, Width
-%% Returns: ok
+%% @spec copyTexSubImage1D(Target::integer(), Level::integer(), Xoffset::integer(), X::integer(), Y::integer(), Width::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCopyTexSubImage1D">External manpage: copyTexSubImage1D</a>
 %% C-API func: void glCopyTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLint x, GLint y, GLsizei width)
 copyTexSubImage1D(Target, Level, Xoffset, X, Y, Width) -> 
  cast(?glCopyTexSubImage1D, <<Target:32/?UN, Level:32/?SN, Xoffset:32/?SN, X:32/?SN, Y:32/?SN, Width:32/?SN>>).
 
-%% Func:    copyTexSubImage2D 
-%% Args:    Target, Level, Xoffset, Yoffset, X, Y, Width, Height
-%% Returns: ok
+%% @spec copyTexSubImage2D(Target::integer(), Level::integer(), Xoffset::integer(), Yoffset::integer(), X::integer(), Y::integer(), Width::integer(), Height::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCopyTexSubImage2D">External manpage: copyTexSubImage2D</a>
 %% C-API func: void glCopyTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height)
 copyTexSubImage2D(Target, Level, Xoffset, Yoffset, X, Y, Width, Height) -> 
  cast(?glCopyTexSubImage2D, <<Target:32/?UN, Level:32/?SN, Xoffset:32/?SN, Yoffset:32/?SN, X:32/?SN, Y:32/?SN, Width:32/?SN, Height:32/?SN>>).
 
-%% Func:    cullFace 
-%% Args:    Mode
-%% Returns: ok
+%% @spec cullFace(Mode::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCullFace">External manpage: cullFace</a>
 %% C-API func: void glCullFace(GLenum mode)
 cullFace(Mode) -> 
  cast(?glCullFace, <<Mode:32/?UN>>).
 
-%% Func:    deleteLists 
-%% Args:    List, Range
-%% Returns: ok
+%% @spec deleteLists(List::integer(), Range::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDeleteLists">External manpage: deleteLists</a>
 %% C-API func: void glDeleteLists(GLuint list, GLsizei range)
 deleteLists(List, Range) -> 
  cast(?glDeleteLists, <<List:32/?UN, Range:32/?SN>>).
 
-%% Func:    deleteTextures 
-%% Args:    N, <<[Textures]>>
-%% Returns: ok
+%% @spec deleteTextures(N::integer(), Textures::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDeleteTextures">External manpage: deleteTextures</a>
 %% C-API func: void glDeleteTextures(GLsizei n,  const GLuint * textures)
 deleteTextures(N, Textures) -> 
  NewTextures = if
@@ -828,70 +768,62 @@ deleteTextures(N, Textures) ->
  end, 
  cast(?glDeleteTextures, [<<N:32/?SN>>,NewTextures]).
 
-%% Func:    depthFunc 
-%% Args:    Func
-%% Returns: ok
+%% @spec depthFunc(Func::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDepthFunc">External manpage: depthFunc</a>
 %% C-API func: void glDepthFunc(GLenum func)
 depthFunc(Func) -> 
  cast(?glDepthFunc, <<Func:32/?UN>>).
 
-%% Func:    depthMask 
-%% Args:    Flag
-%% Returns: ok
+%% @spec depthMask(Flag::bool()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDepthMask">External manpage: depthMask</a>
 %% C-API func: void glDepthMask(GLboolean flag)
 depthMask(Flag) -> 
  cast(?glDepthMask, <<Flag:8/unsigned>>).
 
-%% Func:    depthRange 
-%% Args:    ZNear, ZFar
-%% Returns: ok
+%% @spec depthRange(ZNear::float(), ZFar::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDepthRange">External manpage: depthRange</a>
 %% C-API func: void glDepthRange(GLclampd zNear, GLclampd zFar)
 depthRange(ZNear, ZFar) -> 
  cast(?glDepthRange, <<ZNear:64/?FN, ZFar:64/?FN>>).
 
-%% Func:    disable 
-%% Args:    Cap
-%% Returns: ok
+%% @spec disable(Cap::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDisable">External manpage: disable</a>
 %% C-API func: void glDisable(GLenum cap)
 disable(Cap) -> 
  cast(?glDisable, <<Cap:32/?UN>>).
 
-%% Func:    disableClientState 
-%% Args:    Array
-%% Returns: ok
+%% @spec disableClientState(Array::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDisableClientState">External manpage: disableClientState</a>
 %% C-API func: void glDisableClientState(GLenum array)
 disableClientState(Array) -> 
  cast(?glDisableClientState, <<Array:32/?UN>>).
 
-%% Func:    drawArrays 
-%% Args:    Mode, First, Count
-%% Returns: ok
+%% @spec drawArrays(Mode::integer(), First::integer(), Count::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDrawArrays">External manpage: drawArrays</a>
 %% C-API func: void glDrawArrays(GLenum mode, GLint first, GLsizei count)
 drawArrays(Mode, First, Count) -> 
  cast(?glDrawArrays, <<Mode:32/?UN, First:32/?SN, Count:32/?SN>>).
 
-%% Func:    drawBuffer 
-%% Args:    Mode
-%% Returns: ok
+%% @spec drawBuffer(Mode::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDrawBuffer">External manpage: drawBuffer</a>
 %% C-API func: void glDrawBuffer(GLenum mode)
 drawBuffer(Mode) -> 
  cast(?glDrawBuffer, <<Mode:32/?UN>>).
 
-%% Func:    drawElements 
-%% Args:    Mode, Count, Type, <<[Indices]>>
-%% Returns: ok
+%% @spec drawElements(Mode::integer(), Count::integer(), Type::integer(), Indices::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDrawElements">External manpage: drawElements</a>
 %% C-API func: void glDrawElements(GLenum mode, GLsizei count, GLenum type,  const GLvoid * indices)
 drawElements(Mode, Count, Type, Indices) -> 
- NewIndices = if
-	is_list(Indices) ; is_tuple(Indices) -> term2bin(Indices, Count, Type);
-	is_binary(Indices) -> Indices;
+%% Maybe NULL or offset sometimes2
+ NewIndices = if is_integer(Indices) -> Indices; 
+	is_list(Indices) ; is_tuple(Indices) -> sdl:send_bin(list_to_binary(term2bin(Indices, Count, Type)),?MODULE,?LINE),0;
+	is_binary(Indices) -> sdl:send_bin(Indices, ?MODULE, ?LINE),0;
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Indices})
  end, 
- cast(?glDrawElements, [<<Mode:32/?UN, Count:32/?SN, Type:32/?UN>>,NewIndices]).
+ cast(?glDrawElements, [<<Mode:32/?UN, Count:32/?SN, Type:32/?UN, NewIndices:32/?SN>>]).
 
-%% Func:    drawPixels 
-%% Args:    Width, Height, Format, Type, <<[Pixels]>>
-%% Returns: ok
+%% @spec drawPixels(Width::integer(), Height::integer(), Format::integer(), Type::integer(), Pixels::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDrawPixels">External manpage: drawPixels</a>
 %% C-API func: void glDrawPixels(GLsizei width, GLsizei height, GLenum format, GLenum type,  const GLvoid * pixels)
 drawPixels(Width, Height, Format, Type, Pixels) -> 
 %% Maybe NULL or offset sometimes
@@ -903,16 +835,14 @@ drawPixels(Width, Height, Format, Type, Pixels) ->
    end,
  cast(?glDrawPixels, [<<Width:32/?SN, Height:32/?SN, Format:32/?UN, Type:32/?UN, NewPixels:32/?SN>>]).
 
-%% Func:    edgeFlag 
-%% Args:    Flag
-%% Returns: ok
+%% @spec edgeFlag(Flag::bool()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glEdgeFlag">External manpage: edgeFlag</a>
 %% C-API func: void glEdgeFlag(GLboolean flag)
 edgeFlag(Flag) -> 
  cast(?glEdgeFlag, <<Flag:8/unsigned>>).
 
-%% Func:    edgeFlagPointer 
-%% Args:    Stride, <<[Pointer]>>
-%% Returns: ok
+%% @spec edgeFlagPointer(Stride::integer(), Pointer::binary() | [bool()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glEdgeFlagPointer">External manpage: edgeFlagPointer</a>
 %% C-API func: void glEdgeFlagPointer(GLsizei stride,  const GLboolean * pointer)
 edgeFlagPointer(Stride, Pointer) -> 
 %% Maybe NULL or offset sometimes
@@ -924,9 +854,8 @@ edgeFlagPointer(Stride, Pointer) ->
    end,
  cast(?glEdgeFlagPointer, [<<Stride:32/?SN, NewPointer:32/?SN>>]).
 
-%% Func:    edgeFlagv 
-%% Args:    <<[Flag]>>
-%% Returns: ok
+%% @spec edgeFlagv(Flag::binary() | [bool()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glEdgeFlagv">External manpage: edgeFlagv</a>
 %% C-API func: void glEdgeFlagv( const GLboolean * flag)
 edgeFlagv(Flag) -> 
  NewFlag = if
@@ -936,150 +865,129 @@ edgeFlagv(Flag) ->
  end, 
  cast(?glEdgeFlagv, [ NewFlag]).
 
-%% Func:    enable 
-%% Args:    Cap
-%% Returns: ok
+%% @spec enable(Cap::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glEnable">External manpage: enable</a>
 %% C-API func: void glEnable(GLenum cap)
 enable(Cap) -> 
  cast(?glEnable, <<Cap:32/?UN>>).
 
-%% Func:    enableClientState 
-%% Args:    Array
-%% Returns: ok
+%% @spec enableClientState(Array::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glEnableClientState">External manpage: enableClientState</a>
 %% C-API func: void glEnableClientState(GLenum array)
 enableClientState(Array) -> 
  cast(?glEnableClientState, <<Array:32/?UN>>).
 
-%% Func:    'end' 
-%% Args:    
-%% Returns: ok
+%% @spec 'end'() -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glEnd">External manpage: 'end'</a>
 %% C-API func: void glEnd()
 'end'() -> 
  cast(?glEnd, []).
 
-%% Func:    endList 
-%% Args:    
-%% Returns: ok
+%% @spec endList() -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glEndList">External manpage: endList</a>
 %% C-API func: void glEndList()
 endList() -> 
  cast(?glEndList, []).
 
-%% Func:    evalCoord1d 
-%% Args:    U
-%% Returns: ok
+%% @spec evalCoord1d(U::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glEvalCoord">External manpage: evalCoord1d</a>
 %% C-API func: void glEvalCoord1d(GLdouble u)
 evalCoord1d(U) -> 
  cast(?glEvalCoord1dv, <<U:64/?FN>>).
 
-%% Func:    evalCoord1dv 
-%% Args:    {U1}
-%% Returns: ok
+%% @spec evalCoord1dv({U1::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glEvalCoord">External manpage: evalCoord1dv</a>
 %% C-API func: void glEvalCoord1dv( const GLdouble * u)
 evalCoord1dv({U1}) -> 
  cast(?glEvalCoord1dv, <<U1:64/?FN>>).
 
-%% Func:    evalCoord1f 
-%% Args:    U
-%% Returns: ok
+%% @spec evalCoord1f(U::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glEvalCoord">External manpage: evalCoord1f</a>
 %% C-API func: void glEvalCoord1f(GLfloat u)
 evalCoord1f(U) -> 
  cast(?glEvalCoord1fv, <<U:32/?FN>>).
 
-%% Func:    evalCoord1fv 
-%% Args:    {U1}
-%% Returns: ok
+%% @spec evalCoord1fv({U1::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glEvalCoord">External manpage: evalCoord1fv</a>
 %% C-API func: void glEvalCoord1fv( const GLfloat * u)
 evalCoord1fv({U1}) -> 
  cast(?glEvalCoord1fv, <<U1:32/?FN>>).
 
-%% Func:    evalCoord2d 
-%% Args:    U, V
-%% Returns: ok
+%% @spec evalCoord2d(U::float(), V::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glEvalCoord">External manpage: evalCoord2d</a>
 %% C-API func: void glEvalCoord2d(GLdouble u, GLdouble v)
 evalCoord2d(U, V) -> 
  cast(?glEvalCoord2dv, <<U:64/?FN, V:64/?FN>>).
 
-%% Func:    evalCoord2dv 
-%% Args:    {U1,U2}
-%% Returns: ok
+%% @spec evalCoord2dv({U1::float(),U2::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glEvalCoord">External manpage: evalCoord2dv</a>
 %% C-API func: void glEvalCoord2dv( const GLdouble * u)
 evalCoord2dv({U1,U2}) -> 
  cast(?glEvalCoord2dv, <<U1:64/?FN,U2:64/?FN>>).
 
-%% Func:    evalCoord2f 
-%% Args:    U, V
-%% Returns: ok
+%% @spec evalCoord2f(U::float(), V::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glEvalCoord">External manpage: evalCoord2f</a>
 %% C-API func: void glEvalCoord2f(GLfloat u, GLfloat v)
 evalCoord2f(U, V) -> 
  cast(?glEvalCoord2fv, <<U:32/?FN, V:32/?FN>>).
 
-%% Func:    evalCoord2fv 
-%% Args:    {U1,U2}
-%% Returns: ok
+%% @spec evalCoord2fv({U1::float(),U2::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glEvalCoord">External manpage: evalCoord2fv</a>
 %% C-API func: void glEvalCoord2fv( const GLfloat * u)
 evalCoord2fv({U1,U2}) -> 
  cast(?glEvalCoord2fv, <<U1:32/?FN,U2:32/?FN>>).
 
-%% Func:    evalMesh1 
-%% Args:    Mode, I1, I2
-%% Returns: ok
+%% @spec evalMesh1(Mode::integer(), I1::integer(), I2::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glEvalMesh1">External manpage: evalMesh1</a>
 %% C-API func: void glEvalMesh1(GLenum mode, GLint i1, GLint i2)
 evalMesh1(Mode, I1, I2) -> 
  cast(?glEvalMesh1, <<Mode:32/?UN, I1:32/?SN, I2:32/?SN>>).
 
-%% Func:    evalMesh2 
-%% Args:    Mode, I1, I2, J1, J2
-%% Returns: ok
+%% @spec evalMesh2(Mode::integer(), I1::integer(), I2::integer(), J1::integer(), J2::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glEvalMesh2">External manpage: evalMesh2</a>
 %% C-API func: void glEvalMesh2(GLenum mode, GLint i1, GLint i2, GLint j1, GLint j2)
 evalMesh2(Mode, I1, I2, J1, J2) -> 
  cast(?glEvalMesh2, <<Mode:32/?UN, I1:32/?SN, I2:32/?SN, J1:32/?SN, J2:32/?SN>>).
 
-%% Func:    evalPoint1 
-%% Args:    I
-%% Returns: ok
+%% @spec evalPoint1(I::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glEvalPoint1">External manpage: evalPoint1</a>
 %% C-API func: void glEvalPoint1(GLint i)
 evalPoint1(I) -> 
  cast(?glEvalPoint1, <<I:32/?SN>>).
 
-%% Func:    evalPoint2 
-%% Args:    I, J
-%% Returns: ok
+%% @spec evalPoint2(I::integer(), J::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glEvalPoint2">External manpage: evalPoint2</a>
 %% C-API func: void glEvalPoint2(GLint i, GLint j)
 evalPoint2(I, J) -> 
  cast(?glEvalPoint2, <<I:32/?SN, J:32/?SN>>).
 
-%% Func:    feedbackBuffer 
-%% Args:    Size, Type, #sdlmem{} = Buffer
-%% Returns: ok
+%% @spec feedbackBuffer(Size::integer(), Type::integer(), Buffer::sdlmem()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glFeedbackBuffer">External manpage: feedbackBuffer</a>
 %% C-API func: void glFeedbackBuffer(GLsizei size, GLenum type, GLfloat * buffer)
 feedbackBuffer(Size, Type, #sdlmem{bin=Buffer}) -> 
  sdl:send_bin(Buffer, ?MODULE, ?LINE),
  cast(?glFeedbackBuffer, <<Size:32/?SN, Type:32/?UN>>).
 
-%% Func:    finish 
-%% Args:    
-%% Returns: ok
+%% @spec finish() -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glFinish">External manpage: finish</a>
 %% C-API func: void glFinish()
 finish() -> 
  cast(?glFinish, []).
 
-%% Func:    flush 
-%% Args:    
-%% Returns: ok
+%% @spec flush() -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glFlush">External manpage: flush</a>
 %% C-API func: void glFlush()
 flush() -> 
  cast(?glFlush, []).
 
-%% Func:    fogf 
-%% Args:    Pname, Param
-%% Returns: ok
+%% @spec fogf(Pname::integer(), Param::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glFogf">External manpage: fogf</a>
 %% C-API func: void glFogf(GLenum pname, GLfloat param)
 fogf(Pname, Param) -> 
  cast(?glFogf, <<Pname:32/?UN, Param:32/?FN>>).
 
-%% Func:    fogfv 
-%% Args:    Pname, <<[Params]>>
-%% Returns: ok
+%% @spec fogfv(Pname::integer(), Params::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glFogfv">External manpage: fogfv</a>
 %% C-API func: void glFogfv(GLenum pname,  const GLfloat * params)
 fogfv(Pname, Params) -> 
  NewParams = if
@@ -1092,16 +1000,14 @@ fogfv(Pname, Params) ->
  end, 
  cast(?glFogfv, [<<Pname:32/?UN>>,NewParams]).
 
-%% Func:    fogi 
-%% Args:    Pname, Param
-%% Returns: ok
+%% @spec fogi(Pname::integer(), Param::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glFogi">External manpage: fogi</a>
 %% C-API func: void glFogi(GLenum pname, GLint param)
 fogi(Pname, Param) -> 
  cast(?glFogi, <<Pname:32/?UN, Param:32/?SN>>).
 
-%% Func:    fogiv 
-%% Args:    Pname, <<[Params]>>
-%% Returns: ok
+%% @spec fogiv(Pname::integer(), Params::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glFogiv">External manpage: fogiv</a>
 %% C-API func: void glFogiv(GLenum pname,  const GLint * params)
 fogiv(Pname, Params) -> 
  NewParams = if
@@ -1114,23 +1020,20 @@ fogiv(Pname, Params) ->
  end, 
  cast(?glFogiv, [<<Pname:32/?UN>>,NewParams]).
 
-%% Func:    frontFace 
-%% Args:    Mode
-%% Returns: ok
+%% @spec frontFace(Mode::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glFrontFace">External manpage: frontFace</a>
 %% C-API func: void glFrontFace(GLenum mode)
 frontFace(Mode) -> 
  cast(?glFrontFace, <<Mode:32/?UN>>).
 
-%% Func:    frustum 
-%% Args:    Left, Right, Bottom, Top, ZNear, ZFar
-%% Returns: ok
+%% @spec frustum(Left::float(), Right::float(), Bottom::float(), Top::float(), ZNear::float(), ZFar::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glFrustum">External manpage: frustum</a>
 %% C-API func: void glFrustum(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar)
 frustum(Left, Right, Bottom, Top, ZNear, ZFar) -> 
  cast(?glFrustum, <<Left:64/?FN, Right:64/?FN, Bottom:64/?FN, Top:64/?FN, ZNear:64/?FN, ZFar:64/?FN>>).
 
-%% Func:    genLists 
-%% Args:    Range
-%% Returns: ?GL_UNSIGNED_INT
+%% @spec genLists(Range::integer()) -> integer()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGenLists">External manpage: genLists</a>
 %% C-API func: GLuint glGenLists(GLsizei range)
 genLists(Range) -> 
  Bin = call(?glGenLists, <<Range:32/?SN>>), 
@@ -1140,9 +1043,8 @@ genLists(Range) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    genTextures 
-%% Args:    N
-%% Returns: [Textures]
+%% @spec genTextures(N::integer()) -> Textures::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGenTextures">External manpage: genTextures</a>
 %% C-API func: void glGenTextures(GLsizei n, GLuint * textures)
 genTextures(N) -> 
  Bin = call(?glGenTextures, <<N:32/?SN>>), 
@@ -1152,9 +1054,8 @@ genTextures(N) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getBooleanv 
-%% Args:    Pname
-%% Returns: [Params]
+%% @spec getBooleanv(Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetBooleanv">External manpage: getBooleanv</a>
 %% C-API func: void glGetBooleanv(GLenum pname, GLboolean * params)
 getBooleanv(Pname) -> 
  Bin = call(?glGetBooleanv, <<Pname:32/?UN>>), 
@@ -1166,9 +1067,8 @@ getBooleanv(Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getClipPlane 
-%% Args:    Plane
-%% Returns: [Equation]
+%% @spec getClipPlane(Plane::integer()) -> Equation::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetClipPlane">External manpage: getClipPlane</a>
 %% C-API func: void glGetClipPlane(GLenum plane, GLdouble * equation)
 getClipPlane(Plane) -> 
  Bin = call(?glGetClipPlane, <<Plane:32/?UN>>), 
@@ -1178,9 +1078,8 @@ getClipPlane(Plane) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getDoublev 
-%% Args:    Pname
-%% Returns: [Params]
+%% @spec getDoublev(Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetDoublev">External manpage: getDoublev</a>
 %% C-API func: void glGetDoublev(GLenum pname, GLdouble * params)
 getDoublev(Pname) -> 
  Bin = call(?glGetDoublev, <<Pname:32/?UN>>), 
@@ -1192,9 +1091,8 @@ getDoublev(Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getError 
-%% Args:    
-%% Returns: ?GL_INT
+%% @spec getError() -> integer()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetError">External manpage: getError</a>
 %% C-API func: GLenum glGetError()
 getError() -> 
  Bin = call(?glGetError, []), 
@@ -1204,9 +1102,8 @@ getError() ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getFloatv 
-%% Args:    Pname
-%% Returns: [Params]
+%% @spec getFloatv(Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetFloatv">External manpage: getFloatv</a>
 %% C-API func: void glGetFloatv(GLenum pname, GLfloat * params)
 getFloatv(Pname) -> 
  Bin = call(?glGetFloatv, <<Pname:32/?UN>>), 
@@ -1218,9 +1115,8 @@ getFloatv(Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getIntegerv 
-%% Args:    Pname
-%% Returns: [Params]
+%% @spec getIntegerv(Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetIntegerv">External manpage: getIntegerv</a>
 %% C-API func: void glGetIntegerv(GLenum pname, GLint * params)
 getIntegerv(Pname) -> 
  Bin = call(?glGetIntegerv, <<Pname:32/?UN>>), 
@@ -1232,9 +1128,8 @@ getIntegerv(Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getLightfv 
-%% Args:    Light, Pname
-%% Returns: [Params]
+%% @spec getLightfv(Light::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetLightfv">External manpage: getLightfv</a>
 %% C-API func: void glGetLightfv(GLenum light, GLenum pname, GLfloat * params)
 getLightfv(Light, Pname) -> 
  Bin = call(?glGetLightfv, <<Light:32/?UN, Pname:32/?UN>>), 
@@ -1246,9 +1141,8 @@ getLightfv(Light, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getLightiv 
-%% Args:    Light, Pname
-%% Returns: [Params]
+%% @spec getLightiv(Light::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetLightiv">External manpage: getLightiv</a>
 %% C-API func: void glGetLightiv(GLenum light, GLenum pname, GLint * params)
 getLightiv(Light, Pname) -> 
  Bin = call(?glGetLightiv, <<Light:32/?UN, Pname:32/?UN>>), 
@@ -1260,33 +1154,29 @@ getLightiv(Light, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getMapdv 
-%% Args:    Target, Query, #sdlmem{} = V
-%% Returns: ok
+%% @spec getMapdv(Target::integer(), Query::integer(), V::sdlmem()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetMapdv">External manpage: getMapdv</a>
 %% C-API func: void glGetMapdv(GLenum target, GLenum query, GLdouble * v)
 getMapdv(Target, Query, #sdlmem{bin=V}) -> 
  sdl:send_bin(V, ?MODULE, ?LINE),
  cast(?glGetMapdv, <<Target:32/?UN, Query:32/?UN>>).
 
-%% Func:    getMapfv 
-%% Args:    Target, Query, #sdlmem{} = V
-%% Returns: ok
+%% @spec getMapfv(Target::integer(), Query::integer(), V::sdlmem()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetMapfv">External manpage: getMapfv</a>
 %% C-API func: void glGetMapfv(GLenum target, GLenum query, GLfloat * v)
 getMapfv(Target, Query, #sdlmem{bin=V}) -> 
  sdl:send_bin(V, ?MODULE, ?LINE),
  cast(?glGetMapfv, <<Target:32/?UN, Query:32/?UN>>).
 
-%% Func:    getMapiv 
-%% Args:    Target, Query, #sdlmem{} = V
-%% Returns: ok
+%% @spec getMapiv(Target::integer(), Query::integer(), V::sdlmem()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetMapiv">External manpage: getMapiv</a>
 %% C-API func: void glGetMapiv(GLenum target, GLenum query, GLint * v)
 getMapiv(Target, Query, #sdlmem{bin=V}) -> 
  sdl:send_bin(V, ?MODULE, ?LINE),
  cast(?glGetMapiv, <<Target:32/?UN, Query:32/?UN>>).
 
-%% Func:    getMaterialfv 
-%% Args:    Face, Pname
-%% Returns: [Params]
+%% @spec getMaterialfv(Face::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetMaterialfv">External manpage: getMaterialfv</a>
 %% C-API func: void glGetMaterialfv(GLenum face, GLenum pname, GLfloat * params)
 getMaterialfv(Face, Pname) -> 
  Bin = call(?glGetMaterialfv, <<Face:32/?UN, Pname:32/?UN>>), 
@@ -1298,9 +1188,8 @@ getMaterialfv(Face, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getMaterialiv 
-%% Args:    Face, Pname
-%% Returns: [Params]
+%% @spec getMaterialiv(Face::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetMaterialiv">External manpage: getMaterialiv</a>
 %% C-API func: void glGetMaterialiv(GLenum face, GLenum pname, GLint * params)
 getMaterialiv(Face, Pname) -> 
  Bin = call(?glGetMaterialiv, <<Face:32/?UN, Pname:32/?UN>>), 
@@ -1312,33 +1201,29 @@ getMaterialiv(Face, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getPixelMapfv 
-%% Args:    Map, #sdlmem{} = Values
-%% Returns: ok
+%% @spec getPixelMapfv(Map::integer(), Values::sdlmem()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetPixelMapfv">External manpage: getPixelMapfv</a>
 %% C-API func: void glGetPixelMapfv(GLenum map, GLfloat * values)
 getPixelMapfv(Map, #sdlmem{bin=Values}) -> 
  sdl:send_bin(Values, ?MODULE, ?LINE),
  cast(?glGetPixelMapfv, <<Map:32/?UN>>).
 
-%% Func:    getPixelMapuiv 
-%% Args:    Map, #sdlmem{} = Values
-%% Returns: ok
+%% @spec getPixelMapuiv(Map::integer(), Values::sdlmem()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetPixelMapuiv">External manpage: getPixelMapuiv</a>
 %% C-API func: void glGetPixelMapuiv(GLenum map, GLuint * values)
 getPixelMapuiv(Map, #sdlmem{bin=Values}) -> 
  sdl:send_bin(Values, ?MODULE, ?LINE),
  cast(?glGetPixelMapuiv, <<Map:32/?UN>>).
 
-%% Func:    getPixelMapusv 
-%% Args:    Map, #sdlmem{} = Values
-%% Returns: ok
+%% @spec getPixelMapusv(Map::integer(), Values::sdlmem()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetPixelMapusv">External manpage: getPixelMapusv</a>
 %% C-API func: void glGetPixelMapusv(GLenum map, GLushort * values)
 getPixelMapusv(Map, #sdlmem{bin=Values}) -> 
  sdl:send_bin(Values, ?MODULE, ?LINE),
  cast(?glGetPixelMapusv, <<Map:32/?UN>>).
 
-%% Func:    getPointerv 
-%% Args:    Pname
-%% Returns: Params=#sdlmem{}
+%% @spec getPointerv(Pname::integer()) -> Params::sdlmem()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetPointerv">External manpage: getPointerv</a>
 %% C-API func: void glGetPointerv(GLenum pname,  GLvoid* *params)
 getPointerv(Pname) -> 
  Bin = call(?glGetPointerv, <<Pname:32/?UN>>), 
@@ -1348,9 +1233,8 @@ getPointerv(Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getPolygonStipple 
-%% Args:    
-%% Returns: [Mask]
+%% @spec getPolygonStipple() -> Mask::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetPolygonStipple">External manpage: getPolygonStipple</a>
 %% C-API func: void glGetPolygonStipple(GLubyte * mask)
 getPolygonStipple() -> 
  Bin = call(?glGetPolygonStipple, []), 
@@ -1360,9 +1244,8 @@ getPolygonStipple() ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getString 
-%% Args:    Name
-%% Returns: [?GL_UNSIGNED_BYTE]
+%% @spec getString(Name::integer()) -> [integer()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetString">External manpage: getString</a>
 %% C-API func: GLubyte* glGetString(GLenum name)
 getString(Name) -> 
  Bin = call(?glGetString, <<Name:32/?UN>>), 
@@ -1371,9 +1254,8 @@ getString(Name) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getTexEnvfv 
-%% Args:    Target, Pname
-%% Returns: [Params]
+%% @spec getTexEnvfv(Target::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetTexEnvfv">External manpage: getTexEnvfv</a>
 %% C-API func: void glGetTexEnvfv(GLenum target, GLenum pname, GLfloat * params)
 getTexEnvfv(Target, Pname) -> 
  Bin = call(?glGetTexEnvfv, <<Target:32/?UN, Pname:32/?UN>>), 
@@ -1385,9 +1267,8 @@ getTexEnvfv(Target, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getTexEnviv 
-%% Args:    Target, Pname
-%% Returns: [Params]
+%% @spec getTexEnviv(Target::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetTexEnviv">External manpage: getTexEnviv</a>
 %% C-API func: void glGetTexEnviv(GLenum target, GLenum pname, GLint * params)
 getTexEnviv(Target, Pname) -> 
  Bin = call(?glGetTexEnviv, <<Target:32/?UN, Pname:32/?UN>>), 
@@ -1399,9 +1280,8 @@ getTexEnviv(Target, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getTexGendv 
-%% Args:    Coord, Pname
-%% Returns: [Params]
+%% @spec getTexGendv(Coord::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetTexGendv">External manpage: getTexGendv</a>
 %% C-API func: void glGetTexGendv(GLenum coord, GLenum pname, GLdouble * params)
 getTexGendv(Coord, Pname) -> 
  Bin = call(?glGetTexGendv, <<Coord:32/?UN, Pname:32/?UN>>), 
@@ -1413,9 +1293,8 @@ getTexGendv(Coord, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getTexGenfv 
-%% Args:    Coord, Pname
-%% Returns: [Params]
+%% @spec getTexGenfv(Coord::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetTexGenfv">External manpage: getTexGenfv</a>
 %% C-API func: void glGetTexGenfv(GLenum coord, GLenum pname, GLfloat * params)
 getTexGenfv(Coord, Pname) -> 
  Bin = call(?glGetTexGenfv, <<Coord:32/?UN, Pname:32/?UN>>), 
@@ -1427,9 +1306,8 @@ getTexGenfv(Coord, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getTexGeniv 
-%% Args:    Coord, Pname
-%% Returns: [Params]
+%% @spec getTexGeniv(Coord::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetTexGeniv">External manpage: getTexGeniv</a>
 %% C-API func: void glGetTexGeniv(GLenum coord, GLenum pname, GLint * params)
 getTexGeniv(Coord, Pname) -> 
  Bin = call(?glGetTexGeniv, <<Coord:32/?UN, Pname:32/?UN>>), 
@@ -1441,17 +1319,15 @@ getTexGeniv(Coord, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getTexImage 
-%% Args:    Target, Level, Format, Type, #sdlmem{} = Pixels
-%% Returns: ok
+%% @spec getTexImage(Target::integer(), Level::integer(), Format::integer(), Type::integer(), Pixels::sdlmem()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetTexImage">External manpage: getTexImage</a>
 %% C-API func: void glGetTexImage(GLenum target, GLint level, GLenum format, GLenum type, GLvoid * pixels)
 getTexImage(Target, Level, Format, Type, #sdlmem{bin=Pixels}) -> 
  sdl:send_bin(Pixels, ?MODULE, ?LINE),
  cast(?glGetTexImage, <<Target:32/?UN, Level:32/?SN, Format:32/?UN, Type:32/?UN>>).
 
-%% Func:    getTexLevelParameterfv 
-%% Args:    Target, Level, Pname
-%% Returns: [Params]
+%% @spec getTexLevelParameterfv(Target::integer(), Level::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetTexLevelParameterfv">External manpage: getTexLevelParameterfv</a>
 %% C-API func: void glGetTexLevelParameterfv(GLenum target, GLint level, GLenum pname, GLfloat * params)
 getTexLevelParameterfv(Target, Level, Pname) -> 
  Bin = call(?glGetTexLevelParameterfv, <<Target:32/?UN, Level:32/?SN, Pname:32/?UN>>), 
@@ -1461,9 +1337,8 @@ getTexLevelParameterfv(Target, Level, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getTexLevelParameteriv 
-%% Args:    Target, Level, Pname
-%% Returns: [Params]
+%% @spec getTexLevelParameteriv(Target::integer(), Level::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetTexLevelParameteriv">External manpage: getTexLevelParameteriv</a>
 %% C-API func: void glGetTexLevelParameteriv(GLenum target, GLint level, GLenum pname, GLint * params)
 getTexLevelParameteriv(Target, Level, Pname) -> 
  Bin = call(?glGetTexLevelParameteriv, <<Target:32/?UN, Level:32/?SN, Pname:32/?UN>>), 
@@ -1473,9 +1348,8 @@ getTexLevelParameteriv(Target, Level, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getTexParameterfv 
-%% Args:    Target, Pname
-%% Returns: [Params]
+%% @spec getTexParameterfv(Target::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetTexParameterfv">External manpage: getTexParameterfv</a>
 %% C-API func: void glGetTexParameterfv(GLenum target, GLenum pname, GLfloat * params)
 getTexParameterfv(Target, Pname) -> 
  Bin = call(?glGetTexParameterfv, <<Target:32/?UN, Pname:32/?UN>>), 
@@ -1487,9 +1361,8 @@ getTexParameterfv(Target, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getTexParameteriv 
-%% Args:    Target, Pname
-%% Returns: [Params]
+%% @spec getTexParameteriv(Target::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetTexParameteriv">External manpage: getTexParameteriv</a>
 %% C-API func: void glGetTexParameteriv(GLenum target, GLenum pname, GLint * params)
 getTexParameteriv(Target, Pname) -> 
  Bin = call(?glGetTexParameteriv, <<Target:32/?UN, Pname:32/?UN>>), 
@@ -1501,23 +1374,20 @@ getTexParameteriv(Target, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    hint 
-%% Args:    Target, Mode
-%% Returns: ok
+%% @spec hint(Target::integer(), Mode::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glHint">External manpage: hint</a>
 %% C-API func: void glHint(GLenum target, GLenum mode)
 hint(Target, Mode) -> 
  cast(?glHint, <<Target:32/?UN, Mode:32/?UN>>).
 
-%% Func:    indexMask 
-%% Args:    Mask
-%% Returns: ok
+%% @spec indexMask(Mask::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glIndexMask">External manpage: indexMask</a>
 %% C-API func: void glIndexMask(GLuint mask)
 indexMask(Mask) -> 
  cast(?glIndexMask, <<Mask:32/?UN>>).
 
-%% Func:    indexPointer 
-%% Args:    Type, Stride, <<[Pointer]>>
-%% Returns: ok
+%% @spec indexPointer(Type::integer(), Stride::integer(), Pointer::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glIndexPointer">External manpage: indexPointer</a>
 %% C-API func: void glIndexPointer(GLenum type, GLsizei stride,  const GLvoid * pointer)
 indexPointer(Type, Stride, Pointer) -> 
 %% Maybe NULL or offset sometimes
@@ -1529,16 +1399,14 @@ indexPointer(Type, Stride, Pointer) ->
    end,
  cast(?glIndexPointer, [<<Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
-%% Func:    indexd 
-%% Args:    C
-%% Returns: ok
+%% @spec indexd(C::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glIndexd">External manpage: indexd</a>
 %% C-API func: void glIndexd(GLdouble c)
 indexd(C) -> 
  cast(?glIndexd, <<C:64/?FN>>).
 
-%% Func:    indexdv 
-%% Args:    <<[C]>>
-%% Returns: ok
+%% @spec indexdv(C::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glIndexdv">External manpage: indexdv</a>
 %% C-API func: void glIndexdv( const GLdouble * c)
 indexdv(C) -> 
  NewC = if
@@ -1548,16 +1416,14 @@ indexdv(C) ->
  end, 
  cast(?glIndexdv, [ NewC]).
 
-%% Func:    indexf 
-%% Args:    C
-%% Returns: ok
+%% @spec indexf(C::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glIndexf">External manpage: indexf</a>
 %% C-API func: void glIndexf(GLfloat c)
 indexf(C) -> 
  cast(?glIndexf, <<C:32/?FN>>).
 
-%% Func:    indexfv 
-%% Args:    <<[C]>>
-%% Returns: ok
+%% @spec indexfv(C::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glIndexfv">External manpage: indexfv</a>
 %% C-API func: void glIndexfv( const GLfloat * c)
 indexfv(C) -> 
  NewC = if
@@ -1567,16 +1433,14 @@ indexfv(C) ->
  end, 
  cast(?glIndexfv, [ NewC]).
 
-%% Func:    indexi 
-%% Args:    C
-%% Returns: ok
+%% @spec indexi(C::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glIndexi">External manpage: indexi</a>
 %% C-API func: void glIndexi(GLint c)
 indexi(C) -> 
  cast(?glIndexi, <<C:32/?SN>>).
 
-%% Func:    indexiv 
-%% Args:    <<[C]>>
-%% Returns: ok
+%% @spec indexiv(C::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glIndexiv">External manpage: indexiv</a>
 %% C-API func: void glIndexiv( const GLint * c)
 indexiv(C) -> 
  NewC = if
@@ -1586,16 +1450,14 @@ indexiv(C) ->
  end, 
  cast(?glIndexiv, [ NewC]).
 
-%% Func:    indexs 
-%% Args:    C
-%% Returns: ok
+%% @spec indexs(C::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glIndexs">External manpage: indexs</a>
 %% C-API func: void glIndexs(GLshort c)
 indexs(C) -> 
  cast(?glIndexs, <<C:16/?SN>>).
 
-%% Func:    indexsv 
-%% Args:    <<[C]>>
-%% Returns: ok
+%% @spec indexsv(C::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glIndexsv">External manpage: indexsv</a>
 %% C-API func: void glIndexsv( const GLshort * c)
 indexsv(C) -> 
  NewC = if
@@ -1605,16 +1467,14 @@ indexsv(C) ->
  end, 
  cast(?glIndexsv, [ NewC]).
 
-%% Func:    indexub 
-%% Args:    C
-%% Returns: ok
+%% @spec indexub(C::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glIndexub">External manpage: indexub</a>
 %% C-API func: void glIndexub(GLubyte c)
 indexub(C) -> 
  cast(?glIndexub, <<C:8/unsigned>>).
 
-%% Func:    indexubv 
-%% Args:    <<[C]>>
-%% Returns: ok
+%% @spec indexubv(C::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glIndexubv">External manpage: indexubv</a>
 %% C-API func: void glIndexubv( const GLubyte * c)
 indexubv(C) -> 
  NewC = if
@@ -1624,16 +1484,14 @@ indexubv(C) ->
  end, 
  cast(?glIndexubv, [ NewC]).
 
-%% Func:    initNames 
-%% Args:    
-%% Returns: ok
+%% @spec initNames() -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glInitNames">External manpage: initNames</a>
 %% C-API func: void glInitNames()
 initNames() -> 
  cast(?glInitNames, []).
 
-%% Func:    interleavedArrays 
-%% Args:    Format, Stride, <<[Pointer]>>
-%% Returns: ok
+%% @spec interleavedArrays(Format::integer(), Stride::integer(), Pointer::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glInterleavedArrays">External manpage: interleavedArrays</a>
 %% C-API func: void glInterleavedArrays(GLenum format, GLsizei stride,  const GLvoid * pointer)
 interleavedArrays(Format, Stride, Pointer) -> 
 %% Maybe NULL or offset sometimes
@@ -1645,9 +1503,8 @@ interleavedArrays(Format, Stride, Pointer) ->
    end,
  cast(?glInterleavedArrays, [<<Format:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
-%% Func:    isEnabled 
-%% Args:    Cap
-%% Returns: ?GL_BYTE
+%% @spec isEnabled(Cap::integer()) -> bool()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glIsEnabled">External manpage: isEnabled</a>
 %% C-API func: GLboolean glIsEnabled(GLenum cap)
 isEnabled(Cap) -> 
  Bin = call(?glIsEnabled, <<Cap:32/?UN>>), 
@@ -1657,9 +1514,8 @@ isEnabled(Cap) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    isList 
-%% Args:    List
-%% Returns: ?GL_BYTE
+%% @spec isList(List::integer()) -> bool()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glIsList">External manpage: isList</a>
 %% C-API func: GLboolean glIsList(GLuint list)
 isList(List) -> 
  Bin = call(?glIsList, <<List:32/?UN>>), 
@@ -1669,9 +1525,8 @@ isList(List) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    isTexture 
-%% Args:    Texture
-%% Returns: ?GL_BYTE
+%% @spec isTexture(Texture::integer()) -> bool()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glIsTexture">External manpage: isTexture</a>
 %% C-API func: GLboolean glIsTexture(GLuint texture)
 isTexture(Texture) -> 
  Bin = call(?glIsTexture, <<Texture:32/?UN>>), 
@@ -1681,16 +1536,14 @@ isTexture(Texture) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    lightModelf 
-%% Args:    Pname, Param
-%% Returns: ok
+%% @spec lightModelf(Pname::integer(), Param::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glLightModelf">External manpage: lightModelf</a>
 %% C-API func: void glLightModelf(GLenum pname, GLfloat param)
 lightModelf(Pname, Param) -> 
  cast(?glLightModelf, <<Pname:32/?UN, Param:32/?FN>>).
 
-%% Func:    lightModelfv 
-%% Args:    Pname, <<[Params]>>
-%% Returns: ok
+%% @spec lightModelfv(Pname::integer(), Params::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glLightModelfv">External manpage: lightModelfv</a>
 %% C-API func: void glLightModelfv(GLenum pname,  const GLfloat * params)
 lightModelfv(Pname, Params) -> 
  NewParams = if
@@ -1703,16 +1556,14 @@ lightModelfv(Pname, Params) ->
  end, 
  cast(?glLightModelfv, [<<Pname:32/?UN>>,NewParams]).
 
-%% Func:    lightModeli 
-%% Args:    Pname, Param
-%% Returns: ok
+%% @spec lightModeli(Pname::integer(), Param::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glLightModeli">External manpage: lightModeli</a>
 %% C-API func: void glLightModeli(GLenum pname, GLint param)
 lightModeli(Pname, Param) -> 
  cast(?glLightModeli, <<Pname:32/?UN, Param:32/?SN>>).
 
-%% Func:    lightModeliv 
-%% Args:    Pname, <<[Params]>>
-%% Returns: ok
+%% @spec lightModeliv(Pname::integer(), Params::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glLightModeliv">External manpage: lightModeliv</a>
 %% C-API func: void glLightModeliv(GLenum pname,  const GLint * params)
 lightModeliv(Pname, Params) -> 
  NewParams = if
@@ -1725,16 +1576,14 @@ lightModeliv(Pname, Params) ->
  end, 
  cast(?glLightModeliv, [<<Pname:32/?UN>>,NewParams]).
 
-%% Func:    lightf 
-%% Args:    Light, Pname, Param
-%% Returns: ok
+%% @spec lightf(Light::integer(), Pname::integer(), Param::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glLightf">External manpage: lightf</a>
 %% C-API func: void glLightf(GLenum light, GLenum pname, GLfloat param)
 lightf(Light, Pname, Param) -> 
  cast(?glLightf, <<Light:32/?UN, Pname:32/?UN, Param:32/?FN>>).
 
-%% Func:    lightfv 
-%% Args:    Light, Pname, <<[Params]>>
-%% Returns: ok
+%% @spec lightfv(Light::integer(), Pname::integer(), Params::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glLightfv">External manpage: lightfv</a>
 %% C-API func: void glLightfv(GLenum light, GLenum pname,  const GLfloat * params)
 lightfv(Light, Pname, Params) -> 
  NewParams = if
@@ -1747,16 +1596,14 @@ lightfv(Light, Pname, Params) ->
  end, 
  cast(?glLightfv, [<<Light:32/?UN, Pname:32/?UN>>,NewParams]).
 
-%% Func:    lighti 
-%% Args:    Light, Pname, Param
-%% Returns: ok
+%% @spec lighti(Light::integer(), Pname::integer(), Param::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glLighti">External manpage: lighti</a>
 %% C-API func: void glLighti(GLenum light, GLenum pname, GLint param)
 lighti(Light, Pname, Param) -> 
  cast(?glLighti, <<Light:32/?UN, Pname:32/?UN, Param:32/?SN>>).
 
-%% Func:    lightiv 
-%% Args:    Light, Pname, <<[Params]>>
-%% Returns: ok
+%% @spec lightiv(Light::integer(), Pname::integer(), Params::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glLightiv">External manpage: lightiv</a>
 %% C-API func: void glLightiv(GLenum light, GLenum pname,  const GLint * params)
 lightiv(Light, Pname, Params) -> 
  NewParams = if
@@ -1769,37 +1616,32 @@ lightiv(Light, Pname, Params) ->
  end, 
  cast(?glLightiv, [<<Light:32/?UN, Pname:32/?UN>>,NewParams]).
 
-%% Func:    lineStipple 
-%% Args:    Factor, Pattern
-%% Returns: ok
+%% @spec lineStipple(Factor::integer(), Pattern::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glLineStipple">External manpage: lineStipple</a>
 %% C-API func: void glLineStipple(GLint factor, GLushort pattern)
 lineStipple(Factor, Pattern) -> 
  cast(?glLineStipple, <<Factor:32/?SN, Pattern:16/?UN>>).
 
-%% Func:    lineWidth 
-%% Args:    Width
-%% Returns: ok
+%% @spec lineWidth(Width::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glLineWidth">External manpage: lineWidth</a>
 %% C-API func: void glLineWidth(GLfloat width)
 lineWidth(Width) -> 
  cast(?glLineWidth, <<Width:32/?FN>>).
 
-%% Func:    listBase 
-%% Args:    Base
-%% Returns: ok
+%% @spec listBase(Base::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glListBase">External manpage: listBase</a>
 %% C-API func: void glListBase(GLuint base)
 listBase(Base) -> 
  cast(?glListBase, <<Base:32/?UN>>).
 
-%% Func:    loadIdentity 
-%% Args:    
-%% Returns: ok
+%% @spec loadIdentity() -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glLoadIdentity">External manpage: loadIdentity</a>
 %% C-API func: void glLoadIdentity()
 loadIdentity() -> 
  cast(?glLoadIdentity, []).
 
-%% Func:    loadMatrixd 
-%% Args:    <<[M]>>
-%% Returns: ok
+%% @spec loadMatrixd(M::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glLoadMatrixd">External manpage: loadMatrixd</a>
 %% C-API func: void glLoadMatrixd( const GLdouble * m)
 loadMatrixd(M) -> 
  NewM = if
@@ -1809,9 +1651,8 @@ loadMatrixd(M) ->
  end, 
  cast(?glLoadMatrixd, [ NewM]).
 
-%% Func:    loadMatrixf 
-%% Args:    <<[M]>>
-%% Returns: ok
+%% @spec loadMatrixf(M::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glLoadMatrixf">External manpage: loadMatrixf</a>
 %% C-API func: void glLoadMatrixf( const GLfloat * m)
 loadMatrixf(M) -> 
  NewM = if
@@ -1821,23 +1662,20 @@ loadMatrixf(M) ->
  end, 
  cast(?glLoadMatrixf, [ NewM]).
 
-%% Func:    loadName 
-%% Args:    Name
-%% Returns: ok
+%% @spec loadName(Name::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glLoadName">External manpage: loadName</a>
 %% C-API func: void glLoadName(GLuint name)
 loadName(Name) -> 
  cast(?glLoadName, <<Name:32/?UN>>).
 
-%% Func:    logicOp 
-%% Args:    Opcode
-%% Returns: ok
+%% @spec logicOp(Opcode::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glLogicOp">External manpage: logicOp</a>
 %% C-API func: void glLogicOp(GLenum opcode)
 logicOp(Opcode) -> 
  cast(?glLogicOp, <<Opcode:32/?UN>>).
 
-%% Func:    map1d 
-%% Args:    Target, U1, U2, Stride, Order, <<[Points]>>
-%% Returns: ok
+%% @spec map1d(Target::integer(), U1::float(), U2::float(), Stride::integer(), Order::integer(), Points::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMap1d">External manpage: map1d</a>
 %% C-API func: void glMap1d(GLenum target, GLdouble u1, GLdouble u2, GLint stride, GLint order,  const GLdouble * points)
 map1d(Target, U1, U2, Stride, Order, Points) -> 
  NewPoints = if
@@ -1850,9 +1688,8 @@ map1d(Target, U1, U2, Stride, Order, Points) ->
  end, 
  cast(?glMap1d, [<<Target:32/?UN, U1:64/?FN, U2:64/?FN, Stride:32/?SN, Order:32/?SN>>,NewPoints]).
 
-%% Func:    map1f 
-%% Args:    Target, U1, U2, Stride, Order, <<[Points]>>
-%% Returns: ok
+%% @spec map1f(Target::integer(), U1::float(), U2::float(), Stride::integer(), Order::integer(), Points::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMap1f">External manpage: map1f</a>
 %% C-API func: void glMap1f(GLenum target, GLfloat u1, GLfloat u2, GLint stride, GLint order,  const GLfloat * points)
 map1f(Target, U1, U2, Stride, Order, Points) -> 
  NewPoints = if
@@ -1865,9 +1702,8 @@ map1f(Target, U1, U2, Stride, Order, Points) ->
  end, 
  cast(?glMap1f, [<<Target:32/?UN, U1:32/?FN, U2:32/?FN, Stride:32/?SN, Order:32/?SN>>,NewPoints]).
 
-%% Func:    map2d 
-%% Args:    Target, U1, U2, Ustride, Uorder, V1, V2, Vstride, Vorder, <<[Points]>>
-%% Returns: ok
+%% @spec map2d(Target::integer(), U1::float(), U2::float(), Ustride::integer(), Uorder::integer(), V1::float(), V2::float(), Vstride::integer(), Vorder::integer(), Points::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMap2d">External manpage: map2d</a>
 %% C-API func: void glMap2d(GLenum target, GLdouble u1, GLdouble u2, GLint ustride, GLint uorder, GLdouble v1, GLdouble v2, GLint vstride, GLint vorder,  const GLdouble * points)
 map2d(Target, U1, U2, Ustride, Uorder, V1, V2, Vstride, Vorder, Points) -> 
  NewPoints = if
@@ -1880,9 +1716,8 @@ map2d(Target, U1, U2, Ustride, Uorder, V1, V2, Vstride, Vorder, Points) ->
  end, 
  cast(?glMap2d, [<<Target:32/?UN, U1:64/?FN, U2:64/?FN, Ustride:32/?SN, Uorder:32/?SN, V1:64/?FN, V2:64/?FN, Vstride:32/?SN, Vorder:32/?SN>>,NewPoints]).
 
-%% Func:    map2f 
-%% Args:    Target, U1, U2, Ustride, Uorder, V1, V2, Vstride, Vorder, <<[Points]>>
-%% Returns: ok
+%% @spec map2f(Target::integer(), U1::float(), U2::float(), Ustride::integer(), Uorder::integer(), V1::float(), V2::float(), Vstride::integer(), Vorder::integer(), Points::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMap2f">External manpage: map2f</a>
 %% C-API func: void glMap2f(GLenum target, GLfloat u1, GLfloat u2, GLint ustride, GLint uorder, GLfloat v1, GLfloat v2, GLint vstride, GLint vorder,  const GLfloat * points)
 map2f(Target, U1, U2, Ustride, Uorder, V1, V2, Vstride, Vorder, Points) -> 
  NewPoints = if
@@ -1895,44 +1730,38 @@ map2f(Target, U1, U2, Ustride, Uorder, V1, V2, Vstride, Vorder, Points) ->
  end, 
  cast(?glMap2f, [<<Target:32/?UN, U1:32/?FN, U2:32/?FN, Ustride:32/?SN, Uorder:32/?SN, V1:32/?FN, V2:32/?FN, Vstride:32/?SN, Vorder:32/?SN>>,NewPoints]).
 
-%% Func:    mapGrid1d 
-%% Args:    Un, U1, U2
-%% Returns: ok
+%% @spec mapGrid1d(Un::integer(), U1::float(), U2::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMapGrid1d">External manpage: mapGrid1d</a>
 %% C-API func: void glMapGrid1d(GLint un, GLdouble u1, GLdouble u2)
 mapGrid1d(Un, U1, U2) -> 
  cast(?glMapGrid1d, <<Un:32/?SN, U1:64/?FN, U2:64/?FN>>).
 
-%% Func:    mapGrid1f 
-%% Args:    Un, U1, U2
-%% Returns: ok
+%% @spec mapGrid1f(Un::integer(), U1::float(), U2::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMapGrid1f">External manpage: mapGrid1f</a>
 %% C-API func: void glMapGrid1f(GLint un, GLfloat u1, GLfloat u2)
 mapGrid1f(Un, U1, U2) -> 
  cast(?glMapGrid1f, <<Un:32/?SN, U1:32/?FN, U2:32/?FN>>).
 
-%% Func:    mapGrid2d 
-%% Args:    Un, U1, U2, Vn, V1, V2
-%% Returns: ok
+%% @spec mapGrid2d(Un::integer(), U1::float(), U2::float(), Vn::integer(), V1::float(), V2::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMapGrid2d">External manpage: mapGrid2d</a>
 %% C-API func: void glMapGrid2d(GLint un, GLdouble u1, GLdouble u2, GLint vn, GLdouble v1, GLdouble v2)
 mapGrid2d(Un, U1, U2, Vn, V1, V2) -> 
  cast(?glMapGrid2d, <<Un:32/?SN, U1:64/?FN, U2:64/?FN, Vn:32/?SN, V1:64/?FN, V2:64/?FN>>).
 
-%% Func:    mapGrid2f 
-%% Args:    Un, U1, U2, Vn, V1, V2
-%% Returns: ok
+%% @spec mapGrid2f(Un::integer(), U1::float(), U2::float(), Vn::integer(), V1::float(), V2::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMapGrid2f">External manpage: mapGrid2f</a>
 %% C-API func: void glMapGrid2f(GLint un, GLfloat u1, GLfloat u2, GLint vn, GLfloat v1, GLfloat v2)
 mapGrid2f(Un, U1, U2, Vn, V1, V2) -> 
  cast(?glMapGrid2f, <<Un:32/?SN, U1:32/?FN, U2:32/?FN, Vn:32/?SN, V1:32/?FN, V2:32/?FN>>).
 
-%% Func:    materialf 
-%% Args:    Face, Pname, Param
-%% Returns: ok
+%% @spec materialf(Face::integer(), Pname::integer(), Param::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMaterialf">External manpage: materialf</a>
 %% C-API func: void glMaterialf(GLenum face, GLenum pname, GLfloat param)
 materialf(Face, Pname, Param) -> 
  cast(?glMaterialf, <<Face:32/?UN, Pname:32/?UN, Param:32/?FN>>).
 
-%% Func:    materialfv 
-%% Args:    Face, Pname, <<[Params]>>
-%% Returns: ok
+%% @spec materialfv(Face::integer(), Pname::integer(), Params::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMaterialfv">External manpage: materialfv</a>
 %% C-API func: void glMaterialfv(GLenum face, GLenum pname,  const GLfloat * params)
 materialfv(Face, Pname, Params) -> 
  NewParams = if
@@ -1945,16 +1774,14 @@ materialfv(Face, Pname, Params) ->
  end, 
  cast(?glMaterialfv, [<<Face:32/?UN, Pname:32/?UN>>,NewParams]).
 
-%% Func:    materiali 
-%% Args:    Face, Pname, Param
-%% Returns: ok
+%% @spec materiali(Face::integer(), Pname::integer(), Param::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMateriali">External manpage: materiali</a>
 %% C-API func: void glMateriali(GLenum face, GLenum pname, GLint param)
 materiali(Face, Pname, Param) -> 
  cast(?glMateriali, <<Face:32/?UN, Pname:32/?UN, Param:32/?SN>>).
 
-%% Func:    materialiv 
-%% Args:    Face, Pname, <<[Params]>>
-%% Returns: ok
+%% @spec materialiv(Face::integer(), Pname::integer(), Params::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMaterialiv">External manpage: materialiv</a>
 %% C-API func: void glMaterialiv(GLenum face, GLenum pname,  const GLint * params)
 materialiv(Face, Pname, Params) -> 
  NewParams = if
@@ -1967,16 +1794,14 @@ materialiv(Face, Pname, Params) ->
  end, 
  cast(?glMaterialiv, [<<Face:32/?UN, Pname:32/?UN>>,NewParams]).
 
-%% Func:    matrixMode 
-%% Args:    Mode
-%% Returns: ok
+%% @spec matrixMode(Mode::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMatrixMode">External manpage: matrixMode</a>
 %% C-API func: void glMatrixMode(GLenum mode)
 matrixMode(Mode) -> 
  cast(?glMatrixMode, <<Mode:32/?UN>>).
 
-%% Func:    multMatrixd 
-%% Args:    <<[M]>>
-%% Returns: ok
+%% @spec multMatrixd(M::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultMatrixd">External manpage: multMatrixd</a>
 %% C-API func: void glMultMatrixd( const GLdouble * m)
 multMatrixd(M) -> 
  NewM = if
@@ -1986,9 +1811,8 @@ multMatrixd(M) ->
  end, 
  cast(?glMultMatrixd, [ NewM]).
 
-%% Func:    multMatrixf 
-%% Args:    <<[M]>>
-%% Returns: ok
+%% @spec multMatrixf(M::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultMatrixf">External manpage: multMatrixf</a>
 %% C-API func: void glMultMatrixf( const GLfloat * m)
 multMatrixf(M) -> 
  NewM = if
@@ -1998,86 +1822,74 @@ multMatrixf(M) ->
  end, 
  cast(?glMultMatrixf, [ NewM]).
 
-%% Func:    newList 
-%% Args:    List, Mode
-%% Returns: ok
+%% @spec newList(List::integer(), Mode::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glNewList">External manpage: newList</a>
 %% C-API func: void glNewList(GLuint list, GLenum mode)
 newList(List, Mode) -> 
  cast(?glNewList, <<List:32/?UN, Mode:32/?UN>>).
 
-%% Func:    normal3b 
-%% Args:    Nx, Ny, Nz
-%% Returns: ok
+%% @spec normal3b(Nx::integer(), Ny::integer(), Nz::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glNormal">External manpage: normal3b</a>
 %% C-API func: void glNormal3b(GLbyte nx, GLbyte ny, GLbyte nz)
 normal3b(Nx, Ny, Nz) -> 
  cast(?glNormal3bv, <<Nx:8/signed, Ny:8/signed, Nz:8/signed>>).
 
-%% Func:    normal3bv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec normal3bv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glNormal">External manpage: normal3bv</a>
 %% C-API func: void glNormal3bv( const GLbyte * v)
 normal3bv({V1,V2,V3}) -> 
  cast(?glNormal3bv, <<V1:8/signed,V2:8/signed,V3:8/signed>>).
 
-%% Func:    normal3d 
-%% Args:    Nx, Ny, Nz
-%% Returns: ok
+%% @spec normal3d(Nx::float(), Ny::float(), Nz::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glNormal">External manpage: normal3d</a>
 %% C-API func: void glNormal3d(GLdouble nx, GLdouble ny, GLdouble nz)
 normal3d(Nx, Ny, Nz) -> 
  cast(?glNormal3dv, <<Nx:64/?FN, Ny:64/?FN, Nz:64/?FN>>).
 
-%% Func:    normal3dv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec normal3dv({V1::float(),V2::float(),V3::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glNormal">External manpage: normal3dv</a>
 %% C-API func: void glNormal3dv( const GLdouble * v)
 normal3dv({V1,V2,V3}) -> 
  cast(?glNormal3dv, <<V1:64/?FN,V2:64/?FN,V3:64/?FN>>).
 
-%% Func:    normal3f 
-%% Args:    Nx, Ny, Nz
-%% Returns: ok
+%% @spec normal3f(Nx::float(), Ny::float(), Nz::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glNormal">External manpage: normal3f</a>
 %% C-API func: void glNormal3f(GLfloat nx, GLfloat ny, GLfloat nz)
 normal3f(Nx, Ny, Nz) -> 
  cast(?glNormal3fv, <<Nx:32/?FN, Ny:32/?FN, Nz:32/?FN>>).
 
-%% Func:    normal3fv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec normal3fv({V1::float(),V2::float(),V3::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glNormal">External manpage: normal3fv</a>
 %% C-API func: void glNormal3fv( const GLfloat * v)
 normal3fv({V1,V2,V3}) -> 
  cast(?glNormal3fv, <<V1:32/?FN,V2:32/?FN,V3:32/?FN>>).
 
-%% Func:    normal3i 
-%% Args:    Nx, Ny, Nz
-%% Returns: ok
+%% @spec normal3i(Nx::integer(), Ny::integer(), Nz::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glNormal">External manpage: normal3i</a>
 %% C-API func: void glNormal3i(GLint nx, GLint ny, GLint nz)
 normal3i(Nx, Ny, Nz) -> 
  cast(?glNormal3iv, <<Nx:32/?SN, Ny:32/?SN, Nz:32/?SN>>).
 
-%% Func:    normal3iv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec normal3iv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glNormal">External manpage: normal3iv</a>
 %% C-API func: void glNormal3iv( const GLint * v)
 normal3iv({V1,V2,V3}) -> 
  cast(?glNormal3iv, <<V1:32/?SN,V2:32/?SN,V3:32/?SN>>).
 
-%% Func:    normal3s 
-%% Args:    Nx, Ny, Nz
-%% Returns: ok
+%% @spec normal3s(Nx::integer(), Ny::integer(), Nz::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glNormal">External manpage: normal3s</a>
 %% C-API func: void glNormal3s(GLshort nx, GLshort ny, GLshort nz)
 normal3s(Nx, Ny, Nz) -> 
  cast(?glNormal3sv, <<Nx:16/?SN, Ny:16/?SN, Nz:16/?SN>>).
 
-%% Func:    normal3sv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec normal3sv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glNormal">External manpage: normal3sv</a>
 %% C-API func: void glNormal3sv( const GLshort * v)
 normal3sv({V1,V2,V3}) -> 
  cast(?glNormal3sv, <<V1:16/?SN,V2:16/?SN,V3:16/?SN>>).
 
-%% Func:    normalPointer 
-%% Args:    Type, Stride, <<[Pointer]>>
-%% Returns: ok
+%% @spec normalPointer(Type::integer(), Stride::integer(), Pointer::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glNormalPointer">External manpage: normalPointer</a>
 %% C-API func: void glNormalPointer(GLenum type, GLsizei stride,  const GLvoid * pointer)
 normalPointer(Type, Stride, Pointer) -> 
 %% Maybe NULL or offset sometimes
@@ -2089,23 +1901,20 @@ normalPointer(Type, Stride, Pointer) ->
    end,
  cast(?glNormalPointer, [<<Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
-%% Func:    ortho 
-%% Args:    Left, Right, Bottom, Top, ZNear, ZFar
-%% Returns: ok
+%% @spec ortho(Left::float(), Right::float(), Bottom::float(), Top::float(), ZNear::float(), ZFar::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glOrtho">External manpage: ortho</a>
 %% C-API func: void glOrtho(GLdouble left, GLdouble right, GLdouble bottom, GLdouble top, GLdouble zNear, GLdouble zFar)
 ortho(Left, Right, Bottom, Top, ZNear, ZFar) -> 
  cast(?glOrtho, <<Left:64/?FN, Right:64/?FN, Bottom:64/?FN, Top:64/?FN, ZNear:64/?FN, ZFar:64/?FN>>).
 
-%% Func:    passThrough 
-%% Args:    Token
-%% Returns: ok
+%% @spec passThrough(Token::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPassThrough">External manpage: passThrough</a>
 %% C-API func: void glPassThrough(GLfloat token)
 passThrough(Token) -> 
  cast(?glPassThrough, <<Token:32/?FN>>).
 
-%% Func:    pixelMapfv 
-%% Args:    Map, Mapsize, <<[Values]>>
-%% Returns: ok
+%% @spec pixelMapfv(Map::integer(), Mapsize::integer(), Values::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPixelMapfv">External manpage: pixelMapfv</a>
 %% C-API func: void glPixelMapfv(GLenum map, GLint mapsize,  const GLfloat * values)
 pixelMapfv(Map, Mapsize, Values) -> 
  NewValues = if
@@ -2115,9 +1924,8 @@ pixelMapfv(Map, Mapsize, Values) ->
  end, 
  cast(?glPixelMapfv, [<<Map:32/?UN, Mapsize:32/?SN>>,NewValues]).
 
-%% Func:    pixelMapuiv 
-%% Args:    Map, Mapsize, <<[Values]>>
-%% Returns: ok
+%% @spec pixelMapuiv(Map::integer(), Mapsize::integer(), Values::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPixelMapuiv">External manpage: pixelMapuiv</a>
 %% C-API func: void glPixelMapuiv(GLenum map, GLint mapsize,  const GLuint * values)
 pixelMapuiv(Map, Mapsize, Values) -> 
  NewValues = if
@@ -2127,9 +1935,8 @@ pixelMapuiv(Map, Mapsize, Values) ->
  end, 
  cast(?glPixelMapuiv, [<<Map:32/?UN, Mapsize:32/?SN>>,NewValues]).
 
-%% Func:    pixelMapusv 
-%% Args:    Map, Mapsize, <<[Values]>>
-%% Returns: ok
+%% @spec pixelMapusv(Map::integer(), Mapsize::integer(), Values::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPixelMapusv">External manpage: pixelMapusv</a>
 %% C-API func: void glPixelMapusv(GLenum map, GLint mapsize,  const GLushort * values)
 pixelMapusv(Map, Mapsize, Values) -> 
  NewValues = if
@@ -2139,65 +1946,56 @@ pixelMapusv(Map, Mapsize, Values) ->
  end, 
  cast(?glPixelMapusv, [<<Map:32/?UN, Mapsize:32/?SN>>,NewValues]).
 
-%% Func:    pixelStoref 
-%% Args:    Pname, Param
-%% Returns: ok
+%% @spec pixelStoref(Pname::integer(), Param::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPixelStoref">External manpage: pixelStoref</a>
 %% C-API func: void glPixelStoref(GLenum pname, GLfloat param)
 pixelStoref(Pname, Param) -> 
  cast(?glPixelStoref, <<Pname:32/?UN, Param:32/?FN>>).
 
-%% Func:    pixelStorei 
-%% Args:    Pname, Param
-%% Returns: ok
+%% @spec pixelStorei(Pname::integer(), Param::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPixelStorei">External manpage: pixelStorei</a>
 %% C-API func: void glPixelStorei(GLenum pname, GLint param)
 pixelStorei(Pname, Param) -> 
  cast(?glPixelStorei, <<Pname:32/?UN, Param:32/?SN>>).
 
-%% Func:    pixelTransferf 
-%% Args:    Pname, Param
-%% Returns: ok
+%% @spec pixelTransferf(Pname::integer(), Param::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPixelTransferf">External manpage: pixelTransferf</a>
 %% C-API func: void glPixelTransferf(GLenum pname, GLfloat param)
 pixelTransferf(Pname, Param) -> 
  cast(?glPixelTransferf, <<Pname:32/?UN, Param:32/?FN>>).
 
-%% Func:    pixelTransferi 
-%% Args:    Pname, Param
-%% Returns: ok
+%% @spec pixelTransferi(Pname::integer(), Param::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPixelTransferi">External manpage: pixelTransferi</a>
 %% C-API func: void glPixelTransferi(GLenum pname, GLint param)
 pixelTransferi(Pname, Param) -> 
  cast(?glPixelTransferi, <<Pname:32/?UN, Param:32/?SN>>).
 
-%% Func:    pixelZoom 
-%% Args:    Xfactor, Yfactor
-%% Returns: ok
+%% @spec pixelZoom(Xfactor::float(), Yfactor::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPixelZoom">External manpage: pixelZoom</a>
 %% C-API func: void glPixelZoom(GLfloat xfactor, GLfloat yfactor)
 pixelZoom(Xfactor, Yfactor) -> 
  cast(?glPixelZoom, <<Xfactor:32/?FN, Yfactor:32/?FN>>).
 
-%% Func:    pointSize 
-%% Args:    Size
-%% Returns: ok
+%% @spec pointSize(Size::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPointSize">External manpage: pointSize</a>
 %% C-API func: void glPointSize(GLfloat size)
 pointSize(Size) -> 
  cast(?glPointSize, <<Size:32/?FN>>).
 
-%% Func:    polygonMode 
-%% Args:    Face, Mode
-%% Returns: ok
+%% @spec polygonMode(Face::integer(), Mode::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPolygonMode">External manpage: polygonMode</a>
 %% C-API func: void glPolygonMode(GLenum face, GLenum mode)
 polygonMode(Face, Mode) -> 
  cast(?glPolygonMode, <<Face:32/?UN, Mode:32/?UN>>).
 
-%% Func:    polygonOffset 
-%% Args:    Factor, Units
-%% Returns: ok
+%% @spec polygonOffset(Factor::float(), Units::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPolygonOffset">External manpage: polygonOffset</a>
 %% C-API func: void glPolygonOffset(GLfloat factor, GLfloat units)
 polygonOffset(Factor, Units) -> 
  cast(?glPolygonOffset, <<Factor:32/?FN, Units:32/?FN>>).
 
-%% Func:    polygonStipple 
-%% Args:    <<[Mask]>>
-%% Returns: ok
+%% @spec polygonStipple(Mask::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPolygonStipple">External manpage: polygonStipple</a>
 %% C-API func: void glPolygonStipple( const GLubyte * mask)
 polygonStipple(Mask) -> 
  NewMask = if
@@ -2207,37 +2005,32 @@ polygonStipple(Mask) ->
  end, 
  cast(?glPolygonStipple, [ NewMask]).
 
-%% Func:    popAttrib 
-%% Args:    
-%% Returns: ok
+%% @spec popAttrib() -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPopAttrib">External manpage: popAttrib</a>
 %% C-API func: void glPopAttrib()
 popAttrib() -> 
  cast(?glPopAttrib, []).
 
-%% Func:    popClientAttrib 
-%% Args:    
-%% Returns: ok
+%% @spec popClientAttrib() -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPopClientAttrib">External manpage: popClientAttrib</a>
 %% C-API func: void glPopClientAttrib()
 popClientAttrib() -> 
  cast(?glPopClientAttrib, []).
 
-%% Func:    popMatrix 
-%% Args:    
-%% Returns: ok
+%% @spec popMatrix() -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPopMatrix">External manpage: popMatrix</a>
 %% C-API func: void glPopMatrix()
 popMatrix() -> 
  cast(?glPopMatrix, []).
 
-%% Func:    popName 
-%% Args:    
-%% Returns: ok
+%% @spec popName() -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPopName">External manpage: popName</a>
 %% C-API func: void glPopName()
 popName() -> 
  cast(?glPopName, []).
 
-%% Func:    prioritizeTextures 
-%% Args:    N, <<[Textures]>>, <<[Priorities]>>
-%% Returns: ok
+%% @spec prioritizeTextures(N::integer(), Textures::binary() | [integer()], Priorities::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPrioritizeTextures">External manpage: prioritizeTextures</a>
 %% C-API func: void glPrioritizeTextures(GLsizei n,  const GLuint * textures,  const GLclampf * priorities)
 prioritizeTextures(N, Textures, Priorities) -> 
  NewTextures = if
@@ -2252,227 +2045,195 @@ prioritizeTextures(N, Textures, Priorities) ->
  end, 
  cast(?glPrioritizeTextures, [<<N:32/?SN>>,NewTextures, NewPriorities]).
 
-%% Func:    pushAttrib 
-%% Args:    Mask
-%% Returns: ok
+%% @spec pushAttrib(Mask::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPushAttrib">External manpage: pushAttrib</a>
 %% C-API func: void glPushAttrib(GLbitfield mask)
 pushAttrib(Mask) -> 
  cast(?glPushAttrib, <<Mask:32/?UN>>).
 
-%% Func:    pushClientAttrib 
-%% Args:    Mask
-%% Returns: ok
+%% @spec pushClientAttrib(Mask::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPushClientAttrib">External manpage: pushClientAttrib</a>
 %% C-API func: void glPushClientAttrib(GLbitfield mask)
 pushClientAttrib(Mask) -> 
  cast(?glPushClientAttrib, <<Mask:32/?UN>>).
 
-%% Func:    pushMatrix 
-%% Args:    
-%% Returns: ok
+%% @spec pushMatrix() -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPushMatrix">External manpage: pushMatrix</a>
 %% C-API func: void glPushMatrix()
 pushMatrix() -> 
  cast(?glPushMatrix, []).
 
-%% Func:    pushName 
-%% Args:    Name
-%% Returns: ok
+%% @spec pushName(Name::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPushName">External manpage: pushName</a>
 %% C-API func: void glPushName(GLuint name)
 pushName(Name) -> 
  cast(?glPushName, <<Name:32/?UN>>).
 
-%% Func:    rasterPos2d 
-%% Args:    X, Y
-%% Returns: ok
+%% @spec rasterPos2d(X::float(), Y::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos2d</a>
 %% C-API func: void glRasterPos2d(GLdouble x, GLdouble y)
 rasterPos2d(X, Y) -> 
  cast(?glRasterPos2dv, <<X:64/?FN, Y:64/?FN>>).
 
-%% Func:    rasterPos2dv 
-%% Args:    {V1,V2}
-%% Returns: ok
+%% @spec rasterPos2dv({V1::float(),V2::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos2dv</a>
 %% C-API func: void glRasterPos2dv( const GLdouble * v)
 rasterPos2dv({V1,V2}) -> 
  cast(?glRasterPos2dv, <<V1:64/?FN,V2:64/?FN>>).
 
-%% Func:    rasterPos2f 
-%% Args:    X, Y
-%% Returns: ok
+%% @spec rasterPos2f(X::float(), Y::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos2f</a>
 %% C-API func: void glRasterPos2f(GLfloat x, GLfloat y)
 rasterPos2f(X, Y) -> 
  cast(?glRasterPos2fv, <<X:32/?FN, Y:32/?FN>>).
 
-%% Func:    rasterPos2fv 
-%% Args:    {V1,V2}
-%% Returns: ok
+%% @spec rasterPos2fv({V1::float(),V2::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos2fv</a>
 %% C-API func: void glRasterPos2fv( const GLfloat * v)
 rasterPos2fv({V1,V2}) -> 
  cast(?glRasterPos2fv, <<V1:32/?FN,V2:32/?FN>>).
 
-%% Func:    rasterPos2i 
-%% Args:    X, Y
-%% Returns: ok
+%% @spec rasterPos2i(X::integer(), Y::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos2i</a>
 %% C-API func: void glRasterPos2i(GLint x, GLint y)
 rasterPos2i(X, Y) -> 
  cast(?glRasterPos2iv, <<X:32/?SN, Y:32/?SN>>).
 
-%% Func:    rasterPos2iv 
-%% Args:    {V1,V2}
-%% Returns: ok
+%% @spec rasterPos2iv({V1::integer(),V2::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos2iv</a>
 %% C-API func: void glRasterPos2iv( const GLint * v)
 rasterPos2iv({V1,V2}) -> 
  cast(?glRasterPos2iv, <<V1:32/?SN,V2:32/?SN>>).
 
-%% Func:    rasterPos2s 
-%% Args:    X, Y
-%% Returns: ok
+%% @spec rasterPos2s(X::integer(), Y::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos2s</a>
 %% C-API func: void glRasterPos2s(GLshort x, GLshort y)
 rasterPos2s(X, Y) -> 
  cast(?glRasterPos2sv, <<X:16/?SN, Y:16/?SN>>).
 
-%% Func:    rasterPos2sv 
-%% Args:    {V1,V2}
-%% Returns: ok
+%% @spec rasterPos2sv({V1::integer(),V2::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos2sv</a>
 %% C-API func: void glRasterPos2sv( const GLshort * v)
 rasterPos2sv({V1,V2}) -> 
  cast(?glRasterPos2sv, <<V1:16/?SN,V2:16/?SN>>).
 
-%% Func:    rasterPos3d 
-%% Args:    X, Y, Z
-%% Returns: ok
+%% @spec rasterPos3d(X::float(), Y::float(), Z::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos3d</a>
 %% C-API func: void glRasterPos3d(GLdouble x, GLdouble y, GLdouble z)
 rasterPos3d(X, Y, Z) -> 
  cast(?glRasterPos3dv, <<X:64/?FN, Y:64/?FN, Z:64/?FN>>).
 
-%% Func:    rasterPos3dv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec rasterPos3dv({V1::float(),V2::float(),V3::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos3dv</a>
 %% C-API func: void glRasterPos3dv( const GLdouble * v)
 rasterPos3dv({V1,V2,V3}) -> 
  cast(?glRasterPos3dv, <<V1:64/?FN,V2:64/?FN,V3:64/?FN>>).
 
-%% Func:    rasterPos3f 
-%% Args:    X, Y, Z
-%% Returns: ok
+%% @spec rasterPos3f(X::float(), Y::float(), Z::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos3f</a>
 %% C-API func: void glRasterPos3f(GLfloat x, GLfloat y, GLfloat z)
 rasterPos3f(X, Y, Z) -> 
  cast(?glRasterPos3fv, <<X:32/?FN, Y:32/?FN, Z:32/?FN>>).
 
-%% Func:    rasterPos3fv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec rasterPos3fv({V1::float(),V2::float(),V3::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos3fv</a>
 %% C-API func: void glRasterPos3fv( const GLfloat * v)
 rasterPos3fv({V1,V2,V3}) -> 
  cast(?glRasterPos3fv, <<V1:32/?FN,V2:32/?FN,V3:32/?FN>>).
 
-%% Func:    rasterPos3i 
-%% Args:    X, Y, Z
-%% Returns: ok
+%% @spec rasterPos3i(X::integer(), Y::integer(), Z::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos3i</a>
 %% C-API func: void glRasterPos3i(GLint x, GLint y, GLint z)
 rasterPos3i(X, Y, Z) -> 
  cast(?glRasterPos3iv, <<X:32/?SN, Y:32/?SN, Z:32/?SN>>).
 
-%% Func:    rasterPos3iv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec rasterPos3iv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos3iv</a>
 %% C-API func: void glRasterPos3iv( const GLint * v)
 rasterPos3iv({V1,V2,V3}) -> 
  cast(?glRasterPos3iv, <<V1:32/?SN,V2:32/?SN,V3:32/?SN>>).
 
-%% Func:    rasterPos3s 
-%% Args:    X, Y, Z
-%% Returns: ok
+%% @spec rasterPos3s(X::integer(), Y::integer(), Z::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos3s</a>
 %% C-API func: void glRasterPos3s(GLshort x, GLshort y, GLshort z)
 rasterPos3s(X, Y, Z) -> 
  cast(?glRasterPos3sv, <<X:16/?SN, Y:16/?SN, Z:16/?SN>>).
 
-%% Func:    rasterPos3sv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec rasterPos3sv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos3sv</a>
 %% C-API func: void glRasterPos3sv( const GLshort * v)
 rasterPos3sv({V1,V2,V3}) -> 
  cast(?glRasterPos3sv, <<V1:16/?SN,V2:16/?SN,V3:16/?SN>>).
 
-%% Func:    rasterPos4d 
-%% Args:    X, Y, Z, W
-%% Returns: ok
+%% @spec rasterPos4d(X::float(), Y::float(), Z::float(), W::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos4d</a>
 %% C-API func: void glRasterPos4d(GLdouble x, GLdouble y, GLdouble z, GLdouble w)
 rasterPos4d(X, Y, Z, W) -> 
  cast(?glRasterPos4dv, <<X:64/?FN, Y:64/?FN, Z:64/?FN, W:64/?FN>>).
 
-%% Func:    rasterPos4dv 
-%% Args:    {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec rasterPos4dv({V1::float(),V2::float(),V3::float(),V4::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos4dv</a>
 %% C-API func: void glRasterPos4dv( const GLdouble * v)
 rasterPos4dv({V1,V2,V3,V4}) -> 
  cast(?glRasterPos4dv, <<V1:64/?FN,V2:64/?FN,V3:64/?FN,V4:64/?FN>>).
 
-%% Func:    rasterPos4f 
-%% Args:    X, Y, Z, W
-%% Returns: ok
+%% @spec rasterPos4f(X::float(), Y::float(), Z::float(), W::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos4f</a>
 %% C-API func: void glRasterPos4f(GLfloat x, GLfloat y, GLfloat z, GLfloat w)
 rasterPos4f(X, Y, Z, W) -> 
  cast(?glRasterPos4fv, <<X:32/?FN, Y:32/?FN, Z:32/?FN, W:32/?FN>>).
 
-%% Func:    rasterPos4fv 
-%% Args:    {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec rasterPos4fv({V1::float(),V2::float(),V3::float(),V4::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos4fv</a>
 %% C-API func: void glRasterPos4fv( const GLfloat * v)
 rasterPos4fv({V1,V2,V3,V4}) -> 
  cast(?glRasterPos4fv, <<V1:32/?FN,V2:32/?FN,V3:32/?FN,V4:32/?FN>>).
 
-%% Func:    rasterPos4i 
-%% Args:    X, Y, Z, W
-%% Returns: ok
+%% @spec rasterPos4i(X::integer(), Y::integer(), Z::integer(), W::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos4i</a>
 %% C-API func: void glRasterPos4i(GLint x, GLint y, GLint z, GLint w)
 rasterPos4i(X, Y, Z, W) -> 
  cast(?glRasterPos4iv, <<X:32/?SN, Y:32/?SN, Z:32/?SN, W:32/?SN>>).
 
-%% Func:    rasterPos4iv 
-%% Args:    {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec rasterPos4iv({V1::integer(),V2::integer(),V3::integer(),V4::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos4iv</a>
 %% C-API func: void glRasterPos4iv( const GLint * v)
 rasterPos4iv({V1,V2,V3,V4}) -> 
  cast(?glRasterPos4iv, <<V1:32/?SN,V2:32/?SN,V3:32/?SN,V4:32/?SN>>).
 
-%% Func:    rasterPos4s 
-%% Args:    X, Y, Z, W
-%% Returns: ok
+%% @spec rasterPos4s(X::integer(), Y::integer(), Z::integer(), W::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos4s</a>
 %% C-API func: void glRasterPos4s(GLshort x, GLshort y, GLshort z, GLshort w)
 rasterPos4s(X, Y, Z, W) -> 
  cast(?glRasterPos4sv, <<X:16/?SN, Y:16/?SN, Z:16/?SN, W:16/?SN>>).
 
-%% Func:    rasterPos4sv 
-%% Args:    {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec rasterPos4sv({V1::integer(),V2::integer(),V3::integer(),V4::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRasterPos">External manpage: rasterPos4sv</a>
 %% C-API func: void glRasterPos4sv( const GLshort * v)
 rasterPos4sv({V1,V2,V3,V4}) -> 
  cast(?glRasterPos4sv, <<V1:16/?SN,V2:16/?SN,V3:16/?SN,V4:16/?SN>>).
 
-%% Func:    readBuffer 
-%% Args:    Mode
-%% Returns: ok
+%% @spec readBuffer(Mode::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glReadBuffer">External manpage: readBuffer</a>
 %% C-API func: void glReadBuffer(GLenum mode)
 readBuffer(Mode) -> 
  cast(?glReadBuffer, <<Mode:32/?UN>>).
 
-%% Func:    readPixels 
-%% Args:    X, Y, Width, Height, Format, Type, #sdlmem{} = Pixels
-%% Returns: ok
+%% @spec readPixels(X::integer(), Y::integer(), Width::integer(), Height::integer(), Format::integer(), Type::integer(), Pixels::sdlmem()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glReadPixels">External manpage: readPixels</a>
 %% C-API func: void glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid * pixels)
 readPixels(X, Y, Width, Height, Format, Type, #sdlmem{bin=Pixels}) -> 
  sdl:send_bin(Pixels, ?MODULE, ?LINE),
  cast(?glReadPixels, <<X:32/?SN, Y:32/?SN, Width:32/?SN, Height:32/?SN, Format:32/?UN, Type:32/?UN>>).
 
-%% Func:    rectd 
-%% Args:    X1, Y1, X2, Y2
-%% Returns: ok
+%% @spec rectd(X1::float(), Y1::float(), X2::float(), Y2::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRectd">External manpage: rectd</a>
 %% C-API func: void glRectd(GLdouble x1, GLdouble y1, GLdouble x2, GLdouble y2)
 rectd(X1, Y1, X2, Y2) -> 
  cast(?glRectd, <<X1:64/?FN, Y1:64/?FN, X2:64/?FN, Y2:64/?FN>>).
 
-%% Func:    rectdv 
-%% Args:    <<[V1]>>, <<[V2]>>
-%% Returns: ok
+%% @spec rectdv(V1::binary() | [float()], V2::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRectdv">External manpage: rectdv</a>
 %% C-API func: void glRectdv( const GLdouble * v1,  const GLdouble * v2)
 rectdv(V1, V2) -> 
  NewV1 = if
@@ -2487,16 +2248,14 @@ rectdv(V1, V2) ->
  end, 
  cast(?glRectdv, [ NewV1, NewV2]).
 
-%% Func:    rectf 
-%% Args:    X1, Y1, X2, Y2
-%% Returns: ok
+%% @spec rectf(X1::float(), Y1::float(), X2::float(), Y2::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRectf">External manpage: rectf</a>
 %% C-API func: void glRectf(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2)
 rectf(X1, Y1, X2, Y2) -> 
  cast(?glRectf, <<X1:32/?FN, Y1:32/?FN, X2:32/?FN, Y2:32/?FN>>).
 
-%% Func:    rectfv 
-%% Args:    <<[V1]>>, <<[V2]>>
-%% Returns: ok
+%% @spec rectfv(V1::binary() | [float()], V2::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRectfv">External manpage: rectfv</a>
 %% C-API func: void glRectfv( const GLfloat * v1,  const GLfloat * v2)
 rectfv(V1, V2) -> 
  NewV1 = if
@@ -2511,16 +2270,14 @@ rectfv(V1, V2) ->
  end, 
  cast(?glRectfv, [ NewV1, NewV2]).
 
-%% Func:    recti 
-%% Args:    X1, Y1, X2, Y2
-%% Returns: ok
+%% @spec recti(X1::integer(), Y1::integer(), X2::integer(), Y2::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRecti">External manpage: recti</a>
 %% C-API func: void glRecti(GLint x1, GLint y1, GLint x2, GLint y2)
 recti(X1, Y1, X2, Y2) -> 
  cast(?glRecti, <<X1:32/?SN, Y1:32/?SN, X2:32/?SN, Y2:32/?SN>>).
 
-%% Func:    rectiv 
-%% Args:    <<[V1]>>, <<[V2]>>
-%% Returns: ok
+%% @spec rectiv(V1::binary() | [integer()], V2::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRectiv">External manpage: rectiv</a>
 %% C-API func: void glRectiv( const GLint * v1,  const GLint * v2)
 rectiv(V1, V2) -> 
  NewV1 = if
@@ -2535,16 +2292,14 @@ rectiv(V1, V2) ->
  end, 
  cast(?glRectiv, [ NewV1, NewV2]).
 
-%% Func:    rects 
-%% Args:    X1, Y1, X2, Y2
-%% Returns: ok
+%% @spec rects(X1::integer(), Y1::integer(), X2::integer(), Y2::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRects">External manpage: rects</a>
 %% C-API func: void glRects(GLshort x1, GLshort y1, GLshort x2, GLshort y2)
 rects(X1, Y1, X2, Y2) -> 
  cast(?glRects, <<X1:16/?SN, Y1:16/?SN, X2:16/?SN, Y2:16/?SN>>).
 
-%% Func:    rectsv 
-%% Args:    <<[V1]>>, <<[V2]>>
-%% Returns: ok
+%% @spec rectsv(V1::binary() | [integer()], V2::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRectsv">External manpage: rectsv</a>
 %% C-API func: void glRectsv( const GLshort * v1,  const GLshort * v2)
 rectsv(V1, V2) -> 
  NewV1 = if
@@ -2559,9 +2314,8 @@ rectsv(V1, V2) ->
  end, 
  cast(?glRectsv, [ NewV1, NewV2]).
 
-%% Func:    renderMode 
-%% Args:    Mode
-%% Returns: ?GL_INT
+%% @spec renderMode(Mode::integer()) -> integer()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRenderMode">External manpage: renderMode</a>
 %% C-API func: GLint glRenderMode(GLenum mode)
 renderMode(Mode) -> 
  Bin = call(?glRenderMode, <<Mode:32/?UN>>), 
@@ -2571,304 +2325,261 @@ renderMode(Mode) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    rotated 
-%% Args:    Angle, X, Y, Z
-%% Returns: ok
+%% @spec rotated(Angle::float(), X::float(), Y::float(), Z::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRotated">External manpage: rotated</a>
 %% C-API func: void glRotated(GLdouble angle, GLdouble x, GLdouble y, GLdouble z)
 rotated(Angle, X, Y, Z) -> 
  cast(?glRotated, <<Angle:64/?FN, X:64/?FN, Y:64/?FN, Z:64/?FN>>).
 
-%% Func:    rotatef 
-%% Args:    Angle, X, Y, Z
-%% Returns: ok
+%% @spec rotatef(Angle::float(), X::float(), Y::float(), Z::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRotatef">External manpage: rotatef</a>
 %% C-API func: void glRotatef(GLfloat angle, GLfloat x, GLfloat y, GLfloat z)
 rotatef(Angle, X, Y, Z) -> 
  cast(?glRotatef, <<Angle:32/?FN, X:32/?FN, Y:32/?FN, Z:32/?FN>>).
 
-%% Func:    scaled 
-%% Args:    X, Y, Z
-%% Returns: ok
+%% @spec scaled(X::float(), Y::float(), Z::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glScaled">External manpage: scaled</a>
 %% C-API func: void glScaled(GLdouble x, GLdouble y, GLdouble z)
 scaled(X, Y, Z) -> 
  cast(?glScaled, <<X:64/?FN, Y:64/?FN, Z:64/?FN>>).
 
-%% Func:    scalef 
-%% Args:    X, Y, Z
-%% Returns: ok
+%% @spec scalef(X::float(), Y::float(), Z::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glScalef">External manpage: scalef</a>
 %% C-API func: void glScalef(GLfloat x, GLfloat y, GLfloat z)
 scalef(X, Y, Z) -> 
  cast(?glScalef, <<X:32/?FN, Y:32/?FN, Z:32/?FN>>).
 
-%% Func:    scissor 
-%% Args:    X, Y, Width, Height
-%% Returns: ok
+%% @spec scissor(X::integer(), Y::integer(), Width::integer(), Height::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glScissor">External manpage: scissor</a>
 %% C-API func: void glScissor(GLint x, GLint y, GLsizei width, GLsizei height)
 scissor(X, Y, Width, Height) -> 
  cast(?glScissor, <<X:32/?SN, Y:32/?SN, Width:32/?SN, Height:32/?SN>>).
 
-%% Func:    selectBuffer 
-%% Args:    Size, #sdlmem{} = Buffer
-%% Returns: ok
+%% @spec selectBuffer(Size::integer(), Buffer::sdlmem()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glSelectBuffer">External manpage: selectBuffer</a>
 %% C-API func: void glSelectBuffer(GLsizei size, GLuint * buffer)
 selectBuffer(Size, #sdlmem{bin=Buffer}) -> 
  sdl:send_bin(Buffer, ?MODULE, ?LINE),
  cast(?glSelectBuffer, <<Size:32/?SN>>).
 
-%% Func:    shadeModel 
-%% Args:    Mode
-%% Returns: ok
+%% @spec shadeModel(Mode::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glShadeModel">External manpage: shadeModel</a>
 %% C-API func: void glShadeModel(GLenum mode)
 shadeModel(Mode) -> 
  cast(?glShadeModel, <<Mode:32/?UN>>).
 
-%% Func:    stencilFunc 
-%% Args:    Func, Ref, Mask
-%% Returns: ok
+%% @spec stencilFunc(Func::integer(), Ref::integer(), Mask::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glStencilFunc">External manpage: stencilFunc</a>
 %% C-API func: void glStencilFunc(GLenum func, GLint ref, GLuint mask)
 stencilFunc(Func, Ref, Mask) -> 
  cast(?glStencilFunc, <<Func:32/?UN, Ref:32/?SN, Mask:32/?UN>>).
 
-%% Func:    stencilMask 
-%% Args:    Mask
-%% Returns: ok
+%% @spec stencilMask(Mask::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glStencilMask">External manpage: stencilMask</a>
 %% C-API func: void glStencilMask(GLuint mask)
 stencilMask(Mask) -> 
  cast(?glStencilMask, <<Mask:32/?UN>>).
 
-%% Func:    stencilOp 
-%% Args:    Fail, Zfail, Zpass
-%% Returns: ok
+%% @spec stencilOp(Fail::integer(), Zfail::integer(), Zpass::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glStencilOp">External manpage: stencilOp</a>
 %% C-API func: void glStencilOp(GLenum fail, GLenum zfail, GLenum zpass)
 stencilOp(Fail, Zfail, Zpass) -> 
  cast(?glStencilOp, <<Fail:32/?UN, Zfail:32/?UN, Zpass:32/?UN>>).
 
-%% Func:    texCoord1d 
-%% Args:    S
-%% Returns: ok
+%% @spec texCoord1d(S::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord1d</a>
 %% C-API func: void glTexCoord1d(GLdouble s)
 texCoord1d(S) -> 
  cast(?glTexCoord1dv, <<S:64/?FN>>).
 
-%% Func:    texCoord1dv 
-%% Args:    {V1}
-%% Returns: ok
+%% @spec texCoord1dv({V1::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord1dv</a>
 %% C-API func: void glTexCoord1dv( const GLdouble * v)
 texCoord1dv({V1}) -> 
  cast(?glTexCoord1dv, <<V1:64/?FN>>).
 
-%% Func:    texCoord1f 
-%% Args:    S
-%% Returns: ok
+%% @spec texCoord1f(S::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord1f</a>
 %% C-API func: void glTexCoord1f(GLfloat s)
 texCoord1f(S) -> 
  cast(?glTexCoord1fv, <<S:32/?FN>>).
 
-%% Func:    texCoord1fv 
-%% Args:    {V1}
-%% Returns: ok
+%% @spec texCoord1fv({V1::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord1fv</a>
 %% C-API func: void glTexCoord1fv( const GLfloat * v)
 texCoord1fv({V1}) -> 
  cast(?glTexCoord1fv, <<V1:32/?FN>>).
 
-%% Func:    texCoord1i 
-%% Args:    S
-%% Returns: ok
+%% @spec texCoord1i(S::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord1i</a>
 %% C-API func: void glTexCoord1i(GLint s)
 texCoord1i(S) -> 
  cast(?glTexCoord1iv, <<S:32/?SN>>).
 
-%% Func:    texCoord1iv 
-%% Args:    {V1}
-%% Returns: ok
+%% @spec texCoord1iv({V1::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord1iv</a>
 %% C-API func: void glTexCoord1iv( const GLint * v)
 texCoord1iv({V1}) -> 
  cast(?glTexCoord1iv, <<V1:32/?SN>>).
 
-%% Func:    texCoord1s 
-%% Args:    S
-%% Returns: ok
+%% @spec texCoord1s(S::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord1s</a>
 %% C-API func: void glTexCoord1s(GLshort s)
 texCoord1s(S) -> 
  cast(?glTexCoord1sv, <<S:16/?SN>>).
 
-%% Func:    texCoord1sv 
-%% Args:    {V1}
-%% Returns: ok
+%% @spec texCoord1sv({V1::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord1sv</a>
 %% C-API func: void glTexCoord1sv( const GLshort * v)
 texCoord1sv({V1}) -> 
  cast(?glTexCoord1sv, <<V1:16/?SN>>).
 
-%% Func:    texCoord2d 
-%% Args:    S, T
-%% Returns: ok
+%% @spec texCoord2d(S::float(), T::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord2d</a>
 %% C-API func: void glTexCoord2d(GLdouble s, GLdouble t)
 texCoord2d(S, T) -> 
  cast(?glTexCoord2dv, <<S:64/?FN, T:64/?FN>>).
 
-%% Func:    texCoord2dv 
-%% Args:    {V1,V2}
-%% Returns: ok
+%% @spec texCoord2dv({V1::float(),V2::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord2dv</a>
 %% C-API func: void glTexCoord2dv( const GLdouble * v)
 texCoord2dv({V1,V2}) -> 
  cast(?glTexCoord2dv, <<V1:64/?FN,V2:64/?FN>>).
 
-%% Func:    texCoord2f 
-%% Args:    S, T
-%% Returns: ok
+%% @spec texCoord2f(S::float(), T::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord2f</a>
 %% C-API func: void glTexCoord2f(GLfloat s, GLfloat t)
 texCoord2f(S, T) -> 
  cast(?glTexCoord2fv, <<S:32/?FN, T:32/?FN>>).
 
-%% Func:    texCoord2fv 
-%% Args:    {V1,V2}
-%% Returns: ok
+%% @spec texCoord2fv({V1::float(),V2::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord2fv</a>
 %% C-API func: void glTexCoord2fv( const GLfloat * v)
 texCoord2fv({V1,V2}) -> 
  cast(?glTexCoord2fv, <<V1:32/?FN,V2:32/?FN>>).
 
-%% Func:    texCoord2i 
-%% Args:    S, T
-%% Returns: ok
+%% @spec texCoord2i(S::integer(), T::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord2i</a>
 %% C-API func: void glTexCoord2i(GLint s, GLint t)
 texCoord2i(S, T) -> 
  cast(?glTexCoord2iv, <<S:32/?SN, T:32/?SN>>).
 
-%% Func:    texCoord2iv 
-%% Args:    {V1,V2}
-%% Returns: ok
+%% @spec texCoord2iv({V1::integer(),V2::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord2iv</a>
 %% C-API func: void glTexCoord2iv( const GLint * v)
 texCoord2iv({V1,V2}) -> 
  cast(?glTexCoord2iv, <<V1:32/?SN,V2:32/?SN>>).
 
-%% Func:    texCoord2s 
-%% Args:    S, T
-%% Returns: ok
+%% @spec texCoord2s(S::integer(), T::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord2s</a>
 %% C-API func: void glTexCoord2s(GLshort s, GLshort t)
 texCoord2s(S, T) -> 
  cast(?glTexCoord2sv, <<S:16/?SN, T:16/?SN>>).
 
-%% Func:    texCoord2sv 
-%% Args:    {V1,V2}
-%% Returns: ok
+%% @spec texCoord2sv({V1::integer(),V2::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord2sv</a>
 %% C-API func: void glTexCoord2sv( const GLshort * v)
 texCoord2sv({V1,V2}) -> 
  cast(?glTexCoord2sv, <<V1:16/?SN,V2:16/?SN>>).
 
-%% Func:    texCoord3d 
-%% Args:    S, T, R
-%% Returns: ok
+%% @spec texCoord3d(S::float(), T::float(), R::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord3d</a>
 %% C-API func: void glTexCoord3d(GLdouble s, GLdouble t, GLdouble r)
 texCoord3d(S, T, R) -> 
  cast(?glTexCoord3dv, <<S:64/?FN, T:64/?FN, R:64/?FN>>).
 
-%% Func:    texCoord3dv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec texCoord3dv({V1::float(),V2::float(),V3::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord3dv</a>
 %% C-API func: void glTexCoord3dv( const GLdouble * v)
 texCoord3dv({V1,V2,V3}) -> 
  cast(?glTexCoord3dv, <<V1:64/?FN,V2:64/?FN,V3:64/?FN>>).
 
-%% Func:    texCoord3f 
-%% Args:    S, T, R
-%% Returns: ok
+%% @spec texCoord3f(S::float(), T::float(), R::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord3f</a>
 %% C-API func: void glTexCoord3f(GLfloat s, GLfloat t, GLfloat r)
 texCoord3f(S, T, R) -> 
  cast(?glTexCoord3fv, <<S:32/?FN, T:32/?FN, R:32/?FN>>).
 
-%% Func:    texCoord3fv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec texCoord3fv({V1::float(),V2::float(),V3::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord3fv</a>
 %% C-API func: void glTexCoord3fv( const GLfloat * v)
 texCoord3fv({V1,V2,V3}) -> 
  cast(?glTexCoord3fv, <<V1:32/?FN,V2:32/?FN,V3:32/?FN>>).
 
-%% Func:    texCoord3i 
-%% Args:    S, T, R
-%% Returns: ok
+%% @spec texCoord3i(S::integer(), T::integer(), R::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord3i</a>
 %% C-API func: void glTexCoord3i(GLint s, GLint t, GLint r)
 texCoord3i(S, T, R) -> 
  cast(?glTexCoord3iv, <<S:32/?SN, T:32/?SN, R:32/?SN>>).
 
-%% Func:    texCoord3iv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec texCoord3iv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord3iv</a>
 %% C-API func: void glTexCoord3iv( const GLint * v)
 texCoord3iv({V1,V2,V3}) -> 
  cast(?glTexCoord3iv, <<V1:32/?SN,V2:32/?SN,V3:32/?SN>>).
 
-%% Func:    texCoord3s 
-%% Args:    S, T, R
-%% Returns: ok
+%% @spec texCoord3s(S::integer(), T::integer(), R::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord3s</a>
 %% C-API func: void glTexCoord3s(GLshort s, GLshort t, GLshort r)
 texCoord3s(S, T, R) -> 
  cast(?glTexCoord3sv, <<S:16/?SN, T:16/?SN, R:16/?SN>>).
 
-%% Func:    texCoord3sv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec texCoord3sv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord3sv</a>
 %% C-API func: void glTexCoord3sv( const GLshort * v)
 texCoord3sv({V1,V2,V3}) -> 
  cast(?glTexCoord3sv, <<V1:16/?SN,V2:16/?SN,V3:16/?SN>>).
 
-%% Func:    texCoord4d 
-%% Args:    S, T, R, Q
-%% Returns: ok
+%% @spec texCoord4d(S::float(), T::float(), R::float(), Q::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord4d</a>
 %% C-API func: void glTexCoord4d(GLdouble s, GLdouble t, GLdouble r, GLdouble q)
 texCoord4d(S, T, R, Q) -> 
  cast(?glTexCoord4dv, <<S:64/?FN, T:64/?FN, R:64/?FN, Q:64/?FN>>).
 
-%% Func:    texCoord4dv 
-%% Args:    {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec texCoord4dv({V1::float(),V2::float(),V3::float(),V4::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord4dv</a>
 %% C-API func: void glTexCoord4dv( const GLdouble * v)
 texCoord4dv({V1,V2,V3,V4}) -> 
  cast(?glTexCoord4dv, <<V1:64/?FN,V2:64/?FN,V3:64/?FN,V4:64/?FN>>).
 
-%% Func:    texCoord4f 
-%% Args:    S, T, R, Q
-%% Returns: ok
+%% @spec texCoord4f(S::float(), T::float(), R::float(), Q::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord4f</a>
 %% C-API func: void glTexCoord4f(GLfloat s, GLfloat t, GLfloat r, GLfloat q)
 texCoord4f(S, T, R, Q) -> 
  cast(?glTexCoord4fv, <<S:32/?FN, T:32/?FN, R:32/?FN, Q:32/?FN>>).
 
-%% Func:    texCoord4fv 
-%% Args:    {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec texCoord4fv({V1::float(),V2::float(),V3::float(),V4::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord4fv</a>
 %% C-API func: void glTexCoord4fv( const GLfloat * v)
 texCoord4fv({V1,V2,V3,V4}) -> 
  cast(?glTexCoord4fv, <<V1:32/?FN,V2:32/?FN,V3:32/?FN,V4:32/?FN>>).
 
-%% Func:    texCoord4i 
-%% Args:    S, T, R, Q
-%% Returns: ok
+%% @spec texCoord4i(S::integer(), T::integer(), R::integer(), Q::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord4i</a>
 %% C-API func: void glTexCoord4i(GLint s, GLint t, GLint r, GLint q)
 texCoord4i(S, T, R, Q) -> 
  cast(?glTexCoord4iv, <<S:32/?SN, T:32/?SN, R:32/?SN, Q:32/?SN>>).
 
-%% Func:    texCoord4iv 
-%% Args:    {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec texCoord4iv({V1::integer(),V2::integer(),V3::integer(),V4::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord4iv</a>
 %% C-API func: void glTexCoord4iv( const GLint * v)
 texCoord4iv({V1,V2,V3,V4}) -> 
  cast(?glTexCoord4iv, <<V1:32/?SN,V2:32/?SN,V3:32/?SN,V4:32/?SN>>).
 
-%% Func:    texCoord4s 
-%% Args:    S, T, R, Q
-%% Returns: ok
+%% @spec texCoord4s(S::integer(), T::integer(), R::integer(), Q::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord4s</a>
 %% C-API func: void glTexCoord4s(GLshort s, GLshort t, GLshort r, GLshort q)
 texCoord4s(S, T, R, Q) -> 
  cast(?glTexCoord4sv, <<S:16/?SN, T:16/?SN, R:16/?SN, Q:16/?SN>>).
 
-%% Func:    texCoord4sv 
-%% Args:    {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec texCoord4sv({V1::integer(),V2::integer(),V3::integer(),V4::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoord">External manpage: texCoord4sv</a>
 %% C-API func: void glTexCoord4sv( const GLshort * v)
 texCoord4sv({V1,V2,V3,V4}) -> 
  cast(?glTexCoord4sv, <<V1:16/?SN,V2:16/?SN,V3:16/?SN,V4:16/?SN>>).
 
-%% Func:    texCoordPointer 
-%% Args:    Size, Type, Stride, <<[Pointer]>>
-%% Returns: ok
+%% @spec texCoordPointer(Size::integer(), Type::integer(), Stride::integer(), Pointer::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexCoordPointer">External manpage: texCoordPointer</a>
 %% C-API func: void glTexCoordPointer(GLint size, GLenum type, GLsizei stride,  const GLvoid * pointer)
 texCoordPointer(Size, Type, Stride, Pointer) -> 
 %% Maybe NULL or offset sometimes
@@ -2880,16 +2591,14 @@ texCoordPointer(Size, Type, Stride, Pointer) ->
    end,
  cast(?glTexCoordPointer, [<<Size:32/?SN, Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
-%% Func:    texEnvf 
-%% Args:    Target, Pname, Param
-%% Returns: ok
+%% @spec texEnvf(Target::integer(), Pname::integer(), Param::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexEnvf">External manpage: texEnvf</a>
 %% C-API func: void glTexEnvf(GLenum target, GLenum pname, GLfloat param)
 texEnvf(Target, Pname, Param) -> 
  cast(?glTexEnvf, <<Target:32/?UN, Pname:32/?UN, Param:32/?FN>>).
 
-%% Func:    texEnvfv 
-%% Args:    Target, Pname, <<[Params]>>
-%% Returns: ok
+%% @spec texEnvfv(Target::integer(), Pname::integer(), Params::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexEnvfv">External manpage: texEnvfv</a>
 %% C-API func: void glTexEnvfv(GLenum target, GLenum pname,  const GLfloat * params)
 texEnvfv(Target, Pname, Params) -> 
  NewParams = if
@@ -2902,16 +2611,14 @@ texEnvfv(Target, Pname, Params) ->
  end, 
  cast(?glTexEnvfv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
 
-%% Func:    texEnvi 
-%% Args:    Target, Pname, Param
-%% Returns: ok
+%% @spec texEnvi(Target::integer(), Pname::integer(), Param::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexEnvi">External manpage: texEnvi</a>
 %% C-API func: void glTexEnvi(GLenum target, GLenum pname, GLint param)
 texEnvi(Target, Pname, Param) -> 
  cast(?glTexEnvi, <<Target:32/?UN, Pname:32/?UN, Param:32/?SN>>).
 
-%% Func:    texEnviv 
-%% Args:    Target, Pname, <<[Params]>>
-%% Returns: ok
+%% @spec texEnviv(Target::integer(), Pname::integer(), Params::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexEnviv">External manpage: texEnviv</a>
 %% C-API func: void glTexEnviv(GLenum target, GLenum pname,  const GLint * params)
 texEnviv(Target, Pname, Params) -> 
  NewParams = if
@@ -2924,16 +2631,14 @@ texEnviv(Target, Pname, Params) ->
  end, 
  cast(?glTexEnviv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
 
-%% Func:    texGend 
-%% Args:    Coord, Pname, Param
-%% Returns: ok
+%% @spec texGend(Coord::integer(), Pname::integer(), Param::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexGend">External manpage: texGend</a>
 %% C-API func: void glTexGend(GLenum coord, GLenum pname, GLdouble param)
 texGend(Coord, Pname, Param) -> 
  cast(?glTexGend, <<Coord:32/?UN, Pname:32/?UN, Param:64/?FN>>).
 
-%% Func:    texGendv 
-%% Args:    Coord, Pname, <<[Params]>>
-%% Returns: ok
+%% @spec texGendv(Coord::integer(), Pname::integer(), Params::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexGendv">External manpage: texGendv</a>
 %% C-API func: void glTexGendv(GLenum coord, GLenum pname,  const GLdouble * params)
 texGendv(Coord, Pname, Params) -> 
  NewParams = if
@@ -2943,16 +2648,14 @@ texGendv(Coord, Pname, Params) ->
  end, 
  cast(?glTexGendv, [<<Coord:32/?UN, Pname:32/?UN>>,NewParams]).
 
-%% Func:    texGenf 
-%% Args:    Coord, Pname, Param
-%% Returns: ok
+%% @spec texGenf(Coord::integer(), Pname::integer(), Param::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexGenf">External manpage: texGenf</a>
 %% C-API func: void glTexGenf(GLenum coord, GLenum pname, GLfloat param)
 texGenf(Coord, Pname, Param) -> 
  cast(?glTexGenf, <<Coord:32/?UN, Pname:32/?UN, Param:32/?FN>>).
 
-%% Func:    texGenfv 
-%% Args:    Coord, Pname, <<[Params]>>
-%% Returns: ok
+%% @spec texGenfv(Coord::integer(), Pname::integer(), Params::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexGenfv">External manpage: texGenfv</a>
 %% C-API func: void glTexGenfv(GLenum coord, GLenum pname,  const GLfloat * params)
 texGenfv(Coord, Pname, Params) -> 
  NewParams = if
@@ -2962,16 +2665,14 @@ texGenfv(Coord, Pname, Params) ->
  end, 
  cast(?glTexGenfv, [<<Coord:32/?UN, Pname:32/?UN>>,NewParams]).
 
-%% Func:    texGeni 
-%% Args:    Coord, Pname, Param
-%% Returns: ok
+%% @spec texGeni(Coord::integer(), Pname::integer(), Param::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexGeni">External manpage: texGeni</a>
 %% C-API func: void glTexGeni(GLenum coord, GLenum pname, GLint param)
 texGeni(Coord, Pname, Param) -> 
  cast(?glTexGeni, <<Coord:32/?UN, Pname:32/?UN, Param:32/?SN>>).
 
-%% Func:    texGeniv 
-%% Args:    Coord, Pname, <<[Params]>>
-%% Returns: ok
+%% @spec texGeniv(Coord::integer(), Pname::integer(), Params::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexGeniv">External manpage: texGeniv</a>
 %% C-API func: void glTexGeniv(GLenum coord, GLenum pname,  const GLint * params)
 texGeniv(Coord, Pname, Params) -> 
  NewParams = if
@@ -2981,9 +2682,8 @@ texGeniv(Coord, Pname, Params) ->
  end, 
  cast(?glTexGeniv, [<<Coord:32/?UN, Pname:32/?UN>>,NewParams]).
 
-%% Func:    texImage1D 
-%% Args:    Target, Level, Internalformat, Width, Border, Format, Type, <<[Pixels]>>
-%% Returns: ok
+%% @spec texImage1D(Target::integer(), Level::integer(), Internalformat::integer(), Width::integer(), Border::integer(), Format::integer(), Type::integer(), Pixels::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexImage1D">External manpage: texImage1D</a>
 %% C-API func: void glTexImage1D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLint border, GLenum format, GLenum type,  const GLvoid * pixels)
 texImage1D(Target, Level, Internalformat, Width, Border, Format, Type, Pixels) -> 
 %% Maybe NULL or offset sometimes
@@ -2995,9 +2695,8 @@ texImage1D(Target, Level, Internalformat, Width, Border, Format, Type, Pixels) -
    end,
  cast(?glTexImage1D, [<<Target:32/?UN, Level:32/?SN, Internalformat:32/?SN, Width:32/?SN, Border:32/?SN, Format:32/?UN, Type:32/?UN, NewPixels:32/?SN>>]).
 
-%% Func:    texImage2D 
-%% Args:    Target, Level, Internalformat, Width, Height, Border, Format, Type, <<[Pixels]>>
-%% Returns: ok
+%% @spec texImage2D(Target::integer(), Level::integer(), Internalformat::integer(), Width::integer(), Height::integer(), Border::integer(), Format::integer(), Type::integer(), Pixels::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexImage2D">External manpage: texImage2D</a>
 %% C-API func: void glTexImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type,  const GLvoid * pixels)
 texImage2D(Target, Level, Internalformat, Width, Height, Border, Format, Type, Pixels) -> 
 %% Maybe NULL or offset sometimes
@@ -3009,16 +2708,14 @@ texImage2D(Target, Level, Internalformat, Width, Height, Border, Format, Type, P
    end,
  cast(?glTexImage2D, [<<Target:32/?UN, Level:32/?SN, Internalformat:32/?SN, Width:32/?SN, Height:32/?SN, Border:32/?SN, Format:32/?UN, Type:32/?UN, NewPixels:32/?SN>>]).
 
-%% Func:    texParameterf 
-%% Args:    Target, Pname, Param
-%% Returns: ok
+%% @spec texParameterf(Target::integer(), Pname::integer(), Param::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexParameterf">External manpage: texParameterf</a>
 %% C-API func: void glTexParameterf(GLenum target, GLenum pname, GLfloat param)
 texParameterf(Target, Pname, Param) -> 
  cast(?glTexParameterf, <<Target:32/?UN, Pname:32/?UN, Param:32/?FN>>).
 
-%% Func:    texParameterfv 
-%% Args:    Target, Pname, <<[Params]>>
-%% Returns: ok
+%% @spec texParameterfv(Target::integer(), Pname::integer(), Params::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexParameterfv">External manpage: texParameterfv</a>
 %% C-API func: void glTexParameterfv(GLenum target, GLenum pname,  const GLfloat * params)
 texParameterfv(Target, Pname, Params) -> 
  NewParams = if
@@ -3031,16 +2728,14 @@ texParameterfv(Target, Pname, Params) ->
  end, 
  cast(?glTexParameterfv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
 
-%% Func:    texParameteri 
-%% Args:    Target, Pname, Param
-%% Returns: ok
+%% @spec texParameteri(Target::integer(), Pname::integer(), Param::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexParameteri">External manpage: texParameteri</a>
 %% C-API func: void glTexParameteri(GLenum target, GLenum pname, GLint param)
 texParameteri(Target, Pname, Param) -> 
  cast(?glTexParameteri, <<Target:32/?UN, Pname:32/?UN, Param:32/?SN>>).
 
-%% Func:    texParameteriv 
-%% Args:    Target, Pname, <<[Params]>>
-%% Returns: ok
+%% @spec texParameteriv(Target::integer(), Pname::integer(), Params::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexParameteriv">External manpage: texParameteriv</a>
 %% C-API func: void glTexParameteriv(GLenum target, GLenum pname,  const GLint * params)
 texParameteriv(Target, Pname, Params) -> 
  NewParams = if
@@ -3053,9 +2748,8 @@ texParameteriv(Target, Pname, Params) ->
  end, 
  cast(?glTexParameteriv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
 
-%% Func:    texSubImage1D 
-%% Args:    Target, Level, Xoffset, Width, Format, Type, <<[Pixels]>>
-%% Returns: ok
+%% @spec texSubImage1D(Target::integer(), Level::integer(), Xoffset::integer(), Width::integer(), Format::integer(), Type::integer(), Pixels::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexSubImage1D">External manpage: texSubImage1D</a>
 %% C-API func: void glTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type,  const GLvoid * pixels)
 texSubImage1D(Target, Level, Xoffset, Width, Format, Type, Pixels) -> 
 %% Maybe NULL or offset sometimes
@@ -3067,9 +2761,8 @@ texSubImage1D(Target, Level, Xoffset, Width, Format, Type, Pixels) ->
    end,
  cast(?glTexSubImage1D, [<<Target:32/?UN, Level:32/?SN, Xoffset:32/?SN, Width:32/?SN, Format:32/?UN, Type:32/?UN, NewPixels:32/?SN>>]).
 
-%% Func:    texSubImage2D 
-%% Args:    Target, Level, Xoffset, Yoffset, Width, Height, Format, Type, <<[Pixels]>>
-%% Returns: ok
+%% @spec texSubImage2D(Target::integer(), Level::integer(), Xoffset::integer(), Yoffset::integer(), Width::integer(), Height::integer(), Format::integer(), Type::integer(), Pixels::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexSubImage2D">External manpage: texSubImage2D</a>
 %% C-API func: void glTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type,  const GLvoid * pixels)
 texSubImage2D(Target, Level, Xoffset, Yoffset, Width, Height, Format, Type, Pixels) -> 
 %% Maybe NULL or offset sometimes
@@ -3081,191 +2774,164 @@ texSubImage2D(Target, Level, Xoffset, Yoffset, Width, Height, Format, Type, Pixe
    end,
  cast(?glTexSubImage2D, [<<Target:32/?UN, Level:32/?SN, Xoffset:32/?SN, Yoffset:32/?SN, Width:32/?SN, Height:32/?SN, Format:32/?UN, Type:32/?UN, NewPixels:32/?SN>>]).
 
-%% Func:    translated 
-%% Args:    X, Y, Z
-%% Returns: ok
+%% @spec translated(X::float(), Y::float(), Z::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTranslated">External manpage: translated</a>
 %% C-API func: void glTranslated(GLdouble x, GLdouble y, GLdouble z)
 translated(X, Y, Z) -> 
  cast(?glTranslated, <<X:64/?FN, Y:64/?FN, Z:64/?FN>>).
 
-%% Func:    translatef 
-%% Args:    X, Y, Z
-%% Returns: ok
+%% @spec translatef(X::float(), Y::float(), Z::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTranslatef">External manpage: translatef</a>
 %% C-API func: void glTranslatef(GLfloat x, GLfloat y, GLfloat z)
 translatef(X, Y, Z) -> 
  cast(?glTranslatef, <<X:32/?FN, Y:32/?FN, Z:32/?FN>>).
 
-%% Func:    vertex2d 
-%% Args:    X, Y
-%% Returns: ok
+%% @spec vertex2d(X::float(), Y::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex2d</a>
 %% C-API func: void glVertex2d(GLdouble x, GLdouble y)
 vertex2d(X, Y) -> 
  cast(?glVertex2dv, <<X:64/?FN, Y:64/?FN>>).
 
-%% Func:    vertex2dv 
-%% Args:    {V1,V2}
-%% Returns: ok
+%% @spec vertex2dv({V1::float(),V2::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex2dv</a>
 %% C-API func: void glVertex2dv( const GLdouble * v)
 vertex2dv({V1,V2}) -> 
  cast(?glVertex2dv, <<V1:64/?FN,V2:64/?FN>>).
 
-%% Func:    vertex2f 
-%% Args:    X, Y
-%% Returns: ok
+%% @spec vertex2f(X::float(), Y::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex2f</a>
 %% C-API func: void glVertex2f(GLfloat x, GLfloat y)
 vertex2f(X, Y) -> 
  cast(?glVertex2fv, <<X:32/?FN, Y:32/?FN>>).
 
-%% Func:    vertex2fv 
-%% Args:    {V1,V2}
-%% Returns: ok
+%% @spec vertex2fv({V1::float(),V2::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex2fv</a>
 %% C-API func: void glVertex2fv( const GLfloat * v)
 vertex2fv({V1,V2}) -> 
  cast(?glVertex2fv, <<V1:32/?FN,V2:32/?FN>>).
 
-%% Func:    vertex2i 
-%% Args:    X, Y
-%% Returns: ok
+%% @spec vertex2i(X::integer(), Y::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex2i</a>
 %% C-API func: void glVertex2i(GLint x, GLint y)
 vertex2i(X, Y) -> 
  cast(?glVertex2iv, <<X:32/?SN, Y:32/?SN>>).
 
-%% Func:    vertex2iv 
-%% Args:    {V1,V2}
-%% Returns: ok
+%% @spec vertex2iv({V1::integer(),V2::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex2iv</a>
 %% C-API func: void glVertex2iv( const GLint * v)
 vertex2iv({V1,V2}) -> 
  cast(?glVertex2iv, <<V1:32/?SN,V2:32/?SN>>).
 
-%% Func:    vertex2s 
-%% Args:    X, Y
-%% Returns: ok
+%% @spec vertex2s(X::integer(), Y::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex2s</a>
 %% C-API func: void glVertex2s(GLshort x, GLshort y)
 vertex2s(X, Y) -> 
  cast(?glVertex2sv, <<X:16/?SN, Y:16/?SN>>).
 
-%% Func:    vertex2sv 
-%% Args:    {V1,V2}
-%% Returns: ok
+%% @spec vertex2sv({V1::integer(),V2::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex2sv</a>
 %% C-API func: void glVertex2sv( const GLshort * v)
 vertex2sv({V1,V2}) -> 
  cast(?glVertex2sv, <<V1:16/?SN,V2:16/?SN>>).
 
-%% Func:    vertex3d 
-%% Args:    X, Y, Z
-%% Returns: ok
+%% @spec vertex3d(X::float(), Y::float(), Z::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex3d</a>
 %% C-API func: void glVertex3d(GLdouble x, GLdouble y, GLdouble z)
 vertex3d(X, Y, Z) -> 
  cast(?glVertex3dv, <<X:64/?FN, Y:64/?FN, Z:64/?FN>>).
 
-%% Func:    vertex3dv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec vertex3dv({V1::float(),V2::float(),V3::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex3dv</a>
 %% C-API func: void glVertex3dv( const GLdouble * v)
 vertex3dv({V1,V2,V3}) -> 
  cast(?glVertex3dv, <<V1:64/?FN,V2:64/?FN,V3:64/?FN>>).
 
-%% Func:    vertex3f 
-%% Args:    X, Y, Z
-%% Returns: ok
+%% @spec vertex3f(X::float(), Y::float(), Z::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex3f</a>
 %% C-API func: void glVertex3f(GLfloat x, GLfloat y, GLfloat z)
 vertex3f(X, Y, Z) -> 
  cast(?glVertex3fv, <<X:32/?FN, Y:32/?FN, Z:32/?FN>>).
 
-%% Func:    vertex3fv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec vertex3fv({V1::float(),V2::float(),V3::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex3fv</a>
 %% C-API func: void glVertex3fv( const GLfloat * v)
 vertex3fv({V1,V2,V3}) -> 
  cast(?glVertex3fv, <<V1:32/?FN,V2:32/?FN,V3:32/?FN>>).
 
-%% Func:    vertex3i 
-%% Args:    X, Y, Z
-%% Returns: ok
+%% @spec vertex3i(X::integer(), Y::integer(), Z::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex3i</a>
 %% C-API func: void glVertex3i(GLint x, GLint y, GLint z)
 vertex3i(X, Y, Z) -> 
  cast(?glVertex3iv, <<X:32/?SN, Y:32/?SN, Z:32/?SN>>).
 
-%% Func:    vertex3iv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec vertex3iv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex3iv</a>
 %% C-API func: void glVertex3iv( const GLint * v)
 vertex3iv({V1,V2,V3}) -> 
  cast(?glVertex3iv, <<V1:32/?SN,V2:32/?SN,V3:32/?SN>>).
 
-%% Func:    vertex3s 
-%% Args:    X, Y, Z
-%% Returns: ok
+%% @spec vertex3s(X::integer(), Y::integer(), Z::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex3s</a>
 %% C-API func: void glVertex3s(GLshort x, GLshort y, GLshort z)
 vertex3s(X, Y, Z) -> 
  cast(?glVertex3sv, <<X:16/?SN, Y:16/?SN, Z:16/?SN>>).
 
-%% Func:    vertex3sv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec vertex3sv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex3sv</a>
 %% C-API func: void glVertex3sv( const GLshort * v)
 vertex3sv({V1,V2,V3}) -> 
  cast(?glVertex3sv, <<V1:16/?SN,V2:16/?SN,V3:16/?SN>>).
 
-%% Func:    vertex4d 
-%% Args:    X, Y, Z, W
-%% Returns: ok
+%% @spec vertex4d(X::float(), Y::float(), Z::float(), W::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex4d</a>
 %% C-API func: void glVertex4d(GLdouble x, GLdouble y, GLdouble z, GLdouble w)
 vertex4d(X, Y, Z, W) -> 
  cast(?glVertex4dv, <<X:64/?FN, Y:64/?FN, Z:64/?FN, W:64/?FN>>).
 
-%% Func:    vertex4dv 
-%% Args:    {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec vertex4dv({V1::float(),V2::float(),V3::float(),V4::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex4dv</a>
 %% C-API func: void glVertex4dv( const GLdouble * v)
 vertex4dv({V1,V2,V3,V4}) -> 
  cast(?glVertex4dv, <<V1:64/?FN,V2:64/?FN,V3:64/?FN,V4:64/?FN>>).
 
-%% Func:    vertex4f 
-%% Args:    X, Y, Z, W
-%% Returns: ok
+%% @spec vertex4f(X::float(), Y::float(), Z::float(), W::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex4f</a>
 %% C-API func: void glVertex4f(GLfloat x, GLfloat y, GLfloat z, GLfloat w)
 vertex4f(X, Y, Z, W) -> 
  cast(?glVertex4fv, <<X:32/?FN, Y:32/?FN, Z:32/?FN, W:32/?FN>>).
 
-%% Func:    vertex4fv 
-%% Args:    {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec vertex4fv({V1::float(),V2::float(),V3::float(),V4::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex4fv</a>
 %% C-API func: void glVertex4fv( const GLfloat * v)
 vertex4fv({V1,V2,V3,V4}) -> 
  cast(?glVertex4fv, <<V1:32/?FN,V2:32/?FN,V3:32/?FN,V4:32/?FN>>).
 
-%% Func:    vertex4i 
-%% Args:    X, Y, Z, W
-%% Returns: ok
+%% @spec vertex4i(X::integer(), Y::integer(), Z::integer(), W::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex4i</a>
 %% C-API func: void glVertex4i(GLint x, GLint y, GLint z, GLint w)
 vertex4i(X, Y, Z, W) -> 
  cast(?glVertex4iv, <<X:32/?SN, Y:32/?SN, Z:32/?SN, W:32/?SN>>).
 
-%% Func:    vertex4iv 
-%% Args:    {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec vertex4iv({V1::integer(),V2::integer(),V3::integer(),V4::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex4iv</a>
 %% C-API func: void glVertex4iv( const GLint * v)
 vertex4iv({V1,V2,V3,V4}) -> 
  cast(?glVertex4iv, <<V1:32/?SN,V2:32/?SN,V3:32/?SN,V4:32/?SN>>).
 
-%% Func:    vertex4s 
-%% Args:    X, Y, Z, W
-%% Returns: ok
+%% @spec vertex4s(X::integer(), Y::integer(), Z::integer(), W::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex4s</a>
 %% C-API func: void glVertex4s(GLshort x, GLshort y, GLshort z, GLshort w)
 vertex4s(X, Y, Z, W) -> 
  cast(?glVertex4sv, <<X:16/?SN, Y:16/?SN, Z:16/?SN, W:16/?SN>>).
 
-%% Func:    vertex4sv 
-%% Args:    {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec vertex4sv({V1::integer(),V2::integer(),V3::integer(),V4::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertex">External manpage: vertex4sv</a>
 %% C-API func: void glVertex4sv( const GLshort * v)
 vertex4sv({V1,V2,V3,V4}) -> 
  cast(?glVertex4sv, <<V1:16/?SN,V2:16/?SN,V3:16/?SN,V4:16/?SN>>).
 
-%% Func:    vertexPointer 
-%% Args:    Size, Type, Stride, <<[Pointer]>>
-%% Returns: ok
+%% @spec vertexPointer(Size::integer(), Type::integer(), Stride::integer(), Pointer::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexPointer">External manpage: vertexPointer</a>
 %% C-API func: void glVertexPointer(GLint size, GLenum type, GLsizei stride,  const GLvoid * pointer)
 vertexPointer(Size, Type, Stride, Pointer) -> 
 %% Maybe NULL or offset sometimes
@@ -3277,14 +2943,11 @@ vertexPointer(Size, Type, Stride, Pointer) ->
    end,
  cast(?glVertexPointer, [<<Size:32/?SN, Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
-%% Func:    viewport 
-%% Args:    X, Y, Width, Height
-%% Returns: ok
+%% @spec viewport(X::integer(), Y::integer(), Width::integer(), Height::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glViewport">External manpage: viewport</a>
 %% C-API func: void glViewport(GLint x, GLint y, GLsizei width, GLsizei height)
 viewport(X, Y, Width, Height) -> 
  cast(?glViewport, <<X:32/?SN, Y:32/?SN, Width:32/?SN, Height:32/?SN>>).
-
-
 
 %%% OPENGL 1.2 and later with selected ARB's and extensions
 %%-module(glext).
@@ -3305,35 +2968,32 @@ glGetConvolutionParameterfvLen(Pname) ->
 	?GL_MAX_CONVOLUTION_HEIGHT   ->     1;
 	_ -> 4
     end.
-%% Func:    blendColor 
-%% Args:    Red, Green, Blue, Alpha
-%% Returns: ok
+%% @spec blendColor(Red::float(), Green::float(), Blue::float(), Alpha::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glBlendColor">External manpage: blendColor</a>
 %% C-API func: void glBlendColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha)
 blendColor(Red, Green, Blue, Alpha) -> 
  cast(?glBlendColor, <<Red:32/?FN, Green:32/?FN, Blue:32/?FN, Alpha:32/?FN>>).
 
-%% Func:    blendEquation 
-%% Args:    Mode
-%% Returns: ok
+%% @spec blendEquation(Mode::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glBlendEquation">External manpage: blendEquation</a>
 %% C-API func: void glBlendEquation(GLenum mode)
 blendEquation(Mode) -> 
  cast(?glBlendEquation, <<Mode:32/?UN>>).
 
-%% Func:    drawRangeElements 
-%% Args:    Mode, Start, End, Count, Type, <<[Indices]>>
-%% Returns: ok
+%% @spec drawRangeElements(Mode::integer(), Start::integer(), End::integer(), Count::integer(), Type::integer(), Indices::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDrawRangeElements">External manpage: drawRangeElements</a>
 %% C-API func: void glDrawRangeElements(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type,  const GLvoid * indices)
 drawRangeElements(Mode, Start, End, Count, Type, Indices) -> 
- NewIndices = if
-	is_list(Indices) ; is_tuple(Indices) -> term2bin(Indices, Count, Type);
-	is_binary(Indices) -> Indices;
+%% Maybe NULL or offset sometimes2
+ NewIndices = if is_integer(Indices) -> Indices; 
+	is_list(Indices) ; is_tuple(Indices) -> sdl:send_bin(list_to_binary(term2bin(Indices, Count, Type)),?MODULE,?LINE),0;
+	is_binary(Indices) -> sdl:send_bin(Indices, ?MODULE, ?LINE),0;
 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Indices})
  end, 
- cast(?glDrawRangeElements, [<<Mode:32/?UN, Start:32/?UN, End:32/?UN, Count:32/?SN, Type:32/?UN>>,NewIndices]).
+ cast(?glDrawRangeElements, [<<Mode:32/?UN, Start:32/?UN, End:32/?UN, Count:32/?SN, Type:32/?UN, NewIndices:32/?SN>>]).
 
-%% Func:    colorTable 
-%% Args:    Target, Internalformat, Width, Format, Type, <<[Table]>>
-%% Returns: ok
+%% @spec colorTable(Target::integer(), Internalformat::integer(), Width::integer(), Format::integer(), Type::integer(), Table::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColorTable">External manpage: colorTable</a>
 %% C-API func: void glColorTable(GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type,  const GLvoid * table)
 colorTable(Target, Internalformat, Width, Format, Type, Table) -> 
 %% Maybe NULL or offset sometimes
@@ -3345,9 +3005,8 @@ colorTable(Target, Internalformat, Width, Format, Type, Table) ->
    end,
  cast(?glColorTable, [<<Target:32/?UN, Internalformat:32/?UN, Width:32/?SN, Format:32/?UN, Type:32/?UN, NewTable:32/?SN>>]).
 
-%% Func:    colorTableParameterfv 
-%% Args:    Target, Pname, <<[Params]>>
-%% Returns: ok
+%% @spec colorTableParameterfv(Target::integer(), Pname::integer(), Params::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColorTableParameterfv">External manpage: colorTableParameterfv</a>
 %% C-API func: void glColorTableParameterfv(GLenum target, GLenum pname,  const GLfloat * params)
 colorTableParameterfv(Target, Pname, Params) -> 
  NewParams = if
@@ -3357,9 +3016,8 @@ colorTableParameterfv(Target, Pname, Params) ->
  end, 
  cast(?glColorTableParameterfv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
 
-%% Func:    colorTableParameteriv 
-%% Args:    Target, Pname, <<[Params]>>
-%% Returns: ok
+%% @spec colorTableParameteriv(Target::integer(), Pname::integer(), Params::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColorTableParameteriv">External manpage: colorTableParameteriv</a>
 %% C-API func: void glColorTableParameteriv(GLenum target, GLenum pname,  const GLint * params)
 colorTableParameteriv(Target, Pname, Params) -> 
  NewParams = if
@@ -3369,24 +3027,21 @@ colorTableParameteriv(Target, Pname, Params) ->
  end, 
  cast(?glColorTableParameteriv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
 
-%% Func:    copyColorTable 
-%% Args:    Target, Internalformat, X, Y, Width
-%% Returns: ok
+%% @spec copyColorTable(Target::integer(), Internalformat::integer(), X::integer(), Y::integer(), Width::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCopyColorTable">External manpage: copyColorTable</a>
 %% C-API func: void glCopyColorTable(GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width)
 copyColorTable(Target, Internalformat, X, Y, Width) -> 
  cast(?glCopyColorTable, <<Target:32/?UN, Internalformat:32/?UN, X:32/?SN, Y:32/?SN, Width:32/?SN>>).
 
-%% Func:    getColorTable 
-%% Args:    Target, Format, Type, #sdlmem{} = Table
-%% Returns: ok
+%% @spec getColorTable(Target::integer(), Format::integer(), Type::integer(), Table::sdlmem()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetColorTable">External manpage: getColorTable</a>
 %% C-API func: void glGetColorTable(GLenum target, GLenum format, GLenum type, GLvoid * table)
 getColorTable(Target, Format, Type, #sdlmem{bin=Table}) -> 
  sdl:send_bin(Table, ?MODULE, ?LINE),
  cast(?glGetColorTable, <<Target:32/?UN, Format:32/?UN, Type:32/?UN>>).
 
-%% Func:    getColorTableParameterfv 
-%% Args:    Target, Pname
-%% Returns: [Params]
+%% @spec getColorTableParameterfv(Target::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetColorTableParameterfv">External manpage: getColorTableParameterfv</a>
 %% C-API func: void glGetColorTableParameterfv(GLenum target, GLenum pname, GLfloat * params)
 getColorTableParameterfv(Target, Pname) -> 
  Bin = call(?glGetColorTableParameterfv, <<Target:32/?UN, Pname:32/?UN>>), 
@@ -3396,9 +3051,8 @@ getColorTableParameterfv(Target, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getColorTableParameteriv 
-%% Args:    Target, Pname
-%% Returns: [Params]
+%% @spec getColorTableParameteriv(Target::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetColorTableParameteriv">External manpage: getColorTableParameteriv</a>
 %% C-API func: void glGetColorTableParameteriv(GLenum target, GLenum pname, GLint * params)
 getColorTableParameteriv(Target, Pname) -> 
  Bin = call(?glGetColorTableParameteriv, <<Target:32/?UN, Pname:32/?UN>>), 
@@ -3408,9 +3062,8 @@ getColorTableParameteriv(Target, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    colorSubTable 
-%% Args:    Target, Start, Count, Format, Type, <<[Data]>>
-%% Returns: ok
+%% @spec colorSubTable(Target::integer(), Start::integer(), Count::integer(), Format::integer(), Type::integer(), Data::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glColorSubTable">External manpage: colorSubTable</a>
 %% C-API func: void glColorSubTable(GLenum target, GLsizei start, GLsizei count, GLenum format, GLenum type,  const GLvoid * data)
 colorSubTable(Target, Start, Count, Format, Type, Data) -> 
 %% Maybe NULL or offset sometimes
@@ -3422,16 +3075,14 @@ colorSubTable(Target, Start, Count, Format, Type, Data) ->
    end,
  cast(?glColorSubTable, [<<Target:32/?UN, Start:32/?SN, Count:32/?SN, Format:32/?UN, Type:32/?UN, NewData:32/?SN>>]).
 
-%% Func:    copyColorSubTable 
-%% Args:    Target, Start, X, Y, Width
-%% Returns: ok
+%% @spec copyColorSubTable(Target::integer(), Start::integer(), X::integer(), Y::integer(), Width::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCopyColorSubTable">External manpage: copyColorSubTable</a>
 %% C-API func: void glCopyColorSubTable(GLenum target, GLsizei start, GLint x, GLint y, GLsizei width)
 copyColorSubTable(Target, Start, X, Y, Width) -> 
  cast(?glCopyColorSubTable, <<Target:32/?UN, Start:32/?SN, X:32/?SN, Y:32/?SN, Width:32/?SN>>).
 
-%% Func:    convolutionFilter1D 
-%% Args:    Target, Internalformat, Width, Format, Type, <<[Image]>>
-%% Returns: ok
+%% @spec convolutionFilter1D(Target::integer(), Internalformat::integer(), Width::integer(), Format::integer(), Type::integer(), Image::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glConvolutionFilter1D">External manpage: convolutionFilter1D</a>
 %% C-API func: void glConvolutionFilter1D(GLenum target, GLenum internalformat, GLsizei width, GLenum format, GLenum type,  const GLvoid * image)
 convolutionFilter1D(Target, Internalformat, Width, Format, Type, Image) -> 
 %% Maybe NULL or offset sometimes
@@ -3443,9 +3094,8 @@ convolutionFilter1D(Target, Internalformat, Width, Format, Type, Image) ->
    end,
  cast(?glConvolutionFilter1D, [<<Target:32/?UN, Internalformat:32/?UN, Width:32/?SN, Format:32/?UN, Type:32/?UN, NewImage:32/?SN>>]).
 
-%% Func:    convolutionFilter2D 
-%% Args:    Target, Internalformat, Width, Height, Format, Type, <<[Image]>>
-%% Returns: ok
+%% @spec convolutionFilter2D(Target::integer(), Internalformat::integer(), Width::integer(), Height::integer(), Format::integer(), Type::integer(), Image::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glConvolutionFilter2D">External manpage: convolutionFilter2D</a>
 %% C-API func: void glConvolutionFilter2D(GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type,  const GLvoid * image)
 convolutionFilter2D(Target, Internalformat, Width, Height, Format, Type, Image) -> 
 %% Maybe NULL or offset sometimes
@@ -3457,16 +3107,14 @@ convolutionFilter2D(Target, Internalformat, Width, Height, Format, Type, Image) 
    end,
  cast(?glConvolutionFilter2D, [<<Target:32/?UN, Internalformat:32/?UN, Width:32/?SN, Height:32/?SN, Format:32/?UN, Type:32/?UN, NewImage:32/?SN>>]).
 
-%% Func:    convolutionParameterf 
-%% Args:    Target, Pname, Params
-%% Returns: ok
+%% @spec convolutionParameterf(Target::integer(), Pname::integer(), Params::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glConvolutionParameterf">External manpage: convolutionParameterf</a>
 %% C-API func: void glConvolutionParameterf(GLenum target, GLenum pname, GLfloat params)
 convolutionParameterf(Target, Pname, Params) -> 
  cast(?glConvolutionParameterf, <<Target:32/?UN, Pname:32/?UN, Params:32/?FN>>).
 
-%% Func:    convolutionParameterfv 
-%% Args:    Target, Pname, <<[Params]>>
-%% Returns: ok
+%% @spec convolutionParameterfv(Target::integer(), Pname::integer(), Params::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glConvolutionParameterfv">External manpage: convolutionParameterfv</a>
 %% C-API func: void glConvolutionParameterfv(GLenum target, GLenum pname,  const GLfloat * params)
 convolutionParameterfv(Target, Pname, Params) -> 
  NewParams = if
@@ -3479,16 +3127,14 @@ convolutionParameterfv(Target, Pname, Params) ->
  end, 
  cast(?glConvolutionParameterfv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
 
-%% Func:    convolutionParameteri 
-%% Args:    Target, Pname, Params
-%% Returns: ok
+%% @spec convolutionParameteri(Target::integer(), Pname::integer(), Params::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glConvolutionParameteri">External manpage: convolutionParameteri</a>
 %% C-API func: void glConvolutionParameteri(GLenum target, GLenum pname, GLint params)
 convolutionParameteri(Target, Pname, Params) -> 
  cast(?glConvolutionParameteri, <<Target:32/?UN, Pname:32/?UN, Params:32/?SN>>).
 
-%% Func:    convolutionParameteriv 
-%% Args:    Target, Pname, <<[Params]>>
-%% Returns: ok
+%% @spec convolutionParameteriv(Target::integer(), Pname::integer(), Params::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glConvolutionParameteriv">External manpage: convolutionParameteriv</a>
 %% C-API func: void glConvolutionParameteriv(GLenum target, GLenum pname,  const GLint * params)
 convolutionParameteriv(Target, Pname, Params) -> 
  NewParams = if
@@ -3501,31 +3147,27 @@ convolutionParameteriv(Target, Pname, Params) ->
  end, 
  cast(?glConvolutionParameteriv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
 
-%% Func:    copyConvolutionFilter1D 
-%% Args:    Target, Internalformat, X, Y, Width
-%% Returns: ok
+%% @spec copyConvolutionFilter1D(Target::integer(), Internalformat::integer(), X::integer(), Y::integer(), Width::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCopyConvolutionFilter1D">External manpage: copyConvolutionFilter1D</a>
 %% C-API func: void glCopyConvolutionFilter1D(GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width)
 copyConvolutionFilter1D(Target, Internalformat, X, Y, Width) -> 
  cast(?glCopyConvolutionFilter1D, <<Target:32/?UN, Internalformat:32/?UN, X:32/?SN, Y:32/?SN, Width:32/?SN>>).
 
-%% Func:    copyConvolutionFilter2D 
-%% Args:    Target, Internalformat, X, Y, Width, Height
-%% Returns: ok
+%% @spec copyConvolutionFilter2D(Target::integer(), Internalformat::integer(), X::integer(), Y::integer(), Width::integer(), Height::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCopyConvolutionFilter2D">External manpage: copyConvolutionFilter2D</a>
 %% C-API func: void glCopyConvolutionFilter2D(GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height)
 copyConvolutionFilter2D(Target, Internalformat, X, Y, Width, Height) -> 
  cast(?glCopyConvolutionFilter2D, <<Target:32/?UN, Internalformat:32/?UN, X:32/?SN, Y:32/?SN, Width:32/?SN, Height:32/?SN>>).
 
-%% Func:    getConvolutionFilter 
-%% Args:    Target, Format, Type, #sdlmem{} = Image
-%% Returns: ok
+%% @spec getConvolutionFilter(Target::integer(), Format::integer(), Type::integer(), Image::sdlmem()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetConvolutionFilter">External manpage: getConvolutionFilter</a>
 %% C-API func: void glGetConvolutionFilter(GLenum target, GLenum format, GLenum type, GLvoid * image)
 getConvolutionFilter(Target, Format, Type, #sdlmem{bin=Image}) -> 
  sdl:send_bin(Image, ?MODULE, ?LINE),
  cast(?glGetConvolutionFilter, <<Target:32/?UN, Format:32/?UN, Type:32/?UN>>).
 
-%% Func:    getConvolutionParameterfv 
-%% Args:    Target, Pname
-%% Returns: [Params]
+%% @spec getConvolutionParameterfv(Target::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetConvolutionParameterfv">External manpage: getConvolutionParameterfv</a>
 %% C-API func: void glGetConvolutionParameterfv(GLenum target, GLenum pname, GLfloat * params)
 getConvolutionParameterfv(Target, Pname) -> 
  Bin = call(?glGetConvolutionParameterfv, <<Target:32/?UN, Pname:32/?UN>>), 
@@ -3537,9 +3179,8 @@ getConvolutionParameterfv(Target, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getConvolutionParameteriv 
-%% Args:    Target, Pname
-%% Returns: [Params]
+%% @spec getConvolutionParameteriv(Target::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetConvolutionParameteriv">External manpage: getConvolutionParameteriv</a>
 %% C-API func: void glGetConvolutionParameteriv(GLenum target, GLenum pname, GLint * params)
 getConvolutionParameteriv(Target, Pname) -> 
  Bin = call(?glGetConvolutionParameteriv, <<Target:32/?UN, Pname:32/?UN>>), 
@@ -3551,9 +3192,8 @@ getConvolutionParameteriv(Target, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getSeparableFilter 
-%% Args:    Target, Format, Type, #sdlmem{} = Row, #sdlmem{} = Column, #sdlmem{} = Span
-%% Returns: ok
+%% @spec getSeparableFilter(Target::integer(), Format::integer(), Type::integer(), Row::sdlmem(), Column::sdlmem(), Span::sdlmem()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetSeparableFilter">External manpage: getSeparableFilter</a>
 %% C-API func: void glGetSeparableFilter(GLenum target, GLenum format, GLenum type, GLvoid * row, GLvoid * column, GLvoid * span)
 getSeparableFilter(Target, Format, Type, #sdlmem{bin=Row}, #sdlmem{bin=Column}, #sdlmem{bin=Span}) -> 
  sdl:send_bin(Row, ?MODULE, ?LINE),
@@ -3561,9 +3201,8 @@ getSeparableFilter(Target, Format, Type, #sdlmem{bin=Row}, #sdlmem{bin=Column}, 
  sdl:send_bin(Span, ?MODULE, ?LINE),
  cast(?glGetSeparableFilter, <<Target:32/?UN, Format:32/?UN, Type:32/?UN>>).
 
-%% Func:    separableFilter2D 
-%% Args:    Target, Internalformat, Width, Height, Format, Type, <<[Row]>>, <<[Column]>>
-%% Returns: ok
+%% @spec separableFilter2D(Target::integer(), Internalformat::integer(), Width::integer(), Height::integer(), Format::integer(), Type::integer(), Row::binary() | [number()], Column::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glSeparableFilter2D">External manpage: separableFilter2D</a>
 %% C-API func: void glSeparableFilter2D(GLenum target, GLenum internalformat, GLsizei width, GLsizei height, GLenum format, GLenum type,  const GLvoid * row,  const GLvoid * column)
 separableFilter2D(Target, Internalformat, Width, Height, Format, Type, Row, Column) -> 
 %% Maybe NULL or offset sometimes
@@ -3582,17 +3221,15 @@ separableFilter2D(Target, Internalformat, Width, Height, Format, Type, Row, Colu
    end,
  cast(?glSeparableFilter2D, [<<Target:32/?UN, Internalformat:32/?UN, Width:32/?SN, Height:32/?SN, Format:32/?UN, Type:32/?UN, NewRow:32/?SN, NewColumn:32/?SN>>]).
 
-%% Func:    getHistogram 
-%% Args:    Target, Reset, Format, Type, #sdlmem{} = Values
-%% Returns: ok
+%% @spec getHistogram(Target::integer(), Reset::bool(), Format::integer(), Type::integer(), Values::sdlmem()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetHistogram">External manpage: getHistogram</a>
 %% C-API func: void glGetHistogram(GLenum target, GLboolean reset, GLenum format, GLenum type, GLvoid * values)
 getHistogram(Target, Reset, Format, Type, #sdlmem{bin=Values}) -> 
  sdl:send_bin(Values, ?MODULE, ?LINE),
  cast(?glGetHistogram, <<Target:32/?UN, Reset:8/unsigned, 0:24, Format:32/?UN, Type:32/?UN>>).
 
-%% Func:    getHistogramParameterfv 
-%% Args:    Target, Pname
-%% Returns: [Params]
+%% @spec getHistogramParameterfv(Target::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetHistogramParameterfv">External manpage: getHistogramParameterfv</a>
 %% C-API func: void glGetHistogramParameterfv(GLenum target, GLenum pname, GLfloat * params)
 getHistogramParameterfv(Target, Pname) -> 
  Bin = call(?glGetHistogramParameterfv, <<Target:32/?UN, Pname:32/?UN>>), 
@@ -3602,9 +3239,8 @@ getHistogramParameterfv(Target, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getHistogramParameteriv 
-%% Args:    Target, Pname
-%% Returns: [Params]
+%% @spec getHistogramParameteriv(Target::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetHistogramParameteriv">External manpage: getHistogramParameteriv</a>
 %% C-API func: void glGetHistogramParameteriv(GLenum target, GLenum pname, GLint * params)
 getHistogramParameteriv(Target, Pname) -> 
  Bin = call(?glGetHistogramParameteriv, <<Target:32/?UN, Pname:32/?UN>>), 
@@ -3614,17 +3250,15 @@ getHistogramParameteriv(Target, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getMinmax 
-%% Args:    Target, Reset, Format, Type, #sdlmem{} = Values
-%% Returns: ok
+%% @spec getMinmax(Target::integer(), Reset::bool(), Format::integer(), Type::integer(), Values::sdlmem()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetMinmax">External manpage: getMinmax</a>
 %% C-API func: void glGetMinmax(GLenum target, GLboolean reset, GLenum format, GLenum type, GLvoid * values)
 getMinmax(Target, Reset, Format, Type, #sdlmem{bin=Values}) -> 
  sdl:send_bin(Values, ?MODULE, ?LINE),
  cast(?glGetMinmax, <<Target:32/?UN, Reset:8/unsigned, 0:24, Format:32/?UN, Type:32/?UN>>).
 
-%% Func:    getMinmaxParameterfv 
-%% Args:    Target, Pname
-%% Returns: [Params]
+%% @spec getMinmaxParameterfv(Target::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetMinmaxParameterfv">External manpage: getMinmaxParameterfv</a>
 %% C-API func: void glGetMinmaxParameterfv(GLenum target, GLenum pname, GLfloat * params)
 getMinmaxParameterfv(Target, Pname) -> 
  Bin = call(?glGetMinmaxParameterfv, <<Target:32/?UN, Pname:32/?UN>>), 
@@ -3634,9 +3268,8 @@ getMinmaxParameterfv(Target, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getMinmaxParameteriv 
-%% Args:    Target, Pname
-%% Returns: [Params]
+%% @spec getMinmaxParameteriv(Target::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetMinmaxParameteriv">External manpage: getMinmaxParameteriv</a>
 %% C-API func: void glGetMinmaxParameteriv(GLenum target, GLenum pname, GLint * params)
 getMinmaxParameteriv(Target, Pname) -> 
  Bin = call(?glGetMinmaxParameteriv, <<Target:32/?UN, Pname:32/?UN>>), 
@@ -3646,37 +3279,32 @@ getMinmaxParameteriv(Target, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    histogram 
-%% Args:    Target, Width, Internalformat, Sink
-%% Returns: ok
+%% @spec histogram(Target::integer(), Width::integer(), Internalformat::integer(), Sink::bool()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glHistogram">External manpage: histogram</a>
 %% C-API func: void glHistogram(GLenum target, GLsizei width, GLenum internalformat, GLboolean sink)
 histogram(Target, Width, Internalformat, Sink) -> 
  cast(?glHistogram, <<Target:32/?UN, Width:32/?SN, Internalformat:32/?UN, Sink:8/unsigned>>).
 
-%% Func:    minmax 
-%% Args:    Target, Internalformat, Sink
-%% Returns: ok
+%% @spec minmax(Target::integer(), Internalformat::integer(), Sink::bool()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMinmax">External manpage: minmax</a>
 %% C-API func: void glMinmax(GLenum target, GLenum internalformat, GLboolean sink)
 minmax(Target, Internalformat, Sink) -> 
  cast(?glMinmax, <<Target:32/?UN, Internalformat:32/?UN, Sink:8/unsigned>>).
 
-%% Func:    resetHistogram 
-%% Args:    Target
-%% Returns: ok
+%% @spec resetHistogram(Target::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glResetHistogram">External manpage: resetHistogram</a>
 %% C-API func: void glResetHistogram(GLenum target)
 resetHistogram(Target) -> 
  cast(?glResetHistogram, <<Target:32/?UN>>).
 
-%% Func:    resetMinmax 
-%% Args:    Target
-%% Returns: ok
+%% @spec resetMinmax(Target::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glResetMinmax">External manpage: resetMinmax</a>
 %% C-API func: void glResetMinmax(GLenum target)
 resetMinmax(Target) -> 
  cast(?glResetMinmax, <<Target:32/?UN>>).
 
-%% Func:    texImage3D 
-%% Args:    Target, Level, Internalformat, Width, Height, Depth, Border, Format, Type, <<[Pixels]>>
-%% Returns: ok
+%% @spec texImage3D(Target::integer(), Level::integer(), Internalformat::integer(), Width::integer(), Height::integer(), Depth::integer(), Border::integer(), Format::integer(), Type::integer(), Pixels::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexImage3D">External manpage: texImage3D</a>
 %% C-API func: void glTexImage3D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type,  const GLvoid * pixels)
 texImage3D(Target, Level, Internalformat, Width, Height, Depth, Border, Format, Type, Pixels) -> 
 %% Maybe NULL or offset sometimes
@@ -3688,9 +3316,8 @@ texImage3D(Target, Level, Internalformat, Width, Height, Depth, Border, Format, 
    end,
  cast(?glTexImage3D, [<<Target:32/?UN, Level:32/?SN, Internalformat:32/?SN, Width:32/?SN, Height:32/?SN, Depth:32/?SN, Border:32/?SN, Format:32/?UN, Type:32/?UN, NewPixels:32/?SN>>]).
 
-%% Func:    texSubImage3D 
-%% Args:    Target, Level, Xoffset, Yoffset, Zoffset, Width, Height, Depth, Format, Type, <<[Pixels]>>
-%% Returns: ok
+%% @spec texSubImage3D(Target::integer(), Level::integer(), Xoffset::integer(), Yoffset::integer(), Zoffset::integer(), Width::integer(), Height::integer(), Depth::integer(), Format::integer(), Type::integer(), Pixels::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glTexSubImage3D">External manpage: texSubImage3D</a>
 %% C-API func: void glTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type,  const GLvoid * pixels)
 texSubImage3D(Target, Level, Xoffset, Yoffset, Zoffset, Width, Height, Depth, Format, Type, Pixels) -> 
 %% Maybe NULL or offset sometimes
@@ -3702,254 +3329,218 @@ texSubImage3D(Target, Level, Xoffset, Yoffset, Zoffset, Width, Height, Depth, Fo
    end,
  cast(?glTexSubImage3D, [<<Target:32/?UN, Level:32/?SN, Xoffset:32/?SN, Yoffset:32/?SN, Zoffset:32/?SN, Width:32/?SN, Height:32/?SN, Depth:32/?SN, Format:32/?UN, Type:32/?UN, NewPixels:32/?SN>>]).
 
-%% Func:    copyTexSubImage3D 
-%% Args:    Target, Level, Xoffset, Yoffset, Zoffset, X, Y, Width, Height
-%% Returns: ok
+%% @spec copyTexSubImage3D(Target::integer(), Level::integer(), Xoffset::integer(), Yoffset::integer(), Zoffset::integer(), X::integer(), Y::integer(), Width::integer(), Height::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCopyTexSubImage3D">External manpage: copyTexSubImage3D</a>
 %% C-API func: void glCopyTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint x, GLint y, GLsizei width, GLsizei height)
 copyTexSubImage3D(Target, Level, Xoffset, Yoffset, Zoffset, X, Y, Width, Height) -> 
  cast(?glCopyTexSubImage3D, <<Target:32/?UN, Level:32/?SN, Xoffset:32/?SN, Yoffset:32/?SN, Zoffset:32/?SN, X:32/?SN, Y:32/?SN, Width:32/?SN, Height:32/?SN>>).
 
-%% Func:    activeTexture 
-%% Args:    Texture
-%% Returns: ok
+%% @spec activeTexture(Texture::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glActiveTexture">External manpage: activeTexture</a>
 %% C-API func: void glActiveTexture(GLenum texture)
 activeTexture(Texture) -> 
  cast(?glActiveTexture, <<Texture:32/?UN>>).
 
-%% Func:    clientActiveTexture 
-%% Args:    Texture
-%% Returns: ok
+%% @spec clientActiveTexture(Texture::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glClientActiveTexture">External manpage: clientActiveTexture</a>
 %% C-API func: void glClientActiveTexture(GLenum texture)
 clientActiveTexture(Texture) -> 
  cast(?glClientActiveTexture, <<Texture:32/?UN>>).
 
-%% Func:    multiTexCoord1d 
-%% Args:    Target, S
-%% Returns: ok
+%% @spec multiTexCoord1d(Target::integer(), S::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord1d</a>
 %% C-API func: void glMultiTexCoord1d(GLenum target, GLdouble s)
 multiTexCoord1d(Target, S) -> 
  cast(?glMultiTexCoord1dv, <<Target:32/?UN, S:64/?FN>>).
 
-%% Func:    multiTexCoord1dv 
-%% Args:    Target, {V1}
-%% Returns: ok
+%% @spec multiTexCoord1dv(Target::integer(), {V1::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord1dv</a>
 %% C-API func: void glMultiTexCoord1dv(GLenum target,  const GLdouble * v)
 multiTexCoord1dv(Target, {V1}) -> 
  cast(?glMultiTexCoord1dv, <<Target:32/?UN, V1:64/?FN>>).
 
-%% Func:    multiTexCoord1f 
-%% Args:    Target, S
-%% Returns: ok
+%% @spec multiTexCoord1f(Target::integer(), S::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord1f</a>
 %% C-API func: void glMultiTexCoord1f(GLenum target, GLfloat s)
 multiTexCoord1f(Target, S) -> 
  cast(?glMultiTexCoord1fv, <<Target:32/?UN, S:32/?FN>>).
 
-%% Func:    multiTexCoord1fv 
-%% Args:    Target, {V1}
-%% Returns: ok
+%% @spec multiTexCoord1fv(Target::integer(), {V1::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord1fv</a>
 %% C-API func: void glMultiTexCoord1fv(GLenum target,  const GLfloat * v)
 multiTexCoord1fv(Target, {V1}) -> 
  cast(?glMultiTexCoord1fv, <<Target:32/?UN, V1:32/?FN>>).
 
-%% Func:    multiTexCoord1i 
-%% Args:    Target, S
-%% Returns: ok
+%% @spec multiTexCoord1i(Target::integer(), S::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord1i</a>
 %% C-API func: void glMultiTexCoord1i(GLenum target, GLint s)
 multiTexCoord1i(Target, S) -> 
  cast(?glMultiTexCoord1iv, <<Target:32/?UN, S:32/?SN>>).
 
-%% Func:    multiTexCoord1iv 
-%% Args:    Target, {V1}
-%% Returns: ok
+%% @spec multiTexCoord1iv(Target::integer(), {V1::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord1iv</a>
 %% C-API func: void glMultiTexCoord1iv(GLenum target,  const GLint * v)
 multiTexCoord1iv(Target, {V1}) -> 
  cast(?glMultiTexCoord1iv, <<Target:32/?UN, V1:32/?SN>>).
 
-%% Func:    multiTexCoord1s 
-%% Args:    Target, S
-%% Returns: ok
+%% @spec multiTexCoord1s(Target::integer(), S::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord1s</a>
 %% C-API func: void glMultiTexCoord1s(GLenum target, GLshort s)
 multiTexCoord1s(Target, S) -> 
  cast(?glMultiTexCoord1sv, <<Target:32/?UN, S:16/?SN>>).
 
-%% Func:    multiTexCoord1sv 
-%% Args:    Target, {V1}
-%% Returns: ok
+%% @spec multiTexCoord1sv(Target::integer(), {V1::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord1sv</a>
 %% C-API func: void glMultiTexCoord1sv(GLenum target,  const GLshort * v)
 multiTexCoord1sv(Target, {V1}) -> 
  cast(?glMultiTexCoord1sv, <<Target:32/?UN, V1:16/?SN>>).
 
-%% Func:    multiTexCoord2d 
-%% Args:    Target, S, T
-%% Returns: ok
+%% @spec multiTexCoord2d(Target::integer(), S::float(), T::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord2d</a>
 %% C-API func: void glMultiTexCoord2d(GLenum target, GLdouble s, GLdouble t)
 multiTexCoord2d(Target, S, T) -> 
  cast(?glMultiTexCoord2dv, <<Target:32/?UN, S:64/?FN, T:64/?FN>>).
 
-%% Func:    multiTexCoord2dv 
-%% Args:    Target, {V1,V2}
-%% Returns: ok
+%% @spec multiTexCoord2dv(Target::integer(), {V1::float(),V2::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord2dv</a>
 %% C-API func: void glMultiTexCoord2dv(GLenum target,  const GLdouble * v)
 multiTexCoord2dv(Target, {V1,V2}) -> 
  cast(?glMultiTexCoord2dv, <<Target:32/?UN, V1:64/?FN,V2:64/?FN>>).
 
-%% Func:    multiTexCoord2f 
-%% Args:    Target, S, T
-%% Returns: ok
+%% @spec multiTexCoord2f(Target::integer(), S::float(), T::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord2f</a>
 %% C-API func: void glMultiTexCoord2f(GLenum target, GLfloat s, GLfloat t)
 multiTexCoord2f(Target, S, T) -> 
  cast(?glMultiTexCoord2fv, <<Target:32/?UN, S:32/?FN, T:32/?FN>>).
 
-%% Func:    multiTexCoord2fv 
-%% Args:    Target, {V1,V2}
-%% Returns: ok
+%% @spec multiTexCoord2fv(Target::integer(), {V1::float(),V2::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord2fv</a>
 %% C-API func: void glMultiTexCoord2fv(GLenum target,  const GLfloat * v)
 multiTexCoord2fv(Target, {V1,V2}) -> 
  cast(?glMultiTexCoord2fv, <<Target:32/?UN, V1:32/?FN,V2:32/?FN>>).
 
-%% Func:    multiTexCoord2i 
-%% Args:    Target, S, T
-%% Returns: ok
+%% @spec multiTexCoord2i(Target::integer(), S::integer(), T::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord2i</a>
 %% C-API func: void glMultiTexCoord2i(GLenum target, GLint s, GLint t)
 multiTexCoord2i(Target, S, T) -> 
  cast(?glMultiTexCoord2iv, <<Target:32/?UN, S:32/?SN, T:32/?SN>>).
 
-%% Func:    multiTexCoord2iv 
-%% Args:    Target, {V1,V2}
-%% Returns: ok
+%% @spec multiTexCoord2iv(Target::integer(), {V1::integer(),V2::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord2iv</a>
 %% C-API func: void glMultiTexCoord2iv(GLenum target,  const GLint * v)
 multiTexCoord2iv(Target, {V1,V2}) -> 
  cast(?glMultiTexCoord2iv, <<Target:32/?UN, V1:32/?SN,V2:32/?SN>>).
 
-%% Func:    multiTexCoord2s 
-%% Args:    Target, S, T
-%% Returns: ok
+%% @spec multiTexCoord2s(Target::integer(), S::integer(), T::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord2s</a>
 %% C-API func: void glMultiTexCoord2s(GLenum target, GLshort s, GLshort t)
 multiTexCoord2s(Target, S, T) -> 
  cast(?glMultiTexCoord2sv, <<Target:32/?UN, S:16/?SN, T:16/?SN>>).
 
-%% Func:    multiTexCoord2sv 
-%% Args:    Target, {V1,V2}
-%% Returns: ok
+%% @spec multiTexCoord2sv(Target::integer(), {V1::integer(),V2::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord2sv</a>
 %% C-API func: void glMultiTexCoord2sv(GLenum target,  const GLshort * v)
 multiTexCoord2sv(Target, {V1,V2}) -> 
  cast(?glMultiTexCoord2sv, <<Target:32/?UN, V1:16/?SN,V2:16/?SN>>).
 
-%% Func:    multiTexCoord3d 
-%% Args:    Target, S, T, R
-%% Returns: ok
+%% @spec multiTexCoord3d(Target::integer(), S::float(), T::float(), R::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord3d</a>
 %% C-API func: void glMultiTexCoord3d(GLenum target, GLdouble s, GLdouble t, GLdouble r)
 multiTexCoord3d(Target, S, T, R) -> 
  cast(?glMultiTexCoord3dv, <<Target:32/?UN, S:64/?FN, T:64/?FN, R:64/?FN>>).
 
-%% Func:    multiTexCoord3dv 
-%% Args:    Target, {V1,V2,V3}
-%% Returns: ok
+%% @spec multiTexCoord3dv(Target::integer(), {V1::float(),V2::float(),V3::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord3dv</a>
 %% C-API func: void glMultiTexCoord3dv(GLenum target,  const GLdouble * v)
 multiTexCoord3dv(Target, {V1,V2,V3}) -> 
  cast(?glMultiTexCoord3dv, <<Target:32/?UN, V1:64/?FN,V2:64/?FN,V3:64/?FN>>).
 
-%% Func:    multiTexCoord3f 
-%% Args:    Target, S, T, R
-%% Returns: ok
+%% @spec multiTexCoord3f(Target::integer(), S::float(), T::float(), R::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord3f</a>
 %% C-API func: void glMultiTexCoord3f(GLenum target, GLfloat s, GLfloat t, GLfloat r)
 multiTexCoord3f(Target, S, T, R) -> 
  cast(?glMultiTexCoord3fv, <<Target:32/?UN, S:32/?FN, T:32/?FN, R:32/?FN>>).
 
-%% Func:    multiTexCoord3fv 
-%% Args:    Target, {V1,V2,V3}
-%% Returns: ok
+%% @spec multiTexCoord3fv(Target::integer(), {V1::float(),V2::float(),V3::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord3fv</a>
 %% C-API func: void glMultiTexCoord3fv(GLenum target,  const GLfloat * v)
 multiTexCoord3fv(Target, {V1,V2,V3}) -> 
  cast(?glMultiTexCoord3fv, <<Target:32/?UN, V1:32/?FN,V2:32/?FN,V3:32/?FN>>).
 
-%% Func:    multiTexCoord3i 
-%% Args:    Target, S, T, R
-%% Returns: ok
+%% @spec multiTexCoord3i(Target::integer(), S::integer(), T::integer(), R::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord3i</a>
 %% C-API func: void glMultiTexCoord3i(GLenum target, GLint s, GLint t, GLint r)
 multiTexCoord3i(Target, S, T, R) -> 
  cast(?glMultiTexCoord3iv, <<Target:32/?UN, S:32/?SN, T:32/?SN, R:32/?SN>>).
 
-%% Func:    multiTexCoord3iv 
-%% Args:    Target, {V1,V2,V3}
-%% Returns: ok
+%% @spec multiTexCoord3iv(Target::integer(), {V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord3iv</a>
 %% C-API func: void glMultiTexCoord3iv(GLenum target,  const GLint * v)
 multiTexCoord3iv(Target, {V1,V2,V3}) -> 
  cast(?glMultiTexCoord3iv, <<Target:32/?UN, V1:32/?SN,V2:32/?SN,V3:32/?SN>>).
 
-%% Func:    multiTexCoord3s 
-%% Args:    Target, S, T, R
-%% Returns: ok
+%% @spec multiTexCoord3s(Target::integer(), S::integer(), T::integer(), R::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord3s</a>
 %% C-API func: void glMultiTexCoord3s(GLenum target, GLshort s, GLshort t, GLshort r)
 multiTexCoord3s(Target, S, T, R) -> 
  cast(?glMultiTexCoord3sv, <<Target:32/?UN, S:16/?SN, T:16/?SN, R:16/?SN>>).
 
-%% Func:    multiTexCoord3sv 
-%% Args:    Target, {V1,V2,V3}
-%% Returns: ok
+%% @spec multiTexCoord3sv(Target::integer(), {V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord3sv</a>
 %% C-API func: void glMultiTexCoord3sv(GLenum target,  const GLshort * v)
 multiTexCoord3sv(Target, {V1,V2,V3}) -> 
  cast(?glMultiTexCoord3sv, <<Target:32/?UN, V1:16/?SN,V2:16/?SN,V3:16/?SN>>).
 
-%% Func:    multiTexCoord4d 
-%% Args:    Target, S, T, R, Q
-%% Returns: ok
+%% @spec multiTexCoord4d(Target::integer(), S::float(), T::float(), R::float(), Q::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord4d</a>
 %% C-API func: void glMultiTexCoord4d(GLenum target, GLdouble s, GLdouble t, GLdouble r, GLdouble q)
 multiTexCoord4d(Target, S, T, R, Q) -> 
  cast(?glMultiTexCoord4dv, <<Target:32/?UN, S:64/?FN, T:64/?FN, R:64/?FN, Q:64/?FN>>).
 
-%% Func:    multiTexCoord4dv 
-%% Args:    Target, {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec multiTexCoord4dv(Target::integer(), {V1::float(),V2::float(),V3::float(),V4::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord4dv</a>
 %% C-API func: void glMultiTexCoord4dv(GLenum target,  const GLdouble * v)
 multiTexCoord4dv(Target, {V1,V2,V3,V4}) -> 
  cast(?glMultiTexCoord4dv, <<Target:32/?UN, V1:64/?FN,V2:64/?FN,V3:64/?FN,V4:64/?FN>>).
 
-%% Func:    multiTexCoord4f 
-%% Args:    Target, S, T, R, Q
-%% Returns: ok
+%% @spec multiTexCoord4f(Target::integer(), S::float(), T::float(), R::float(), Q::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord4f</a>
 %% C-API func: void glMultiTexCoord4f(GLenum target, GLfloat s, GLfloat t, GLfloat r, GLfloat q)
 multiTexCoord4f(Target, S, T, R, Q) -> 
  cast(?glMultiTexCoord4fv, <<Target:32/?UN, S:32/?FN, T:32/?FN, R:32/?FN, Q:32/?FN>>).
 
-%% Func:    multiTexCoord4fv 
-%% Args:    Target, {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec multiTexCoord4fv(Target::integer(), {V1::float(),V2::float(),V3::float(),V4::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord4fv</a>
 %% C-API func: void glMultiTexCoord4fv(GLenum target,  const GLfloat * v)
 multiTexCoord4fv(Target, {V1,V2,V3,V4}) -> 
  cast(?glMultiTexCoord4fv, <<Target:32/?UN, V1:32/?FN,V2:32/?FN,V3:32/?FN,V4:32/?FN>>).
 
-%% Func:    multiTexCoord4i 
-%% Args:    Target, S, T, R, Q
-%% Returns: ok
+%% @spec multiTexCoord4i(Target::integer(), S::integer(), T::integer(), R::integer(), Q::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord4i</a>
 %% C-API func: void glMultiTexCoord4i(GLenum target, GLint s, GLint t, GLint r, GLint q)
 multiTexCoord4i(Target, S, T, R, Q) -> 
  cast(?glMultiTexCoord4iv, <<Target:32/?UN, S:32/?SN, T:32/?SN, R:32/?SN, Q:32/?SN>>).
 
-%% Func:    multiTexCoord4iv 
-%% Args:    Target, {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec multiTexCoord4iv(Target::integer(), {V1::integer(),V2::integer(),V3::integer(),V4::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord4iv</a>
 %% C-API func: void glMultiTexCoord4iv(GLenum target,  const GLint * v)
 multiTexCoord4iv(Target, {V1,V2,V3,V4}) -> 
  cast(?glMultiTexCoord4iv, <<Target:32/?UN, V1:32/?SN,V2:32/?SN,V3:32/?SN,V4:32/?SN>>).
 
-%% Func:    multiTexCoord4s 
-%% Args:    Target, S, T, R, Q
-%% Returns: ok
+%% @spec multiTexCoord4s(Target::integer(), S::integer(), T::integer(), R::integer(), Q::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord4s</a>
 %% C-API func: void glMultiTexCoord4s(GLenum target, GLshort s, GLshort t, GLshort r, GLshort q)
 multiTexCoord4s(Target, S, T, R, Q) -> 
  cast(?glMultiTexCoord4sv, <<Target:32/?UN, S:16/?SN, T:16/?SN, R:16/?SN, Q:16/?SN>>).
 
-%% Func:    multiTexCoord4sv 
-%% Args:    Target, {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec multiTexCoord4sv(Target::integer(), {V1::integer(),V2::integer(),V3::integer(),V4::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiTexCoord">External manpage: multiTexCoord4sv</a>
 %% C-API func: void glMultiTexCoord4sv(GLenum target,  const GLshort * v)
 multiTexCoord4sv(Target, {V1,V2,V3,V4}) -> 
  cast(?glMultiTexCoord4sv, <<Target:32/?UN, V1:16/?SN,V2:16/?SN,V3:16/?SN,V4:16/?SN>>).
 
-%% Func:    loadTransposeMatrixf 
-%% Args:    <<[M]>>
-%% Returns: ok
+%% @spec loadTransposeMatrixf(M::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glLoadTransposeMatrixf">External manpage: loadTransposeMatrixf</a>
 %% C-API func: void glLoadTransposeMatrixf( const GLfloat * m)
 loadTransposeMatrixf(M) -> 
  NewM = if
@@ -3959,9 +3550,8 @@ loadTransposeMatrixf(M) ->
  end, 
  cast(?glLoadTransposeMatrixf, [ NewM]).
 
-%% Func:    loadTransposeMatrixd 
-%% Args:    <<[M]>>
-%% Returns: ok
+%% @spec loadTransposeMatrixd(M::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glLoadTransposeMatrixd">External manpage: loadTransposeMatrixd</a>
 %% C-API func: void glLoadTransposeMatrixd( const GLdouble * m)
 loadTransposeMatrixd(M) -> 
  NewM = if
@@ -3971,9 +3561,8 @@ loadTransposeMatrixd(M) ->
  end, 
  cast(?glLoadTransposeMatrixd, [ NewM]).
 
-%% Func:    multTransposeMatrixf 
-%% Args:    <<[M]>>
-%% Returns: ok
+%% @spec multTransposeMatrixf(M::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultTransposeMatrixf">External manpage: multTransposeMatrixf</a>
 %% C-API func: void glMultTransposeMatrixf( const GLfloat * m)
 multTransposeMatrixf(M) -> 
  NewM = if
@@ -3983,9 +3572,8 @@ multTransposeMatrixf(M) ->
  end, 
  cast(?glMultTransposeMatrixf, [ NewM]).
 
-%% Func:    multTransposeMatrixd 
-%% Args:    <<[M]>>
-%% Returns: ok
+%% @spec multTransposeMatrixd(M::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultTransposeMatrixd">External manpage: multTransposeMatrixd</a>
 %% C-API func: void glMultTransposeMatrixd( const GLdouble * m)
 multTransposeMatrixd(M) -> 
  NewM = if
@@ -3995,16 +3583,14 @@ multTransposeMatrixd(M) ->
  end, 
  cast(?glMultTransposeMatrixd, [ NewM]).
 
-%% Func:    sampleCoverage 
-%% Args:    Value, Invert
-%% Returns: ok
+%% @spec sampleCoverage(Value::float(), Invert::bool()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glSampleCoverage">External manpage: sampleCoverage</a>
 %% C-API func: void glSampleCoverage(GLclampf value, GLboolean invert)
 sampleCoverage(Value, Invert) -> 
  cast(?glSampleCoverage, <<Value:32/?FN, Invert:8/unsigned>>).
 
-%% Func:    compressedTexImage3D 
-%% Args:    Target, Level, Internalformat, Width, Height, Depth, Border, ImageSize, <<[Data]>>
-%% Returns: ok
+%% @spec compressedTexImage3D(Target::integer(), Level::integer(), Internalformat::integer(), Width::integer(), Height::integer(), Depth::integer(), Border::integer(), ImageSize::integer(), Data::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCompressedTexImage3D">External manpage: compressedTexImage3D</a>
 %% C-API func: void glCompressedTexImage3D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLsizei imageSize,  const GLvoid * data)
 compressedTexImage3D(Target, Level, Internalformat, Width, Height, Depth, Border, ImageSize, Data) -> 
 %% Maybe NULL or offset sometimes
@@ -4016,9 +3602,8 @@ compressedTexImage3D(Target, Level, Internalformat, Width, Height, Depth, Border
    end,
  cast(?glCompressedTexImage3D, [<<Target:32/?UN, Level:32/?SN, Internalformat:32/?UN, Width:32/?SN, Height:32/?SN, Depth:32/?SN, Border:32/?SN, ImageSize:32/?SN, NewData:32/?SN>>]).
 
-%% Func:    compressedTexImage2D 
-%% Args:    Target, Level, Internalformat, Width, Height, Border, ImageSize, <<[Data]>>
-%% Returns: ok
+%% @spec compressedTexImage2D(Target::integer(), Level::integer(), Internalformat::integer(), Width::integer(), Height::integer(), Border::integer(), ImageSize::integer(), Data::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCompressedTexImage2D">External manpage: compressedTexImage2D</a>
 %% C-API func: void glCompressedTexImage2D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize,  const GLvoid * data)
 compressedTexImage2D(Target, Level, Internalformat, Width, Height, Border, ImageSize, Data) -> 
 %% Maybe NULL or offset sometimes
@@ -4030,9 +3615,8 @@ compressedTexImage2D(Target, Level, Internalformat, Width, Height, Border, Image
    end,
  cast(?glCompressedTexImage2D, [<<Target:32/?UN, Level:32/?SN, Internalformat:32/?UN, Width:32/?SN, Height:32/?SN, Border:32/?SN, ImageSize:32/?SN, NewData:32/?SN>>]).
 
-%% Func:    compressedTexImage1D 
-%% Args:    Target, Level, Internalformat, Width, Border, ImageSize, <<[Data]>>
-%% Returns: ok
+%% @spec compressedTexImage1D(Target::integer(), Level::integer(), Internalformat::integer(), Width::integer(), Border::integer(), ImageSize::integer(), Data::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCompressedTexImage1D">External manpage: compressedTexImage1D</a>
 %% C-API func: void glCompressedTexImage1D(GLenum target, GLint level, GLenum internalformat, GLsizei width, GLint border, GLsizei imageSize,  const GLvoid * data)
 compressedTexImage1D(Target, Level, Internalformat, Width, Border, ImageSize, Data) -> 
 %% Maybe NULL or offset sometimes
@@ -4044,9 +3628,8 @@ compressedTexImage1D(Target, Level, Internalformat, Width, Border, ImageSize, Da
    end,
  cast(?glCompressedTexImage1D, [<<Target:32/?UN, Level:32/?SN, Internalformat:32/?UN, Width:32/?SN, Border:32/?SN, ImageSize:32/?SN, NewData:32/?SN>>]).
 
-%% Func:    compressedTexSubImage3D 
-%% Args:    Target, Level, Xoffset, Yoffset, Zoffset, Width, Height, Depth, Format, ImageSize, <<[Data]>>
-%% Returns: ok
+%% @spec compressedTexSubImage3D(Target::integer(), Level::integer(), Xoffset::integer(), Yoffset::integer(), Zoffset::integer(), Width::integer(), Height::integer(), Depth::integer(), Format::integer(), ImageSize::integer(), Data::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCompressedTexSubImage3D">External manpage: compressedTexSubImage3D</a>
 %% C-API func: void glCompressedTexSubImage3D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize,  const GLvoid * data)
 compressedTexSubImage3D(Target, Level, Xoffset, Yoffset, Zoffset, Width, Height, Depth, Format, ImageSize, Data) -> 
 %% Maybe NULL or offset sometimes
@@ -4058,9 +3641,8 @@ compressedTexSubImage3D(Target, Level, Xoffset, Yoffset, Zoffset, Width, Height,
    end,
  cast(?glCompressedTexSubImage3D, [<<Target:32/?UN, Level:32/?SN, Xoffset:32/?SN, Yoffset:32/?SN, Zoffset:32/?SN, Width:32/?SN, Height:32/?SN, Depth:32/?SN, Format:32/?UN, ImageSize:32/?SN, NewData:32/?SN>>]).
 
-%% Func:    compressedTexSubImage2D 
-%% Args:    Target, Level, Xoffset, Yoffset, Width, Height, Format, ImageSize, <<[Data]>>
-%% Returns: ok
+%% @spec compressedTexSubImage2D(Target::integer(), Level::integer(), Xoffset::integer(), Yoffset::integer(), Width::integer(), Height::integer(), Format::integer(), ImageSize::integer(), Data::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCompressedTexSubImage2D">External manpage: compressedTexSubImage2D</a>
 %% C-API func: void glCompressedTexSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize,  const GLvoid * data)
 compressedTexSubImage2D(Target, Level, Xoffset, Yoffset, Width, Height, Format, ImageSize, Data) -> 
 %% Maybe NULL or offset sometimes
@@ -4072,9 +3654,8 @@ compressedTexSubImage2D(Target, Level, Xoffset, Yoffset, Width, Height, Format, 
    end,
  cast(?glCompressedTexSubImage2D, [<<Target:32/?UN, Level:32/?SN, Xoffset:32/?SN, Yoffset:32/?SN, Width:32/?SN, Height:32/?SN, Format:32/?UN, ImageSize:32/?SN, NewData:32/?SN>>]).
 
-%% Func:    compressedTexSubImage1D 
-%% Args:    Target, Level, Xoffset, Width, Format, ImageSize, <<[Data]>>
-%% Returns: ok
+%% @spec compressedTexSubImage1D(Target::integer(), Level::integer(), Xoffset::integer(), Width::integer(), Format::integer(), ImageSize::integer(), Data::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCompressedTexSubImage1D">External manpage: compressedTexSubImage1D</a>
 %% C-API func: void glCompressedTexSubImage1D(GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLsizei imageSize,  const GLvoid * data)
 compressedTexSubImage1D(Target, Level, Xoffset, Width, Format, ImageSize, Data) -> 
 %% Maybe NULL or offset sometimes
@@ -4086,31 +3667,27 @@ compressedTexSubImage1D(Target, Level, Xoffset, Width, Format, ImageSize, Data) 
    end,
  cast(?glCompressedTexSubImage1D, [<<Target:32/?UN, Level:32/?SN, Xoffset:32/?SN, Width:32/?SN, Format:32/?UN, ImageSize:32/?SN, NewData:32/?SN>>]).
 
-%% Func:    getCompressedTexImage 
-%% Args:    Target, Level, #sdlmem{} = Img
-%% Returns: ok
+%% @spec getCompressedTexImage(Target::integer(), Level::integer(), Img::sdlmem()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetCompressedTexImage">External manpage: getCompressedTexImage</a>
 %% C-API func: void glGetCompressedTexImage(GLenum target, GLint level, GLvoid * img)
 getCompressedTexImage(Target, Level, #sdlmem{bin=Img}) -> 
  sdl:send_bin(Img, ?MODULE, ?LINE),
  cast(?glGetCompressedTexImage, <<Target:32/?UN, Level:32/?SN>>).
 
-%% Func:    blendFuncSeparate 
-%% Args:    SfactorRGB, DfactorRGB, SfactorAlpha, DfactorAlpha
-%% Returns: ok
+%% @spec blendFuncSeparate(SfactorRGB::integer(), DfactorRGB::integer(), SfactorAlpha::integer(), DfactorAlpha::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glBlendFuncSeparate">External manpage: blendFuncSeparate</a>
 %% C-API func: void glBlendFuncSeparate(GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha)
 blendFuncSeparate(SfactorRGB, DfactorRGB, SfactorAlpha, DfactorAlpha) -> 
  cast(?glBlendFuncSeparate, <<SfactorRGB:32/?UN, DfactorRGB:32/?UN, SfactorAlpha:32/?UN, DfactorAlpha:32/?UN>>).
 
-%% Func:    fogCoordf 
-%% Args:    Coord
-%% Returns: ok
+%% @spec fogCoordf(Coord::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glFogCoordf">External manpage: fogCoordf</a>
 %% C-API func: void glFogCoordf(GLfloat coord)
 fogCoordf(Coord) -> 
  cast(?glFogCoordf, <<Coord:32/?FN>>).
 
-%% Func:    fogCoordfv 
-%% Args:    <<[Coord]>>
-%% Returns: ok
+%% @spec fogCoordfv(Coord::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glFogCoordfv">External manpage: fogCoordfv</a>
 %% C-API func: void glFogCoordfv( const GLfloat * coord)
 fogCoordfv(Coord) -> 
  NewCoord = if
@@ -4120,16 +3697,14 @@ fogCoordfv(Coord) ->
  end, 
  cast(?glFogCoordfv, [ NewCoord]).
 
-%% Func:    fogCoordd 
-%% Args:    Coord
-%% Returns: ok
+%% @spec fogCoordd(Coord::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glFogCoordd">External manpage: fogCoordd</a>
 %% C-API func: void glFogCoordd(GLdouble coord)
 fogCoordd(Coord) -> 
  cast(?glFogCoordd, <<Coord:64/?FN>>).
 
-%% Func:    fogCoorddv 
-%% Args:    <<[Coord]>>
-%% Returns: ok
+%% @spec fogCoorddv(Coord::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glFogCoorddv">External manpage: fogCoorddv</a>
 %% C-API func: void glFogCoorddv( const GLdouble * coord)
 fogCoorddv(Coord) -> 
  NewCoord = if
@@ -4139,9 +3714,8 @@ fogCoorddv(Coord) ->
  end, 
  cast(?glFogCoorddv, [ NewCoord]).
 
-%% Func:    fogCoordPointer 
-%% Args:    Type, Stride, <<[Pointer]>>
-%% Returns: ok
+%% @spec fogCoordPointer(Type::integer(), Stride::integer(), Pointer::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glFogCoordPointer">External manpage: fogCoordPointer</a>
 %% C-API func: void glFogCoordPointer(GLenum type, GLsizei stride,  const GLvoid * pointer)
 fogCoordPointer(Type, Stride, Pointer) -> 
 %% Maybe NULL or offset sometimes
@@ -4153,9 +3727,8 @@ fogCoordPointer(Type, Stride, Pointer) ->
    end,
  cast(?glFogCoordPointer, [<<Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
-%% Func:    multiDrawArrays 
-%% Args:    Mode, <<[First]>>, <<[Count]>>, Primcount
-%% Returns: ok
+%% @spec multiDrawArrays(Mode::integer(), First::binary() | [integer()], Count::binary() | [integer()], Primcount::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMultiDrawArrays">External manpage: multiDrawArrays</a>
 %% C-API func: void glMultiDrawArrays(GLenum mode,  const GLint * first,  const GLsizei * count, GLsizei primcount)
 multiDrawArrays(Mode, First, Count, Primcount) -> 
  NewFirst = if
@@ -4170,16 +3743,14 @@ multiDrawArrays(Mode, First, Count, Primcount) ->
  end, 
  cast(?glMultiDrawArrays, [<<Primcount:32/?SN, Mode:32/?UN>>,NewFirst, NewCount]).
 
-%% Func:    pointParameterf 
-%% Args:    Pname, Param
-%% Returns: ok
+%% @spec pointParameterf(Pname::integer(), Param::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPointParameterf">External manpage: pointParameterf</a>
 %% C-API func: void glPointParameterf(GLenum pname, GLfloat param)
 pointParameterf(Pname, Param) -> 
  cast(?glPointParameterf, <<Pname:32/?UN, Param:32/?FN>>).
 
-%% Func:    pointParameterfv 
-%% Args:    Pname, <<[Params]>>
-%% Returns: ok
+%% @spec pointParameterfv(Pname::integer(), Params::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPointParameterfv">External manpage: pointParameterfv</a>
 %% C-API func: void glPointParameterfv(GLenum pname,  const GLfloat * params)
 pointParameterfv(Pname, Params) -> 
  NewParams = if
@@ -4189,16 +3760,14 @@ pointParameterfv(Pname, Params) ->
  end, 
  cast(?glPointParameterfv, [<<Pname:32/?UN>>,NewParams]).
 
-%% Func:    pointParameteri 
-%% Args:    Pname, Param
-%% Returns: ok
+%% @spec pointParameteri(Pname::integer(), Param::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPointParameteri">External manpage: pointParameteri</a>
 %% C-API func: void glPointParameteri(GLenum pname, GLint param)
 pointParameteri(Pname, Param) -> 
  cast(?glPointParameteri, <<Pname:32/?UN, Param:32/?SN>>).
 
-%% Func:    pointParameteriv 
-%% Args:    Pname, <<[Params]>>
-%% Returns: ok
+%% @spec pointParameteriv(Pname::integer(), Params::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glPointParameteriv">External manpage: pointParameteriv</a>
 %% C-API func: void glPointParameteriv(GLenum pname,  const GLint * params)
 pointParameteriv(Pname, Params) -> 
  NewParams = if
@@ -4208,121 +3777,104 @@ pointParameteriv(Pname, Params) ->
  end, 
  cast(?glPointParameteriv, [<<Pname:32/?UN>>,NewParams]).
 
-%% Func:    secondaryColor3b 
-%% Args:    Red, Green, Blue
-%% Returns: ok
+%% @spec secondaryColor3b(Red::integer(), Green::integer(), Blue::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glSecondaryColor">External manpage: secondaryColor3b</a>
 %% C-API func: void glSecondaryColor3b(GLbyte red, GLbyte green, GLbyte blue)
 secondaryColor3b(Red, Green, Blue) -> 
  cast(?glSecondaryColor3bv, <<Red:8/signed, Green:8/signed, Blue:8/signed>>).
 
-%% Func:    secondaryColor3bv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec secondaryColor3bv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glSecondaryColor">External manpage: secondaryColor3bv</a>
 %% C-API func: void glSecondaryColor3bv( const GLbyte * v)
 secondaryColor3bv({V1,V2,V3}) -> 
  cast(?glSecondaryColor3bv, <<V1:8/signed,V2:8/signed,V3:8/signed>>).
 
-%% Func:    secondaryColor3d 
-%% Args:    Red, Green, Blue
-%% Returns: ok
+%% @spec secondaryColor3d(Red::float(), Green::float(), Blue::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glSecondaryColor">External manpage: secondaryColor3d</a>
 %% C-API func: void glSecondaryColor3d(GLdouble red, GLdouble green, GLdouble blue)
 secondaryColor3d(Red, Green, Blue) -> 
  cast(?glSecondaryColor3dv, <<Red:64/?FN, Green:64/?FN, Blue:64/?FN>>).
 
-%% Func:    secondaryColor3dv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec secondaryColor3dv({V1::float(),V2::float(),V3::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glSecondaryColor">External manpage: secondaryColor3dv</a>
 %% C-API func: void glSecondaryColor3dv( const GLdouble * v)
 secondaryColor3dv({V1,V2,V3}) -> 
  cast(?glSecondaryColor3dv, <<V1:64/?FN,V2:64/?FN,V3:64/?FN>>).
 
-%% Func:    secondaryColor3f 
-%% Args:    Red, Green, Blue
-%% Returns: ok
+%% @spec secondaryColor3f(Red::float(), Green::float(), Blue::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glSecondaryColor">External manpage: secondaryColor3f</a>
 %% C-API func: void glSecondaryColor3f(GLfloat red, GLfloat green, GLfloat blue)
 secondaryColor3f(Red, Green, Blue) -> 
  cast(?glSecondaryColor3fv, <<Red:32/?FN, Green:32/?FN, Blue:32/?FN>>).
 
-%% Func:    secondaryColor3fv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec secondaryColor3fv({V1::float(),V2::float(),V3::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glSecondaryColor">External manpage: secondaryColor3fv</a>
 %% C-API func: void glSecondaryColor3fv( const GLfloat * v)
 secondaryColor3fv({V1,V2,V3}) -> 
  cast(?glSecondaryColor3fv, <<V1:32/?FN,V2:32/?FN,V3:32/?FN>>).
 
-%% Func:    secondaryColor3i 
-%% Args:    Red, Green, Blue
-%% Returns: ok
+%% @spec secondaryColor3i(Red::integer(), Green::integer(), Blue::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glSecondaryColor">External manpage: secondaryColor3i</a>
 %% C-API func: void glSecondaryColor3i(GLint red, GLint green, GLint blue)
 secondaryColor3i(Red, Green, Blue) -> 
  cast(?glSecondaryColor3iv, <<Red:32/?SN, Green:32/?SN, Blue:32/?SN>>).
 
-%% Func:    secondaryColor3iv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec secondaryColor3iv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glSecondaryColor">External manpage: secondaryColor3iv</a>
 %% C-API func: void glSecondaryColor3iv( const GLint * v)
 secondaryColor3iv({V1,V2,V3}) -> 
  cast(?glSecondaryColor3iv, <<V1:32/?SN,V2:32/?SN,V3:32/?SN>>).
 
-%% Func:    secondaryColor3s 
-%% Args:    Red, Green, Blue
-%% Returns: ok
+%% @spec secondaryColor3s(Red::integer(), Green::integer(), Blue::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glSecondaryColor">External manpage: secondaryColor3s</a>
 %% C-API func: void glSecondaryColor3s(GLshort red, GLshort green, GLshort blue)
 secondaryColor3s(Red, Green, Blue) -> 
  cast(?glSecondaryColor3sv, <<Red:16/?SN, Green:16/?SN, Blue:16/?SN>>).
 
-%% Func:    secondaryColor3sv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec secondaryColor3sv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glSecondaryColor">External manpage: secondaryColor3sv</a>
 %% C-API func: void glSecondaryColor3sv( const GLshort * v)
 secondaryColor3sv({V1,V2,V3}) -> 
  cast(?glSecondaryColor3sv, <<V1:16/?SN,V2:16/?SN,V3:16/?SN>>).
 
-%% Func:    secondaryColor3ub 
-%% Args:    Red, Green, Blue
-%% Returns: ok
+%% @spec secondaryColor3ub(Red::integer(), Green::integer(), Blue::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glSecondaryColor">External manpage: secondaryColor3ub</a>
 %% C-API func: void glSecondaryColor3ub(GLubyte red, GLubyte green, GLubyte blue)
 secondaryColor3ub(Red, Green, Blue) -> 
  cast(?glSecondaryColor3ubv, <<Red:8/unsigned, Green:8/unsigned, Blue:8/unsigned>>).
 
-%% Func:    secondaryColor3ubv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec secondaryColor3ubv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glSecondaryColor">External manpage: secondaryColor3ubv</a>
 %% C-API func: void glSecondaryColor3ubv( const GLubyte * v)
 secondaryColor3ubv({V1,V2,V3}) -> 
  cast(?glSecondaryColor3ubv, <<V1:8/unsigned,V2:8/unsigned,V3:8/unsigned>>).
 
-%% Func:    secondaryColor3ui 
-%% Args:    Red, Green, Blue
-%% Returns: ok
+%% @spec secondaryColor3ui(Red::integer(), Green::integer(), Blue::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glSecondaryColor">External manpage: secondaryColor3ui</a>
 %% C-API func: void glSecondaryColor3ui(GLuint red, GLuint green, GLuint blue)
 secondaryColor3ui(Red, Green, Blue) -> 
  cast(?glSecondaryColor3uiv, <<Red:32/?UN, Green:32/?UN, Blue:32/?UN>>).
 
-%% Func:    secondaryColor3uiv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec secondaryColor3uiv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glSecondaryColor">External manpage: secondaryColor3uiv</a>
 %% C-API func: void glSecondaryColor3uiv( const GLuint * v)
 secondaryColor3uiv({V1,V2,V3}) -> 
  cast(?glSecondaryColor3uiv, <<V1:32/?UN,V2:32/?UN,V3:32/?UN>>).
 
-%% Func:    secondaryColor3us 
-%% Args:    Red, Green, Blue
-%% Returns: ok
+%% @spec secondaryColor3us(Red::integer(), Green::integer(), Blue::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glSecondaryColor">External manpage: secondaryColor3us</a>
 %% C-API func: void glSecondaryColor3us(GLushort red, GLushort green, GLushort blue)
 secondaryColor3us(Red, Green, Blue) -> 
  cast(?glSecondaryColor3usv, <<Red:16/?UN, Green:16/?UN, Blue:16/?UN>>).
 
-%% Func:    secondaryColor3usv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec secondaryColor3usv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glSecondaryColor">External manpage: secondaryColor3usv</a>
 %% C-API func: void glSecondaryColor3usv( const GLushort * v)
 secondaryColor3usv({V1,V2,V3}) -> 
  cast(?glSecondaryColor3usv, <<V1:16/?UN,V2:16/?UN,V3:16/?UN>>).
 
-%% Func:    secondaryColorPointer 
-%% Args:    Size, Type, Stride, <<[Pointer]>>
-%% Returns: ok
+%% @spec secondaryColorPointer(Size::integer(), Type::integer(), Stride::integer(), Pointer::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glSecondaryColorPointer">External manpage: secondaryColorPointer</a>
 %% C-API func: void glSecondaryColorPointer(GLint size, GLenum type, GLsizei stride,  const GLvoid * pointer)
 secondaryColorPointer(Size, Type, Stride, Pointer) -> 
 %% Maybe NULL or offset sometimes
@@ -4334,121 +3886,104 @@ secondaryColorPointer(Size, Type, Stride, Pointer) ->
    end,
  cast(?glSecondaryColorPointer, [<<Size:32/?SN, Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
-%% Func:    windowPos2d 
-%% Args:    X, Y
-%% Returns: ok
+%% @spec windowPos2d(X::float(), Y::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWindowPos">External manpage: windowPos2d</a>
 %% C-API func: void glWindowPos2d(GLdouble x, GLdouble y)
 windowPos2d(X, Y) -> 
  cast(?glWindowPos2dv, <<X:64/?FN, Y:64/?FN>>).
 
-%% Func:    windowPos2dv 
-%% Args:    {V1,V2}
-%% Returns: ok
+%% @spec windowPos2dv({V1::float(),V2::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWindowPos">External manpage: windowPos2dv</a>
 %% C-API func: void glWindowPos2dv( const GLdouble * v)
 windowPos2dv({V1,V2}) -> 
  cast(?glWindowPos2dv, <<V1:64/?FN,V2:64/?FN>>).
 
-%% Func:    windowPos2f 
-%% Args:    X, Y
-%% Returns: ok
+%% @spec windowPos2f(X::float(), Y::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWindowPos">External manpage: windowPos2f</a>
 %% C-API func: void glWindowPos2f(GLfloat x, GLfloat y)
 windowPos2f(X, Y) -> 
  cast(?glWindowPos2fv, <<X:32/?FN, Y:32/?FN>>).
 
-%% Func:    windowPos2fv 
-%% Args:    {V1,V2}
-%% Returns: ok
+%% @spec windowPos2fv({V1::float(),V2::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWindowPos">External manpage: windowPos2fv</a>
 %% C-API func: void glWindowPos2fv( const GLfloat * v)
 windowPos2fv({V1,V2}) -> 
  cast(?glWindowPos2fv, <<V1:32/?FN,V2:32/?FN>>).
 
-%% Func:    windowPos2i 
-%% Args:    X, Y
-%% Returns: ok
+%% @spec windowPos2i(X::integer(), Y::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWindowPos">External manpage: windowPos2i</a>
 %% C-API func: void glWindowPos2i(GLint x, GLint y)
 windowPos2i(X, Y) -> 
  cast(?glWindowPos2iv, <<X:32/?SN, Y:32/?SN>>).
 
-%% Func:    windowPos2iv 
-%% Args:    {V1,V2}
-%% Returns: ok
+%% @spec windowPos2iv({V1::integer(),V2::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWindowPos">External manpage: windowPos2iv</a>
 %% C-API func: void glWindowPos2iv( const GLint * v)
 windowPos2iv({V1,V2}) -> 
  cast(?glWindowPos2iv, <<V1:32/?SN,V2:32/?SN>>).
 
-%% Func:    windowPos2s 
-%% Args:    X, Y
-%% Returns: ok
+%% @spec windowPos2s(X::integer(), Y::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWindowPos">External manpage: windowPos2s</a>
 %% C-API func: void glWindowPos2s(GLshort x, GLshort y)
 windowPos2s(X, Y) -> 
  cast(?glWindowPos2sv, <<X:16/?SN, Y:16/?SN>>).
 
-%% Func:    windowPos2sv 
-%% Args:    {V1,V2}
-%% Returns: ok
+%% @spec windowPos2sv({V1::integer(),V2::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWindowPos">External manpage: windowPos2sv</a>
 %% C-API func: void glWindowPos2sv( const GLshort * v)
 windowPos2sv({V1,V2}) -> 
  cast(?glWindowPos2sv, <<V1:16/?SN,V2:16/?SN>>).
 
-%% Func:    windowPos3d 
-%% Args:    X, Y, Z
-%% Returns: ok
+%% @spec windowPos3d(X::float(), Y::float(), Z::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWindowPos">External manpage: windowPos3d</a>
 %% C-API func: void glWindowPos3d(GLdouble x, GLdouble y, GLdouble z)
 windowPos3d(X, Y, Z) -> 
  cast(?glWindowPos3dv, <<X:64/?FN, Y:64/?FN, Z:64/?FN>>).
 
-%% Func:    windowPos3dv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec windowPos3dv({V1::float(),V2::float(),V3::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWindowPos">External manpage: windowPos3dv</a>
 %% C-API func: void glWindowPos3dv( const GLdouble * v)
 windowPos3dv({V1,V2,V3}) -> 
  cast(?glWindowPos3dv, <<V1:64/?FN,V2:64/?FN,V3:64/?FN>>).
 
-%% Func:    windowPos3f 
-%% Args:    X, Y, Z
-%% Returns: ok
+%% @spec windowPos3f(X::float(), Y::float(), Z::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWindowPos">External manpage: windowPos3f</a>
 %% C-API func: void glWindowPos3f(GLfloat x, GLfloat y, GLfloat z)
 windowPos3f(X, Y, Z) -> 
  cast(?glWindowPos3fv, <<X:32/?FN, Y:32/?FN, Z:32/?FN>>).
 
-%% Func:    windowPos3fv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec windowPos3fv({V1::float(),V2::float(),V3::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWindowPos">External manpage: windowPos3fv</a>
 %% C-API func: void glWindowPos3fv( const GLfloat * v)
 windowPos3fv({V1,V2,V3}) -> 
  cast(?glWindowPos3fv, <<V1:32/?FN,V2:32/?FN,V3:32/?FN>>).
 
-%% Func:    windowPos3i 
-%% Args:    X, Y, Z
-%% Returns: ok
+%% @spec windowPos3i(X::integer(), Y::integer(), Z::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWindowPos">External manpage: windowPos3i</a>
 %% C-API func: void glWindowPos3i(GLint x, GLint y, GLint z)
 windowPos3i(X, Y, Z) -> 
  cast(?glWindowPos3iv, <<X:32/?SN, Y:32/?SN, Z:32/?SN>>).
 
-%% Func:    windowPos3iv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec windowPos3iv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWindowPos">External manpage: windowPos3iv</a>
 %% C-API func: void glWindowPos3iv( const GLint * v)
 windowPos3iv({V1,V2,V3}) -> 
  cast(?glWindowPos3iv, <<V1:32/?SN,V2:32/?SN,V3:32/?SN>>).
 
-%% Func:    windowPos3s 
-%% Args:    X, Y, Z
-%% Returns: ok
+%% @spec windowPos3s(X::integer(), Y::integer(), Z::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWindowPos">External manpage: windowPos3s</a>
 %% C-API func: void glWindowPos3s(GLshort x, GLshort y, GLshort z)
 windowPos3s(X, Y, Z) -> 
  cast(?glWindowPos3sv, <<X:16/?SN, Y:16/?SN, Z:16/?SN>>).
 
-%% Func:    windowPos3sv 
-%% Args:    {V1,V2,V3}
-%% Returns: ok
+%% @spec windowPos3sv({V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWindowPos">External manpage: windowPos3sv</a>
 %% C-API func: void glWindowPos3sv( const GLshort * v)
 windowPos3sv({V1,V2,V3}) -> 
  cast(?glWindowPos3sv, <<V1:16/?SN,V2:16/?SN,V3:16/?SN>>).
 
-%% Func:    genQueries 
-%% Args:    N
-%% Returns: [Ids]
+%% @spec genQueries(N::integer()) -> Ids::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGenQueries">External manpage: genQueries</a>
 %% C-API func: void glGenQueries(GLsizei n, GLuint * ids)
 genQueries(N) -> 
  Bin = call(?glGenQueries, <<N:32/?SN>>), 
@@ -4458,9 +3993,8 @@ genQueries(N) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    deleteQueries 
-%% Args:    N, <<[Ids]>>
-%% Returns: ok
+%% @spec deleteQueries(N::integer(), Ids::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDeleteQueries">External manpage: deleteQueries</a>
 %% C-API func: void glDeleteQueries(GLsizei n,  const GLuint * ids)
 deleteQueries(N, Ids) -> 
  NewIds = if
@@ -4470,9 +4004,8 @@ deleteQueries(N, Ids) ->
  end, 
  cast(?glDeleteQueries, [<<N:32/?SN>>,NewIds]).
 
-%% Func:    isQuery 
-%% Args:    Id
-%% Returns: ?GL_BYTE
+%% @spec isQuery(Id::integer()) -> bool()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glIsQuery">External manpage: isQuery</a>
 %% C-API func: GLboolean glIsQuery(GLuint id)
 isQuery(Id) -> 
  Bin = call(?glIsQuery, <<Id:32/?UN>>), 
@@ -4482,23 +4015,20 @@ isQuery(Id) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    beginQuery 
-%% Args:    Target, Id
-%% Returns: ok
+%% @spec beginQuery(Target::integer(), Id::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glBeginQuery">External manpage: beginQuery</a>
 %% C-API func: void glBeginQuery(GLenum target, GLuint id)
 beginQuery(Target, Id) -> 
  cast(?glBeginQuery, <<Target:32/?UN, Id:32/?UN>>).
 
-%% Func:    endQuery 
-%% Args:    Target
-%% Returns: ok
+%% @spec endQuery(Target::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glEndQuery">External manpage: endQuery</a>
 %% C-API func: void glEndQuery(GLenum target)
 endQuery(Target) -> 
  cast(?glEndQuery, <<Target:32/?UN>>).
 
-%% Func:    getQueryiv 
-%% Args:    Target, Pname
-%% Returns: [Params]
+%% @spec getQueryiv(Target::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetQueryiv">External manpage: getQueryiv</a>
 %% C-API func: void glGetQueryiv(GLenum target, GLenum pname, GLint * params)
 getQueryiv(Target, Pname) -> 
  Bin = call(?glGetQueryiv, <<Target:32/?UN, Pname:32/?UN>>), 
@@ -4508,9 +4038,8 @@ getQueryiv(Target, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getQueryObjectiv 
-%% Args:    Id, Pname
-%% Returns: [Params]
+%% @spec getQueryObjectiv(Id::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetQueryObjectiv">External manpage: getQueryObjectiv</a>
 %% C-API func: void glGetQueryObjectiv(GLuint id, GLenum pname, GLint * params)
 getQueryObjectiv(Id, Pname) -> 
  Bin = call(?glGetQueryObjectiv, <<Id:32/?UN, Pname:32/?UN>>), 
@@ -4520,9 +4049,8 @@ getQueryObjectiv(Id, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getQueryObjectuiv 
-%% Args:    Id, Pname
-%% Returns: [Params]
+%% @spec getQueryObjectuiv(Id::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetQueryObjectuiv">External manpage: getQueryObjectuiv</a>
 %% C-API func: void glGetQueryObjectuiv(GLuint id, GLenum pname, GLuint * params)
 getQueryObjectuiv(Id, Pname) -> 
  Bin = call(?glGetQueryObjectuiv, <<Id:32/?UN, Pname:32/?UN>>), 
@@ -4532,16 +4060,14 @@ getQueryObjectuiv(Id, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    bindBuffer 
-%% Args:    Target, Buffer
-%% Returns: ok
+%% @spec bindBuffer(Target::integer(), Buffer::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glBindBuffer">External manpage: bindBuffer</a>
 %% C-API func: void glBindBuffer(GLenum target, GLuint buffer)
 bindBuffer(Target, Buffer) -> 
  cast(?glBindBuffer, <<Target:32/?UN, Buffer:32/?UN>>).
 
-%% Func:    deleteBuffers 
-%% Args:    N, <<[Buffers]>>
-%% Returns: ok
+%% @spec deleteBuffers(N::integer(), Buffers::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDeleteBuffers">External manpage: deleteBuffers</a>
 %% C-API func: void glDeleteBuffers(GLsizei n,  const GLuint * buffers)
 deleteBuffers(N, Buffers) -> 
  NewBuffers = if
@@ -4551,9 +4077,8 @@ deleteBuffers(N, Buffers) ->
  end, 
  cast(?glDeleteBuffers, [<<N:32/?SN>>,NewBuffers]).
 
-%% Func:    genBuffers 
-%% Args:    N
-%% Returns: [Buffers]
+%% @spec genBuffers(N::integer()) -> Buffers::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGenBuffers">External manpage: genBuffers</a>
 %% C-API func: void glGenBuffers(GLsizei n, GLuint * buffers)
 genBuffers(N) -> 
  Bin = call(?glGenBuffers, <<N:32/?SN>>), 
@@ -4563,9 +4088,8 @@ genBuffers(N) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    isBuffer 
-%% Args:    Buffer
-%% Returns: ?GL_BYTE
+%% @spec isBuffer(Buffer::integer()) -> bool()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glIsBuffer">External manpage: isBuffer</a>
 %% C-API func: GLboolean glIsBuffer(GLuint buffer)
 isBuffer(Buffer) -> 
  Bin = call(?glIsBuffer, <<Buffer:32/?UN>>), 
@@ -4575,9 +4099,8 @@ isBuffer(Buffer) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    bufferData 
-%% Args:    Target, Size, <<[Data]>>, Usage
-%% Returns: ok
+%% @spec bufferData(Target::integer(), Size::integer(), Data::binary() | [number()], Usage::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glBufferData">External manpage: bufferData</a>
 %% C-API func: void glBufferData(GLenum target, GLsizeiptr size,  const GLvoid * data, GLenum usage)
 bufferData(Target, Size, Data, Usage) -> 
 %% Maybe NULL or offset sometimes
@@ -4589,9 +4112,8 @@ bufferData(Target, Size, Data, Usage) ->
    end,
  cast(?glBufferData, [<<Target:32/?UN, Size:32/?UN, NewData:32/?SN, Usage:32/?UN>>]).
 
-%% Func:    bufferSubData 
-%% Args:    Target, Offset, Size, <<[Data]>>
-%% Returns: ok
+%% @spec bufferSubData(Target::integer(), Offset::integer(), Size::integer(), Data::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glBufferSubData">External manpage: bufferSubData</a>
 %% C-API func: void glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size,  const GLvoid * data)
 bufferSubData(Target, Offset, Size, Data) -> 
 %% Maybe NULL or offset sometimes
@@ -4603,17 +4125,15 @@ bufferSubData(Target, Offset, Size, Data) ->
    end,
  cast(?glBufferSubData, [<<Target:32/?UN, Offset:32/?UN, Size:32/?UN, NewData:32/?SN>>]).
 
-%% Func:    getBufferSubData 
-%% Args:    Target, Offset, Size, #sdlmem{} = Data
-%% Returns: ok
+%% @spec getBufferSubData(Target::integer(), Offset::integer(), Size::integer(), Data::sdlmem()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetBufferSubData">External manpage: getBufferSubData</a>
 %% C-API func: void glGetBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, GLvoid * data)
 getBufferSubData(Target, Offset, Size, #sdlmem{bin=Data}) -> 
  sdl:send_bin(Data, ?MODULE, ?LINE),
  cast(?glGetBufferSubData, <<Target:32/?UN, Offset:32/?UN, Size:32/?UN>>).
 
-%% Func:    unmapBuffer 
-%% Args:    Target
-%% Returns: ?GL_BYTE
+%% @spec unmapBuffer(Target::integer()) -> bool()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUnmapBuffer">External manpage: unmapBuffer</a>
 %% C-API func: GLboolean glUnmapBuffer(GLenum target)
 unmapBuffer(Target) -> 
  Bin = call(?glUnmapBuffer, <<Target:32/?UN>>), 
@@ -4623,9 +4143,8 @@ unmapBuffer(Target) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getBufferParameteriv 
-%% Args:    Target, Pname
-%% Returns: [Params]
+%% @spec getBufferParameteriv(Target::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetBufferParameteriv">External manpage: getBufferParameteriv</a>
 %% C-API func: void glGetBufferParameteriv(GLenum target, GLenum pname, GLint * params)
 getBufferParameteriv(Target, Pname) -> 
  Bin = call(?glGetBufferParameteriv, <<Target:32/?UN, Pname:32/?UN>>), 
@@ -4635,9 +4154,8 @@ getBufferParameteriv(Target, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getBufferPointerv 
-%% Args:    Target, Pname
-%% Returns: Params=#sdlmem{}
+%% @spec getBufferPointerv(Target::integer(), Pname::integer()) -> Params::sdlmem()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetBufferPointerv">External manpage: getBufferPointerv</a>
 %% C-API func: void glGetBufferPointerv(GLenum target, GLenum pname,  GLvoid* *params)
 getBufferPointerv(Target, Pname) -> 
  Bin = call(?glGetBufferPointerv, <<Target:32/?UN, Pname:32/?UN>>), 
@@ -4647,16 +4165,14 @@ getBufferPointerv(Target, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    blendEquationSeparate 
-%% Args:    ModeRGB, ModeAlpha
-%% Returns: ok
+%% @spec blendEquationSeparate(ModeRGB::integer(), ModeAlpha::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glBlendEquationSeparate">External manpage: blendEquationSeparate</a>
 %% C-API func: void glBlendEquationSeparate(GLenum modeRGB, GLenum modeAlpha)
 blendEquationSeparate(ModeRGB, ModeAlpha) -> 
  cast(?glBlendEquationSeparate, <<ModeRGB:32/?UN, ModeAlpha:32/?UN>>).
 
-%% Func:    drawBuffers 
-%% Args:    N, <<[Bufs]>>
-%% Returns: ok
+%% @spec drawBuffers(N::integer(), Bufs::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDrawBuffers">External manpage: drawBuffers</a>
 %% C-API func: void glDrawBuffers(GLsizei n,  const GLenum * bufs)
 drawBuffers(N, Bufs) -> 
  NewBufs = if
@@ -4666,52 +4182,45 @@ drawBuffers(N, Bufs) ->
  end, 
  cast(?glDrawBuffers, [<<N:32/?SN>>,NewBufs]).
 
-%% Func:    stencilOpSeparate 
-%% Args:    Face, Sfail, Dpfail, Dppass
-%% Returns: ok
+%% @spec stencilOpSeparate(Face::integer(), Sfail::integer(), Dpfail::integer(), Dppass::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glStencilOpSeparate">External manpage: stencilOpSeparate</a>
 %% C-API func: void glStencilOpSeparate(GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass)
 stencilOpSeparate(Face, Sfail, Dpfail, Dppass) -> 
  cast(?glStencilOpSeparate, <<Face:32/?UN, Sfail:32/?UN, Dpfail:32/?UN, Dppass:32/?UN>>).
 
-%% Func:    stencilFuncSeparate 
-%% Args:    Frontfunc, Backfunc, Ref, Mask
-%% Returns: ok
+%% @spec stencilFuncSeparate(Frontfunc::integer(), Backfunc::integer(), Ref::integer(), Mask::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glStencilFuncSeparate">External manpage: stencilFuncSeparate</a>
 %% C-API func: void glStencilFuncSeparate(GLenum frontfunc, GLenum backfunc, GLint ref, GLuint mask)
 stencilFuncSeparate(Frontfunc, Backfunc, Ref, Mask) -> 
  cast(?glStencilFuncSeparate, <<Frontfunc:32/?UN, Backfunc:32/?UN, Ref:32/?SN, Mask:32/?UN>>).
 
-%% Func:    stencilMaskSeparate 
-%% Args:    Face, Mask
-%% Returns: ok
+%% @spec stencilMaskSeparate(Face::integer(), Mask::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glStencilMaskSeparate">External manpage: stencilMaskSeparate</a>
 %% C-API func: void glStencilMaskSeparate(GLenum face, GLuint mask)
 stencilMaskSeparate(Face, Mask) -> 
  cast(?glStencilMaskSeparate, <<Face:32/?UN, Mask:32/?UN>>).
 
-%% Func:    attachShader 
-%% Args:    Program, Shader
-%% Returns: ok
+%% @spec attachShader(Program::integer(), Shader::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glAttachShader">External manpage: attachShader</a>
 %% C-API func: void glAttachShader(GLuint program, GLuint shader)
 attachShader(Program, Shader) -> 
  cast(?glAttachShader, <<Program:32/?UN, Shader:32/?UN>>).
 
-%% Func:    bindAttribLocation 
-%% Args:    Program, Index, <<[Name]>>
-%% Returns: ok
+%% @spec bindAttribLocation(Program::integer(), Index::integer(), Name::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glBindAttribLocation">External manpage: bindAttribLocation</a>
 %% C-API func: void glBindAttribLocation(GLuint program, GLuint index,  const GLchar * name)
 bindAttribLocation(Program, Index, Name) -> 
  sdl:send_bin(list_to_binary([Name,0]), ?MODULE, ?LINE),
  cast(?glBindAttribLocation, <<Program:32/?UN, Index:32/?UN>>).
 
-%% Func:    compileShader 
-%% Args:    Shader
-%% Returns: ok
+%% @spec compileShader(Shader::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCompileShader">External manpage: compileShader</a>
 %% C-API func: void glCompileShader(GLuint shader)
 compileShader(Shader) -> 
  cast(?glCompileShader, <<Shader:32/?UN>>).
 
-%% Func:    createProgram 
-%% Args:    
-%% Returns: ?GL_UNSIGNED_INT
+%% @spec createProgram() -> integer()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCreateProgram">External manpage: createProgram</a>
 %% C-API func: GLuint glCreateProgram()
 createProgram() -> 
  Bin = call(?glCreateProgram, []), 
@@ -4721,9 +4230,8 @@ createProgram() ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    createShader 
-%% Args:    Type
-%% Returns: ?GL_UNSIGNED_INT
+%% @spec createShader(Type::integer()) -> integer()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCreateShader">External manpage: createShader</a>
 %% C-API func: GLuint glCreateShader(GLenum type)
 createShader(Type) -> 
  Bin = call(?glCreateShader, <<Type:32/?UN>>), 
@@ -4733,44 +4241,38 @@ createShader(Type) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    deleteProgram 
-%% Args:    Program
-%% Returns: ok
+%% @spec deleteProgram(Program::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDeleteProgram">External manpage: deleteProgram</a>
 %% C-API func: void glDeleteProgram(GLuint program)
 deleteProgram(Program) -> 
  cast(?glDeleteProgram, <<Program:32/?UN>>).
 
-%% Func:    deleteShader 
-%% Args:    Shader
-%% Returns: ok
+%% @spec deleteShader(Shader::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDeleteShader">External manpage: deleteShader</a>
 %% C-API func: void glDeleteShader(GLuint shader)
 deleteShader(Shader) -> 
  cast(?glDeleteShader, <<Shader:32/?UN>>).
 
-%% Func:    detachShader 
-%% Args:    Program, Shader
-%% Returns: ok
+%% @spec detachShader(Program::integer(), Shader::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDetachShader">External manpage: detachShader</a>
 %% C-API func: void glDetachShader(GLuint program, GLuint shader)
 detachShader(Program, Shader) -> 
  cast(?glDetachShader, <<Program:32/?UN, Shader:32/?UN>>).
 
-%% Func:    disableVertexAttribArray 
-%% Args:    Index
-%% Returns: ok
+%% @spec disableVertexAttribArray(Index::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDisableVertexAttribArray">External manpage: disableVertexAttribArray</a>
 %% C-API func: void glDisableVertexAttribArray(GLuint index)
 disableVertexAttribArray(Index) -> 
  cast(?glDisableVertexAttribArray, <<Index:32/?UN>>).
 
-%% Func:    enableVertexAttribArray 
-%% Args:    Index
-%% Returns: ok
+%% @spec enableVertexAttribArray(Index::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glEnableVertexAttribArray">External manpage: enableVertexAttribArray</a>
 %% C-API func: void glEnableVertexAttribArray(GLuint index)
 enableVertexAttribArray(Index) -> 
  cast(?glEnableVertexAttribArray, <<Index:32/?UN>>).
 
-%% Func:    getActiveAttrib 
-%% Args:    Program, Index, BufSize
-%% Returns: {[Length], [Size], [Type], [Name]}
+%% @spec getActiveAttrib(Program::integer(), Index::integer(), BufSize::integer()) -> {[Length::integer()], [Size::integer()], [Type::integer()], [Name::integer()]}
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetActiveAttrib">External manpage: getActiveAttrib</a>
 %% C-API func: void glGetActiveAttrib(GLuint program, GLuint index, GLsizei bufSize, GLsizei * length, GLint * size, GLenum * type, GLchar * name)
 getActiveAttrib(Program, Index, BufSize) -> 
  Bin = call(?glGetActiveAttrib, <<Program:32/?UN, Index:32/?UN, BufSize:32/?SN>>), 
@@ -4780,9 +4282,8 @@ getActiveAttrib(Program, Index, BufSize) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getActiveUniform 
-%% Args:    Program, Index, BufSize
-%% Returns: {[Length], [Size], [Type], [Name]}
+%% @spec getActiveUniform(Program::integer(), Index::integer(), BufSize::integer()) -> {[Length::integer()], [Size::integer()], [Type::integer()], [Name::integer()]}
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetActiveUniform">External manpage: getActiveUniform</a>
 %% C-API func: void glGetActiveUniform(GLuint program, GLuint index, GLsizei bufSize, GLsizei * length, GLint * size, GLenum * type, GLchar * name)
 getActiveUniform(Program, Index, BufSize) -> 
  Bin = call(?glGetActiveUniform, <<Program:32/?UN, Index:32/?UN, BufSize:32/?SN>>), 
@@ -4792,9 +4293,8 @@ getActiveUniform(Program, Index, BufSize) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getAttachedShaders 
-%% Args:    Program, MaxCount
-%% Returns: {[Count], [Obj]}
+%% @spec getAttachedShaders(Program::integer(), MaxCount::integer()) -> {[Count::integer()], [Obj::integer()]}
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetAttachedShaders">External manpage: getAttachedShaders</a>
 %% C-API func: void glGetAttachedShaders(GLuint program, GLsizei maxCount, GLsizei * count, GLuint * obj)
 getAttachedShaders(Program, MaxCount) -> 
  Bin = call(?glGetAttachedShaders, <<Program:32/?UN, MaxCount:32/?SN>>), 
@@ -4804,9 +4304,8 @@ getAttachedShaders(Program, MaxCount) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getAttribLocation 
-%% Args:    Program, <<[Name]>>
-%% Returns: ?GL_INT
+%% @spec getAttribLocation(Program::integer(), Name::binary() | [integer()]) -> integer()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetAttribLocation">External manpage: getAttribLocation</a>
 %% C-API func: GLint glGetAttribLocation(GLuint program,  const GLchar * name)
 getAttribLocation(Program, Name) -> 
  sdl:send_bin(list_to_binary([Name,0]), ?MODULE, ?LINE),
@@ -4817,9 +4316,8 @@ getAttribLocation(Program, Name) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getProgramiv 
-%% Args:    Program, Pname
-%% Returns: [Params]
+%% @spec getProgramiv(Program::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetProgramiv">External manpage: getProgramiv</a>
 %% C-API func: void glGetProgramiv(GLuint program, GLenum pname, GLint * params)
 getProgramiv(Program, Pname) -> 
  Bin = call(?glGetProgramiv, <<Program:32/?UN, Pname:32/?UN>>), 
@@ -4829,9 +4327,8 @@ getProgramiv(Program, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getProgramInfoLog 
-%% Args:    Program, BufSize
-%% Returns: {[Length], [InfoLog]}
+%% @spec getProgramInfoLog(Program::integer(), BufSize::integer()) -> {[Length::integer()], [InfoLog::integer()]}
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetProgramInfoLog">External manpage: getProgramInfoLog</a>
 %% C-API func: void glGetProgramInfoLog(GLuint program, GLsizei bufSize, GLsizei * length, GLchar * infoLog)
 getProgramInfoLog(Program, BufSize) -> 
  Bin = call(?glGetProgramInfoLog, <<Program:32/?UN, BufSize:32/?SN>>), 
@@ -4841,9 +4338,8 @@ getProgramInfoLog(Program, BufSize) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getShaderiv 
-%% Args:    Shader, Pname
-%% Returns: [Params]
+%% @spec getShaderiv(Shader::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetShaderiv">External manpage: getShaderiv</a>
 %% C-API func: void glGetShaderiv(GLuint shader, GLenum pname, GLint * params)
 getShaderiv(Shader, Pname) -> 
  Bin = call(?glGetShaderiv, <<Shader:32/?UN, Pname:32/?UN>>), 
@@ -4853,9 +4349,8 @@ getShaderiv(Shader, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getShaderInfoLog 
-%% Args:    Shader, BufSize
-%% Returns: {[Length], [InfoLog]}
+%% @spec getShaderInfoLog(Shader::integer(), BufSize::integer()) -> {[Length::integer()], [InfoLog::integer()]}
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetShaderInfoLog">External manpage: getShaderInfoLog</a>
 %% C-API func: void glGetShaderInfoLog(GLuint shader, GLsizei bufSize, GLsizei * length, GLchar * infoLog)
 getShaderInfoLog(Shader, BufSize) -> 
  Bin = call(?glGetShaderInfoLog, <<Shader:32/?UN, BufSize:32/?SN>>), 
@@ -4865,9 +4360,8 @@ getShaderInfoLog(Shader, BufSize) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getShaderSource 
-%% Args:    Shader, BufSize
-%% Returns: {[Length], [Source]}
+%% @spec getShaderSource(Shader::integer(), BufSize::integer()) -> {[Length::integer()], [Source::integer()]}
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetShaderSource">External manpage: getShaderSource</a>
 %% C-API func: void glGetShaderSource(GLuint shader, GLsizei bufSize, GLsizei * length, GLchar * source)
 getShaderSource(Shader, BufSize) -> 
  Bin = call(?glGetShaderSource, <<Shader:32/?UN, BufSize:32/?SN>>), 
@@ -4877,9 +4371,8 @@ getShaderSource(Shader, BufSize) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getUniformLocation 
-%% Args:    Program, <<[Name]>>
-%% Returns: ?GL_INT
+%% @spec getUniformLocation(Program::integer(), Name::binary() | [integer()]) -> integer()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetUniformLocation">External manpage: getUniformLocation</a>
 %% C-API func: GLint glGetUniformLocation(GLuint program,  const GLchar * name)
 getUniformLocation(Program, Name) -> 
  sdl:send_bin(list_to_binary([Name,0]), ?MODULE, ?LINE),
@@ -4890,25 +4383,22 @@ getUniformLocation(Program, Name) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getUniformfv 
-%% Args:    Program, Location, #sdlmem{} = Params
-%% Returns: ok
+%% @spec getUniformfv(Program::integer(), Location::integer(), Params::sdlmem()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetUniformfv">External manpage: getUniformfv</a>
 %% C-API func: void glGetUniformfv(GLuint program, GLint location, GLfloat * params)
 getUniformfv(Program, Location, #sdlmem{bin=Params}) -> 
  sdl:send_bin(Params, ?MODULE, ?LINE),
  cast(?glGetUniformfv, <<Program:32/?UN, Location:32/?SN>>).
 
-%% Func:    getUniformiv 
-%% Args:    Program, Location, #sdlmem{} = Params
-%% Returns: ok
+%% @spec getUniformiv(Program::integer(), Location::integer(), Params::sdlmem()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetUniformiv">External manpage: getUniformiv</a>
 %% C-API func: void glGetUniformiv(GLuint program, GLint location, GLint * params)
 getUniformiv(Program, Location, #sdlmem{bin=Params}) -> 
  sdl:send_bin(Params, ?MODULE, ?LINE),
  cast(?glGetUniformiv, <<Program:32/?UN, Location:32/?SN>>).
 
-%% Func:    getVertexAttribdv 
-%% Args:    Index, Pname
-%% Returns: [Params]
+%% @spec getVertexAttribdv(Index::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetVertexAttribdv">External manpage: getVertexAttribdv</a>
 %% C-API func: void glGetVertexAttribdv(GLuint index, GLenum pname, GLdouble * params)
 getVertexAttribdv(Index, Pname) -> 
  Bin = call(?glGetVertexAttribdv, <<Index:32/?UN, Pname:32/?UN>>), 
@@ -4918,9 +4408,8 @@ getVertexAttribdv(Index, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getVertexAttribfv 
-%% Args:    Index, Pname
-%% Returns: [Params]
+%% @spec getVertexAttribfv(Index::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetVertexAttribfv">External manpage: getVertexAttribfv</a>
 %% C-API func: void glGetVertexAttribfv(GLuint index, GLenum pname, GLfloat * params)
 getVertexAttribfv(Index, Pname) -> 
  Bin = call(?glGetVertexAttribfv, <<Index:32/?UN, Pname:32/?UN>>), 
@@ -4930,9 +4419,8 @@ getVertexAttribfv(Index, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getVertexAttribiv 
-%% Args:    Index, Pname
-%% Returns: [Params]
+%% @spec getVertexAttribiv(Index::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetVertexAttribiv">External manpage: getVertexAttribiv</a>
 %% C-API func: void glGetVertexAttribiv(GLuint index, GLenum pname, GLint * params)
 getVertexAttribiv(Index, Pname) -> 
  Bin = call(?glGetVertexAttribiv, <<Index:32/?UN, Pname:32/?UN>>), 
@@ -4942,9 +4430,8 @@ getVertexAttribiv(Index, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getVertexAttribPointerv 
-%% Args:    Index, Pname
-%% Returns: Pointer=#sdlmem{}
+%% @spec getVertexAttribPointerv(Index::integer(), Pname::integer()) -> Pointer::sdlmem()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetVertexAttribPointerv">External manpage: getVertexAttribPointerv</a>
 %% C-API func: void glGetVertexAttribPointerv(GLuint index, GLenum pname,  GLvoid* *pointer)
 getVertexAttribPointerv(Index, Pname) -> 
  Bin = call(?glGetVertexAttribPointerv, <<Index:32/?UN, Pname:32/?UN>>), 
@@ -4954,9 +4441,8 @@ getVertexAttribPointerv(Index, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    isProgram 
-%% Args:    Program
-%% Returns: ?GL_BYTE
+%% @spec isProgram(Program::integer()) -> bool()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glIsProgram">External manpage: isProgram</a>
 %% C-API func: GLboolean glIsProgram(GLuint program)
 isProgram(Program) -> 
  Bin = call(?glIsProgram, <<Program:32/?UN>>), 
@@ -4966,9 +4452,8 @@ isProgram(Program) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    isShader 
-%% Args:    Shader
-%% Returns: ?GL_BYTE
+%% @spec isShader(Shader::integer()) -> bool()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glIsShader">External manpage: isShader</a>
 %% C-API func: GLboolean glIsShader(GLuint shader)
 isShader(Shader) -> 
  Bin = call(?glIsShader, <<Shader:32/?UN>>), 
@@ -4978,16 +4463,14 @@ isShader(Shader) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    linkProgram 
-%% Args:    Program
-%% Returns: ok
+%% @spec linkProgram(Program::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glLinkProgram">External manpage: linkProgram</a>
 %% C-API func: void glLinkProgram(GLuint program)
 linkProgram(Program) -> 
  cast(?glLinkProgram, <<Program:32/?UN>>).
 
-%% Func:    shaderSource 
-%% Args:    Shader, Count, <<[Length]>>
-%% Returns: ok
+%% @spec shaderSource(Shader::integer(), Count::integer(), String::[binary()], Length::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glShaderSource">External manpage: shaderSource</a>
 %% C-API func: void glShaderSource(GLuint shader, GLsizei count,  const GLchar* *string,  const GLint * length)
 shaderSource(Shader, Count, String, Length) -> 
  lists:foreach(fun(Values) -> sdl:send_bin(list_to_binary([Values,0]), ?MODULE, ?LINE) end, String),
@@ -4998,293 +4481,253 @@ shaderSource(Shader, Count, String, Length) ->
  end, 
  cast(?glShaderSource, [<<Shader:32/?UN, Count:32/?SN>>,NewLength]).
 
-%% Func:    useProgram 
-%% Args:    Program
-%% Returns: ok
+%% @spec useProgram(Program::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUseProgram">External manpage: useProgram</a>
 %% C-API func: void glUseProgram(GLuint program)
 useProgram(Program) -> 
  cast(?glUseProgram, <<Program:32/?UN>>).
 
-%% Func:    uniform1f 
-%% Args:    Location, V0
-%% Returns: ok
+%% @spec uniform1f(Location::integer(), V0::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUniform1f">External manpage: uniform1f</a>
 %% C-API func: void glUniform1f(GLint location, GLfloat v0)
 uniform1f(Location, V0) -> 
  cast(?glUniform1f, <<Location:32/?SN, V0:32/?FN>>).
 
-%% Func:    uniform2f 
-%% Args:    Location, V0, V1
-%% Returns: ok
+%% @spec uniform2f(Location::integer(), V0::float(), V1::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUniform2f">External manpage: uniform2f</a>
 %% C-API func: void glUniform2f(GLint location, GLfloat v0, GLfloat v1)
 uniform2f(Location, V0, V1) -> 
  cast(?glUniform2f, <<Location:32/?SN, V0:32/?FN, V1:32/?FN>>).
 
-%% Func:    uniform3f 
-%% Args:    Location, V0, V1, V2
-%% Returns: ok
+%% @spec uniform3f(Location::integer(), V0::float(), V1::float(), V2::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUniform3f">External manpage: uniform3f</a>
 %% C-API func: void glUniform3f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2)
 uniform3f(Location, V0, V1, V2) -> 
  cast(?glUniform3f, <<Location:32/?SN, V0:32/?FN, V1:32/?FN, V2:32/?FN>>).
 
-%% Func:    uniform4f 
-%% Args:    Location, V0, V1, V2, V3
-%% Returns: ok
+%% @spec uniform4f(Location::integer(), V0::float(), V1::float(), V2::float(), V3::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUniform4f">External manpage: uniform4f</a>
 %% C-API func: void glUniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
 uniform4f(Location, V0, V1, V2, V3) -> 
  cast(?glUniform4f, <<Location:32/?SN, V0:32/?FN, V1:32/?FN, V2:32/?FN, V3:32/?FN>>).
 
-%% Func:    uniform1i 
-%% Args:    Location, V0
-%% Returns: ok
+%% @spec uniform1i(Location::integer(), V0::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUniform1i">External manpage: uniform1i</a>
 %% C-API func: void glUniform1i(GLint location, GLint v0)
 uniform1i(Location, V0) -> 
  cast(?glUniform1i, <<Location:32/?SN, V0:32/?SN>>).
 
-%% Func:    uniform2i 
-%% Args:    Location, V0, V1
-%% Returns: ok
+%% @spec uniform2i(Location::integer(), V0::integer(), V1::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUniform2i">External manpage: uniform2i</a>
 %% C-API func: void glUniform2i(GLint location, GLint v0, GLint v1)
 uniform2i(Location, V0, V1) -> 
  cast(?glUniform2i, <<Location:32/?SN, V0:32/?SN, V1:32/?SN>>).
 
-%% Func:    uniform3i 
-%% Args:    Location, V0, V1, V2
-%% Returns: ok
+%% @spec uniform3i(Location::integer(), V0::integer(), V1::integer(), V2::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUniform3i">External manpage: uniform3i</a>
 %% C-API func: void glUniform3i(GLint location, GLint v0, GLint v1, GLint v2)
 uniform3i(Location, V0, V1, V2) -> 
  cast(?glUniform3i, <<Location:32/?SN, V0:32/?SN, V1:32/?SN, V2:32/?SN>>).
 
-%% Func:    uniform4i 
-%% Args:    Location, V0, V1, V2, V3
-%% Returns: ok
+%% @spec uniform4i(Location::integer(), V0::integer(), V1::integer(), V2::integer(), V3::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUniform4i">External manpage: uniform4i</a>
 %% C-API func: void glUniform4i(GLint location, GLint v0, GLint v1, GLint v2, GLint v3)
 uniform4i(Location, V0, V1, V2, V3) -> 
  cast(?glUniform4i, <<Location:32/?SN, V0:32/?SN, V1:32/?SN, V2:32/?SN, V3:32/?SN>>).
 
-%% Func:    uniform1fv 
-%% Args:    Location, Count, [Value1]
-%% Returns: ok
+%% @spec uniform1fv(Location::integer(), Count::integer(), [Value1::float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUniform">External manpage: uniform1fv</a>
 %% C-API func: void glUniform1fv(GLint location, GLsizei count,  const GLfloat * value)
 uniform1fv(Location, Count, Value) -> 
- sdl:send_bin(sdl_util:term2bin(Value,Count,?GL_FLOAT), ?MODULE, ?LINE),
+ sdl:send_bin(list_to_binary(term2bin(Value,Count,?GL_FLOAT)), ?MODULE, ?LINE),
  cast(?glUniform1fv, <<Location:32/?SN, Count:32/?SN>>).
 
-%% Func:    uniform2fv 
-%% Args:    Location, Count, [{Value1,Value2}]
-%% Returns: ok
+%% @spec uniform2fv(Location::integer(), Count::integer(), [{Value1::float(),Value2::float()}]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUniform">External manpage: uniform2fv</a>
 %% C-API func: void glUniform2fv(GLint location, GLsizei count,  const GLfloat * value)
 uniform2fv(Location, Count, Value) -> 
  sdl:send_bin(sdl_util:tuplelist2bin(2,?GL_FLOAT,Value), ?MODULE, ?LINE),
  cast(?glUniform2fv, <<Location:32/?SN, Count:32/?SN>>).
 
-%% Func:    uniform3fv 
-%% Args:    Location, Count, [{Value1,Value2,Value3}]
-%% Returns: ok
+%% @spec uniform3fv(Location::integer(), Count::integer(), [{Value1::float(),Value2::float(),Value3::float()}]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUniform">External manpage: uniform3fv</a>
 %% C-API func: void glUniform3fv(GLint location, GLsizei count,  const GLfloat * value)
 uniform3fv(Location, Count, Value) -> 
  sdl:send_bin(sdl_util:tuplelist2bin(3,?GL_FLOAT,Value), ?MODULE, ?LINE),
  cast(?glUniform3fv, <<Location:32/?SN, Count:32/?SN>>).
 
-%% Func:    uniform4fv 
-%% Args:    Location, Count, [{Value1,Value2,Value3,Value4}]
-%% Returns: ok
+%% @spec uniform4fv(Location::integer(), Count::integer(), [{Value1::float(),Value2::float(),Value3::float(),Value4::float()}]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUniform">External manpage: uniform4fv</a>
 %% C-API func: void glUniform4fv(GLint location, GLsizei count,  const GLfloat * value)
 uniform4fv(Location, Count, Value) -> 
  sdl:send_bin(sdl_util:tuplelist2bin(4,?GL_FLOAT,Value), ?MODULE, ?LINE),
  cast(?glUniform4fv, <<Location:32/?SN, Count:32/?SN>>).
 
-%% Func:    uniform1iv 
-%% Args:    Location, Count, [Value1]
-%% Returns: ok
+%% @spec uniform1iv(Location::integer(), Count::integer(), [Value1::integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUniform">External manpage: uniform1iv</a>
 %% C-API func: void glUniform1iv(GLint location, GLsizei count,  const GLint * value)
 uniform1iv(Location, Count, Value) -> 
- sdl:send_bin(sdl_util:term2bin(Value,Count,?GL_INT), ?MODULE, ?LINE),
+ sdl:send_bin(list_to_binary(term2bin(Value,Count,?GL_INT)), ?MODULE, ?LINE),
  cast(?glUniform1iv, <<Location:32/?SN, Count:32/?SN>>).
 
-%% Func:    uniform2iv 
-%% Args:    Location, Count, [{Value1,Value2}]
-%% Returns: ok
+%% @spec uniform2iv(Location::integer(), Count::integer(), [{Value1::integer(),Value2::integer()}]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUniform">External manpage: uniform2iv</a>
 %% C-API func: void glUniform2iv(GLint location, GLsizei count,  const GLint * value)
 uniform2iv(Location, Count, Value) -> 
  sdl:send_bin(sdl_util:tuplelist2bin(2,?GL_INT,Value), ?MODULE, ?LINE),
  cast(?glUniform2iv, <<Location:32/?SN, Count:32/?SN>>).
 
-%% Func:    uniform3iv 
-%% Args:    Location, Count, [{Value1,Value2,Value3}]
-%% Returns: ok
+%% @spec uniform3iv(Location::integer(), Count::integer(), [{Value1::integer(),Value2::integer(),Value3::integer()}]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUniform">External manpage: uniform3iv</a>
 %% C-API func: void glUniform3iv(GLint location, GLsizei count,  const GLint * value)
 uniform3iv(Location, Count, Value) -> 
  sdl:send_bin(sdl_util:tuplelist2bin(3,?GL_INT,Value), ?MODULE, ?LINE),
  cast(?glUniform3iv, <<Location:32/?SN, Count:32/?SN>>).
 
-%% Func:    uniform4iv 
-%% Args:    Location, Count, [{Value1,Value2,Value3,Value4}]
-%% Returns: ok
+%% @spec uniform4iv(Location::integer(), Count::integer(), [{Value1::integer(),Value2::integer(),Value3::integer(),Value4::integer()}]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUniform">External manpage: uniform4iv</a>
 %% C-API func: void glUniform4iv(GLint location, GLsizei count,  const GLint * value)
 uniform4iv(Location, Count, Value) -> 
  sdl:send_bin(sdl_util:tuplelist2bin(4,?GL_INT,Value), ?MODULE, ?LINE),
  cast(?glUniform4iv, <<Location:32/?SN, Count:32/?SN>>).
 
-%% Func:    uniformMatrix2fv 
-%% Args:    Location, Count, Transpose, [{Value1,Value2,Value3,Value4}]
-%% Returns: ok
+%% @spec uniformMatrix2fv(Location::integer(), Count::integer(), Transpose::bool(), [{Value1::float(),Value2::float(),Value3::float(),Value4::float()}]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUniformMatrix">External manpage: uniformMatrix2fv</a>
 %% C-API func: void glUniformMatrix2fv(GLint location, GLsizei count, GLboolean transpose,  const GLfloat * value)
 uniformMatrix2fv(Location, Count, Transpose, Value) -> 
  sdl:send_bin(sdl_util:tuplelist2bin(4,?GL_FLOAT,Value), ?MODULE, ?LINE),
  cast(?glUniformMatrix2fv, <<Location:32/?SN, Count:32/?SN, Transpose:8/unsigned>>).
 
-%% Func:    uniformMatrix3fv 
-%% Args:    Location, Count, Transpose, [{Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8,Value9}]
-%% Returns: ok
+%% @spec uniformMatrix3fv(Location::integer(), Count::integer(), Transpose::bool(), [{Value1::float(),Value2::float(),Value3::float(),Value4::float(),Value5::float(),Value6::float(),Value7::float(),Value8::float(),Value9::float()}]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUniformMatrix">External manpage: uniformMatrix3fv</a>
 %% C-API func: void glUniformMatrix3fv(GLint location, GLsizei count, GLboolean transpose,  const GLfloat * value)
 uniformMatrix3fv(Location, Count, Transpose, Value) -> 
  sdl:send_bin(sdl_util:tuplelist2bin(9,?GL_FLOAT,Value), ?MODULE, ?LINE),
  cast(?glUniformMatrix3fv, <<Location:32/?SN, Count:32/?SN, Transpose:8/unsigned>>).
 
-%% Func:    uniformMatrix4fv 
-%% Args:    Location, Count, Transpose, [{Value1,Value2,Value3,Value4,Value5,Value6,Value7,Value8,Value9,Value10,Value11,Value12,Value13,Value14,Value15,Value16}]
-%% Returns: ok
+%% @spec uniformMatrix4fv(Location::integer(), Count::integer(), Transpose::bool(), [{Value1::float(),Value2::float(),Value3::float(),Value4::float(),Value5::float(),Value6::float(),Value7::float(),Value8::float(),Value9::float(),Value10::float(),Value11::float(),Value12::float(),Value13::float(),Value14::float(),Value15::float(),Value16::float()}]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUniformMatrix">External manpage: uniformMatrix4fv</a>
 %% C-API func: void glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose,  const GLfloat * value)
 uniformMatrix4fv(Location, Count, Transpose, Value) -> 
  sdl:send_bin(sdl_util:tuplelist2bin(16,?GL_FLOAT,Value), ?MODULE, ?LINE),
  cast(?glUniformMatrix4fv, <<Location:32/?SN, Count:32/?SN, Transpose:8/unsigned>>).
 
-%% Func:    validateProgram 
-%% Args:    Program
-%% Returns: ok
+%% @spec validateProgram(Program::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glValidateProgram">External manpage: validateProgram</a>
 %% C-API func: void glValidateProgram(GLuint program)
 validateProgram(Program) -> 
  cast(?glValidateProgram, <<Program:32/?UN>>).
 
-%% Func:    vertexAttrib1d 
-%% Args:    Index, X
-%% Returns: ok
+%% @spec vertexAttrib1d(Index::integer(), X::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib1d</a>
 %% C-API func: void glVertexAttrib1d(GLuint index, GLdouble x)
 vertexAttrib1d(Index, X) -> 
  cast(?glVertexAttrib1dv, <<Index:32/?UN, X:64/?FN>>).
 
-%% Func:    vertexAttrib1dv 
-%% Args:    Index, {V1}
-%% Returns: ok
+%% @spec vertexAttrib1dv(Index::integer(), {V1::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib1dv</a>
 %% C-API func: void glVertexAttrib1dv(GLuint index,  const GLdouble * v)
 vertexAttrib1dv(Index, {V1}) -> 
  cast(?glVertexAttrib1dv, <<Index:32/?UN, V1:64/?FN>>).
 
-%% Func:    vertexAttrib1f 
-%% Args:    Index, X
-%% Returns: ok
+%% @spec vertexAttrib1f(Index::integer(), X::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib1f</a>
 %% C-API func: void glVertexAttrib1f(GLuint index, GLfloat x)
 vertexAttrib1f(Index, X) -> 
  cast(?glVertexAttrib1fv, <<Index:32/?UN, X:32/?FN>>).
 
-%% Func:    vertexAttrib1fv 
-%% Args:    Index, {V1}
-%% Returns: ok
+%% @spec vertexAttrib1fv(Index::integer(), {V1::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib1fv</a>
 %% C-API func: void glVertexAttrib1fv(GLuint index,  const GLfloat * v)
 vertexAttrib1fv(Index, {V1}) -> 
  cast(?glVertexAttrib1fv, <<Index:32/?UN, V1:32/?FN>>).
 
-%% Func:    vertexAttrib1s 
-%% Args:    Index, X
-%% Returns: ok
+%% @spec vertexAttrib1s(Index::integer(), X::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib1s</a>
 %% C-API func: void glVertexAttrib1s(GLuint index, GLshort x)
 vertexAttrib1s(Index, X) -> 
  cast(?glVertexAttrib1sv, <<Index:32/?UN, X:16/?SN>>).
 
-%% Func:    vertexAttrib1sv 
-%% Args:    Index, {V1}
-%% Returns: ok
+%% @spec vertexAttrib1sv(Index::integer(), {V1::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib1sv</a>
 %% C-API func: void glVertexAttrib1sv(GLuint index,  const GLshort * v)
 vertexAttrib1sv(Index, {V1}) -> 
  cast(?glVertexAttrib1sv, <<Index:32/?UN, V1:16/?SN>>).
 
-%% Func:    vertexAttrib2d 
-%% Args:    Index, X, Y
-%% Returns: ok
+%% @spec vertexAttrib2d(Index::integer(), X::float(), Y::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib2d</a>
 %% C-API func: void glVertexAttrib2d(GLuint index, GLdouble x, GLdouble y)
 vertexAttrib2d(Index, X, Y) -> 
  cast(?glVertexAttrib2dv, <<Index:32/?UN, X:64/?FN, Y:64/?FN>>).
 
-%% Func:    vertexAttrib2dv 
-%% Args:    Index, {V1,V2}
-%% Returns: ok
+%% @spec vertexAttrib2dv(Index::integer(), {V1::float(),V2::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib2dv</a>
 %% C-API func: void glVertexAttrib2dv(GLuint index,  const GLdouble * v)
 vertexAttrib2dv(Index, {V1,V2}) -> 
  cast(?glVertexAttrib2dv, <<Index:32/?UN, V1:64/?FN,V2:64/?FN>>).
 
-%% Func:    vertexAttrib2f 
-%% Args:    Index, X, Y
-%% Returns: ok
+%% @spec vertexAttrib2f(Index::integer(), X::float(), Y::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib2f</a>
 %% C-API func: void glVertexAttrib2f(GLuint index, GLfloat x, GLfloat y)
 vertexAttrib2f(Index, X, Y) -> 
  cast(?glVertexAttrib2fv, <<Index:32/?UN, X:32/?FN, Y:32/?FN>>).
 
-%% Func:    vertexAttrib2fv 
-%% Args:    Index, {V1,V2}
-%% Returns: ok
+%% @spec vertexAttrib2fv(Index::integer(), {V1::float(),V2::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib2fv</a>
 %% C-API func: void glVertexAttrib2fv(GLuint index,  const GLfloat * v)
 vertexAttrib2fv(Index, {V1,V2}) -> 
  cast(?glVertexAttrib2fv, <<Index:32/?UN, V1:32/?FN,V2:32/?FN>>).
 
-%% Func:    vertexAttrib2s 
-%% Args:    Index, X, Y
-%% Returns: ok
+%% @spec vertexAttrib2s(Index::integer(), X::integer(), Y::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib2s</a>
 %% C-API func: void glVertexAttrib2s(GLuint index, GLshort x, GLshort y)
 vertexAttrib2s(Index, X, Y) -> 
  cast(?glVertexAttrib2sv, <<Index:32/?UN, X:16/?SN, Y:16/?SN>>).
 
-%% Func:    vertexAttrib2sv 
-%% Args:    Index, {V1,V2}
-%% Returns: ok
+%% @spec vertexAttrib2sv(Index::integer(), {V1::integer(),V2::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib2sv</a>
 %% C-API func: void glVertexAttrib2sv(GLuint index,  const GLshort * v)
 vertexAttrib2sv(Index, {V1,V2}) -> 
  cast(?glVertexAttrib2sv, <<Index:32/?UN, V1:16/?SN,V2:16/?SN>>).
 
-%% Func:    vertexAttrib3d 
-%% Args:    Index, X, Y, Z
-%% Returns: ok
+%% @spec vertexAttrib3d(Index::integer(), X::float(), Y::float(), Z::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib3d</a>
 %% C-API func: void glVertexAttrib3d(GLuint index, GLdouble x, GLdouble y, GLdouble z)
 vertexAttrib3d(Index, X, Y, Z) -> 
  cast(?glVertexAttrib3dv, <<Index:32/?UN, X:64/?FN, Y:64/?FN, Z:64/?FN>>).
 
-%% Func:    vertexAttrib3dv 
-%% Args:    Index, {V1,V2,V3}
-%% Returns: ok
+%% @spec vertexAttrib3dv(Index::integer(), {V1::float(),V2::float(),V3::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib3dv</a>
 %% C-API func: void glVertexAttrib3dv(GLuint index,  const GLdouble * v)
 vertexAttrib3dv(Index, {V1,V2,V3}) -> 
  cast(?glVertexAttrib3dv, <<Index:32/?UN, V1:64/?FN,V2:64/?FN,V3:64/?FN>>).
 
-%% Func:    vertexAttrib3f 
-%% Args:    Index, X, Y, Z
-%% Returns: ok
+%% @spec vertexAttrib3f(Index::integer(), X::float(), Y::float(), Z::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib3f</a>
 %% C-API func: void glVertexAttrib3f(GLuint index, GLfloat x, GLfloat y, GLfloat z)
 vertexAttrib3f(Index, X, Y, Z) -> 
  cast(?glVertexAttrib3fv, <<Index:32/?UN, X:32/?FN, Y:32/?FN, Z:32/?FN>>).
 
-%% Func:    vertexAttrib3fv 
-%% Args:    Index, {V1,V2,V3}
-%% Returns: ok
+%% @spec vertexAttrib3fv(Index::integer(), {V1::float(),V2::float(),V3::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib3fv</a>
 %% C-API func: void glVertexAttrib3fv(GLuint index,  const GLfloat * v)
 vertexAttrib3fv(Index, {V1,V2,V3}) -> 
  cast(?glVertexAttrib3fv, <<Index:32/?UN, V1:32/?FN,V2:32/?FN,V3:32/?FN>>).
 
-%% Func:    vertexAttrib3s 
-%% Args:    Index, X, Y, Z
-%% Returns: ok
+%% @spec vertexAttrib3s(Index::integer(), X::integer(), Y::integer(), Z::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib3s</a>
 %% C-API func: void glVertexAttrib3s(GLuint index, GLshort x, GLshort y, GLshort z)
 vertexAttrib3s(Index, X, Y, Z) -> 
  cast(?glVertexAttrib3sv, <<Index:32/?UN, X:16/?SN, Y:16/?SN, Z:16/?SN>>).
 
-%% Func:    vertexAttrib3sv 
-%% Args:    Index, {V1,V2,V3}
-%% Returns: ok
+%% @spec vertexAttrib3sv(Index::integer(), {V1::integer(),V2::integer(),V3::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib3sv</a>
 %% C-API func: void glVertexAttrib3sv(GLuint index,  const GLshort * v)
 vertexAttrib3sv(Index, {V1,V2,V3}) -> 
  cast(?glVertexAttrib3sv, <<Index:32/?UN, V1:16/?SN,V2:16/?SN,V3:16/?SN>>).
 
-%% Func:    vertexAttrib4Nbv 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
+%% @spec vertexAttrib4Nbv(Index::integer(), V::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib4Nbv">External manpage: vertexAttrib4Nbv</a>
 %% C-API func: void glVertexAttrib4Nbv(GLuint index,  const GLbyte * v)
 vertexAttrib4Nbv(Index, V) -> 
  NewV = if
@@ -5294,9 +4737,8 @@ vertexAttrib4Nbv(Index, V) ->
  end, 
  cast(?glVertexAttrib4Nbv, [<<Index:32/?UN>>,NewV]).
 
-%% Func:    vertexAttrib4Niv 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
+%% @spec vertexAttrib4Niv(Index::integer(), V::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib4Niv">External manpage: vertexAttrib4Niv</a>
 %% C-API func: void glVertexAttrib4Niv(GLuint index,  const GLint * v)
 vertexAttrib4Niv(Index, V) -> 
  NewV = if
@@ -5306,9 +4748,8 @@ vertexAttrib4Niv(Index, V) ->
  end, 
  cast(?glVertexAttrib4Niv, [<<Index:32/?UN>>,NewV]).
 
-%% Func:    vertexAttrib4Nsv 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
+%% @spec vertexAttrib4Nsv(Index::integer(), V::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib4Nsv">External manpage: vertexAttrib4Nsv</a>
 %% C-API func: void glVertexAttrib4Nsv(GLuint index,  const GLshort * v)
 vertexAttrib4Nsv(Index, V) -> 
  NewV = if
@@ -5318,16 +4759,14 @@ vertexAttrib4Nsv(Index, V) ->
  end, 
  cast(?glVertexAttrib4Nsv, [<<Index:32/?UN>>,NewV]).
 
-%% Func:    vertexAttrib4Nub 
-%% Args:    Index, X, Y, Z, W
-%% Returns: ok
+%% @spec vertexAttrib4Nub(Index::integer(), X::integer(), Y::integer(), Z::integer(), W::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib4Nub">External manpage: vertexAttrib4Nub</a>
 %% C-API func: void glVertexAttrib4Nub(GLuint index, GLubyte x, GLubyte y, GLubyte z, GLubyte w)
 vertexAttrib4Nub(Index, X, Y, Z, W) -> 
  cast(?glVertexAttrib4Nub, <<Index:32/?UN, X:8/unsigned, Y:8/unsigned, Z:8/unsigned, W:8/unsigned>>).
 
-%% Func:    vertexAttrib4Nubv 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
+%% @spec vertexAttrib4Nubv(Index::integer(), V::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib4Nubv">External manpage: vertexAttrib4Nubv</a>
 %% C-API func: void glVertexAttrib4Nubv(GLuint index,  const GLubyte * v)
 vertexAttrib4Nubv(Index, V) -> 
  NewV = if
@@ -5337,9 +4776,8 @@ vertexAttrib4Nubv(Index, V) ->
  end, 
  cast(?glVertexAttrib4Nubv, [<<Index:32/?UN>>,NewV]).
 
-%% Func:    vertexAttrib4Nuiv 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
+%% @spec vertexAttrib4Nuiv(Index::integer(), V::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib4Nuiv">External manpage: vertexAttrib4Nuiv</a>
 %% C-API func: void glVertexAttrib4Nuiv(GLuint index,  const GLuint * v)
 vertexAttrib4Nuiv(Index, V) -> 
  NewV = if
@@ -5349,9 +4787,8 @@ vertexAttrib4Nuiv(Index, V) ->
  end, 
  cast(?glVertexAttrib4Nuiv, [<<Index:32/?UN>>,NewV]).
 
-%% Func:    vertexAttrib4Nusv 
-%% Args:    Index, <<[V]>>
-%% Returns: ok
+%% @spec vertexAttrib4Nusv(Index::integer(), V::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib4Nusv">External manpage: vertexAttrib4Nusv</a>
 %% C-API func: void glVertexAttrib4Nusv(GLuint index,  const GLushort * v)
 vertexAttrib4Nusv(Index, V) -> 
  NewV = if
@@ -5361,86 +4798,74 @@ vertexAttrib4Nusv(Index, V) ->
  end, 
  cast(?glVertexAttrib4Nusv, [<<Index:32/?UN>>,NewV]).
 
-%% Func:    vertexAttrib4bv 
-%% Args:    Index, {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec vertexAttrib4bv(Index::integer(), {V1::integer(),V2::integer(),V3::integer(),V4::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib4bv</a>
 %% C-API func: void glVertexAttrib4bv(GLuint index,  const GLbyte * v)
 vertexAttrib4bv(Index, {V1,V2,V3,V4}) -> 
  cast(?glVertexAttrib4bv, <<Index:32/?UN, V1:8/signed,V2:8/signed,V3:8/signed,V4:8/signed>>).
 
-%% Func:    vertexAttrib4d 
-%% Args:    Index, X, Y, Z, W
-%% Returns: ok
+%% @spec vertexAttrib4d(Index::integer(), X::float(), Y::float(), Z::float(), W::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib4d</a>
 %% C-API func: void glVertexAttrib4d(GLuint index, GLdouble x, GLdouble y, GLdouble z, GLdouble w)
 vertexAttrib4d(Index, X, Y, Z, W) -> 
  cast(?glVertexAttrib4dv, <<Index:32/?UN, X:64/?FN, Y:64/?FN, Z:64/?FN, W:64/?FN>>).
 
-%% Func:    vertexAttrib4dv 
-%% Args:    Index, {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec vertexAttrib4dv(Index::integer(), {V1::float(),V2::float(),V3::float(),V4::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib4dv</a>
 %% C-API func: void glVertexAttrib4dv(GLuint index,  const GLdouble * v)
 vertexAttrib4dv(Index, {V1,V2,V3,V4}) -> 
  cast(?glVertexAttrib4dv, <<Index:32/?UN, V1:64/?FN,V2:64/?FN,V3:64/?FN,V4:64/?FN>>).
 
-%% Func:    vertexAttrib4f 
-%% Args:    Index, X, Y, Z, W
-%% Returns: ok
+%% @spec vertexAttrib4f(Index::integer(), X::float(), Y::float(), Z::float(), W::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib4f</a>
 %% C-API func: void glVertexAttrib4f(GLuint index, GLfloat x, GLfloat y, GLfloat z, GLfloat w)
 vertexAttrib4f(Index, X, Y, Z, W) -> 
  cast(?glVertexAttrib4fv, <<Index:32/?UN, X:32/?FN, Y:32/?FN, Z:32/?FN, W:32/?FN>>).
 
-%% Func:    vertexAttrib4fv 
-%% Args:    Index, {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec vertexAttrib4fv(Index::integer(), {V1::float(),V2::float(),V3::float(),V4::float()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib4fv</a>
 %% C-API func: void glVertexAttrib4fv(GLuint index,  const GLfloat * v)
 vertexAttrib4fv(Index, {V1,V2,V3,V4}) -> 
  cast(?glVertexAttrib4fv, <<Index:32/?UN, V1:32/?FN,V2:32/?FN,V3:32/?FN,V4:32/?FN>>).
 
-%% Func:    vertexAttrib4iv 
-%% Args:    Index, {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec vertexAttrib4iv(Index::integer(), {V1::integer(),V2::integer(),V3::integer(),V4::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib4iv</a>
 %% C-API func: void glVertexAttrib4iv(GLuint index,  const GLint * v)
 vertexAttrib4iv(Index, {V1,V2,V3,V4}) -> 
  cast(?glVertexAttrib4iv, <<Index:32/?UN, V1:32/?SN,V2:32/?SN,V3:32/?SN,V4:32/?SN>>).
 
-%% Func:    vertexAttrib4s 
-%% Args:    Index, X, Y, Z, W
-%% Returns: ok
+%% @spec vertexAttrib4s(Index::integer(), X::integer(), Y::integer(), Z::integer(), W::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib4s</a>
 %% C-API func: void glVertexAttrib4s(GLuint index, GLshort x, GLshort y, GLshort z, GLshort w)
 vertexAttrib4s(Index, X, Y, Z, W) -> 
  cast(?glVertexAttrib4sv, <<Index:32/?UN, X:16/?SN, Y:16/?SN, Z:16/?SN, W:16/?SN>>).
 
-%% Func:    vertexAttrib4sv 
-%% Args:    Index, {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec vertexAttrib4sv(Index::integer(), {V1::integer(),V2::integer(),V3::integer(),V4::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib4sv</a>
 %% C-API func: void glVertexAttrib4sv(GLuint index,  const GLshort * v)
 vertexAttrib4sv(Index, {V1,V2,V3,V4}) -> 
  cast(?glVertexAttrib4sv, <<Index:32/?UN, V1:16/?SN,V2:16/?SN,V3:16/?SN,V4:16/?SN>>).
 
-%% Func:    vertexAttrib4ubv 
-%% Args:    Index, {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec vertexAttrib4ubv(Index::integer(), {V1::integer(),V2::integer(),V3::integer(),V4::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib4ubv</a>
 %% C-API func: void glVertexAttrib4ubv(GLuint index,  const GLubyte * v)
 vertexAttrib4ubv(Index, {V1,V2,V3,V4}) -> 
  cast(?glVertexAttrib4ubv, <<Index:32/?UN, V1:8/unsigned,V2:8/unsigned,V3:8/unsigned,V4:8/unsigned>>).
 
-%% Func:    vertexAttrib4uiv 
-%% Args:    Index, {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec vertexAttrib4uiv(Index::integer(), {V1::integer(),V2::integer(),V3::integer(),V4::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib4uiv</a>
 %% C-API func: void glVertexAttrib4uiv(GLuint index,  const GLuint * v)
 vertexAttrib4uiv(Index, {V1,V2,V3,V4}) -> 
  cast(?glVertexAttrib4uiv, <<Index:32/?UN, V1:32/?UN,V2:32/?UN,V3:32/?UN,V4:32/?UN>>).
 
-%% Func:    vertexAttrib4usv 
-%% Args:    Index, {V1,V2,V3,V4}
-%% Returns: ok
+%% @spec vertexAttrib4usv(Index::integer(), {V1::integer(),V2::integer(),V3::integer(),V4::integer()}) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttrib">External manpage: vertexAttrib4usv</a>
 %% C-API func: void glVertexAttrib4usv(GLuint index,  const GLushort * v)
 vertexAttrib4usv(Index, {V1,V2,V3,V4}) -> 
  cast(?glVertexAttrib4usv, <<Index:32/?UN, V1:16/?UN,V2:16/?UN,V3:16/?UN,V4:16/?UN>>).
 
-%% Func:    vertexAttribPointer 
-%% Args:    Index, Size, Type, Normalized, Stride, <<[Pointer]>>
-%% Returns: ok
+%% @spec vertexAttribPointer(Index::integer(), Size::integer(), Type::integer(), Normalized::bool(), Stride::integer(), Pointer::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexAttribPointer">External manpage: vertexAttribPointer</a>
 %% C-API func: void glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride,  const GLvoid * pointer)
 vertexAttribPointer(Index, Size, Type, Normalized, Stride, Pointer) -> 
 %% Maybe NULL or offset sometimes
@@ -5452,9 +4877,8 @@ vertexAttribPointer(Index, Size, Type, Normalized, Stride, Pointer) ->
    end,
  cast(?glVertexAttribPointer, [<<Index:32/?UN, Size:32/?SN, Type:32/?UN, Normalized:8/unsigned, 0:24, Stride:32/?SN, NewPointer:32/?SN>>]).
 
-%% Func:    weightbvARB 
-%% Args:    Size, <<[Weights]>>
-%% Returns: ok
+%% @spec weightbvARB(Size::integer(), Weights::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWeightbvARB">External manpage: weightbvARB</a>
 %% C-API func: void glWeightbvARB(GLint size,  const GLbyte * weights)
 weightbvARB(Size, Weights) -> 
  weightbv(Size, Weights).
@@ -5466,9 +4890,8 @@ weightbv(Size, Weights) ->
  end, 
  cast(?glWeightbv, [<<Size:32/?SN>>,NewWeights]).
 
-%% Func:    weightsvARB 
-%% Args:    Size, <<[Weights]>>
-%% Returns: ok
+%% @spec weightsvARB(Size::integer(), Weights::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWeightsvARB">External manpage: weightsvARB</a>
 %% C-API func: void glWeightsvARB(GLint size,  const GLshort * weights)
 weightsvARB(Size, Weights) -> 
  weightsv(Size, Weights).
@@ -5480,9 +4903,8 @@ weightsv(Size, Weights) ->
  end, 
  cast(?glWeightsv, [<<Size:32/?SN>>,NewWeights]).
 
-%% Func:    weightivARB 
-%% Args:    Size, <<[Weights]>>
-%% Returns: ok
+%% @spec weightivARB(Size::integer(), Weights::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWeightivARB">External manpage: weightivARB</a>
 %% C-API func: void glWeightivARB(GLint size,  const GLint * weights)
 weightivARB(Size, Weights) -> 
  weightiv(Size, Weights).
@@ -5494,9 +4916,8 @@ weightiv(Size, Weights) ->
  end, 
  cast(?glWeightiv, [<<Size:32/?SN>>,NewWeights]).
 
-%% Func:    weightfvARB 
-%% Args:    Size, <<[Weights]>>
-%% Returns: ok
+%% @spec weightfvARB(Size::integer(), Weights::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWeightfvARB">External manpage: weightfvARB</a>
 %% C-API func: void glWeightfvARB(GLint size,  const GLfloat * weights)
 weightfvARB(Size, Weights) -> 
  weightfv(Size, Weights).
@@ -5508,9 +4929,8 @@ weightfv(Size, Weights) ->
  end, 
  cast(?glWeightfv, [<<Size:32/?SN>>,NewWeights]).
 
-%% Func:    weightdvARB 
-%% Args:    Size, <<[Weights]>>
-%% Returns: ok
+%% @spec weightdvARB(Size::integer(), Weights::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWeightdvARB">External manpage: weightdvARB</a>
 %% C-API func: void glWeightdvARB(GLint size,  const GLdouble * weights)
 weightdvARB(Size, Weights) -> 
  weightdv(Size, Weights).
@@ -5522,9 +4942,8 @@ weightdv(Size, Weights) ->
  end, 
  cast(?glWeightdv, [<<Size:32/?SN>>,NewWeights]).
 
-%% Func:    weightubvARB 
-%% Args:    Size, <<[Weights]>>
-%% Returns: ok
+%% @spec weightubvARB(Size::integer(), Weights::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWeightubvARB">External manpage: weightubvARB</a>
 %% C-API func: void glWeightubvARB(GLint size,  const GLubyte * weights)
 weightubvARB(Size, Weights) -> 
  weightubv(Size, Weights).
@@ -5536,9 +4955,8 @@ weightubv(Size, Weights) ->
  end, 
  cast(?glWeightubv, [<<Size:32/?SN>>,NewWeights]).
 
-%% Func:    weightusvARB 
-%% Args:    Size, <<[Weights]>>
-%% Returns: ok
+%% @spec weightusvARB(Size::integer(), Weights::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWeightusvARB">External manpage: weightusvARB</a>
 %% C-API func: void glWeightusvARB(GLint size,  const GLushort * weights)
 weightusvARB(Size, Weights) -> 
  weightusv(Size, Weights).
@@ -5550,9 +4968,8 @@ weightusv(Size, Weights) ->
  end, 
  cast(?glWeightusv, [<<Size:32/?SN>>,NewWeights]).
 
-%% Func:    weightuivARB 
-%% Args:    Size, <<[Weights]>>
-%% Returns: ok
+%% @spec weightuivARB(Size::integer(), Weights::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWeightuivARB">External manpage: weightuivARB</a>
 %% C-API func: void glWeightuivARB(GLint size,  const GLuint * weights)
 weightuivARB(Size, Weights) -> 
  weightuiv(Size, Weights).
@@ -5564,9 +4981,8 @@ weightuiv(Size, Weights) ->
  end, 
  cast(?glWeightuiv, [<<Size:32/?SN>>,NewWeights]).
 
-%% Func:    weightPointerARB 
-%% Args:    Size, Type, Stride, <<[Pointer]>>
-%% Returns: ok
+%% @spec weightPointerARB(Size::integer(), Type::integer(), Stride::integer(), Pointer::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glWeightPointerARB">External manpage: weightPointerARB</a>
 %% C-API func: void glWeightPointerARB(GLint size, GLenum type, GLsizei stride,  const GLvoid * pointer)
 weightPointerARB(Size, Type, Stride, Pointer) -> 
  weightPointer(Size, Type, Stride, Pointer).
@@ -5580,27 +4996,24 @@ weightPointer(Size, Type, Stride, Pointer) ->
    end,
  cast(?glWeightPointer, [<<Size:32/?SN, Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
-%% Func:    vertexBlendARB 
-%% Args:    Count
-%% Returns: ok
+%% @spec vertexBlendARB(Count::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glVertexBlendARB">External manpage: vertexBlendARB</a>
 %% C-API func: void glVertexBlendARB(GLint count)
 vertexBlendARB(Count) -> 
  vertexBlend(Count).
 vertexBlend(Count) -> 
  cast(?glVertexBlend, <<Count:32/?SN>>).
 
-%% Func:    currentPaletteMatrixARB 
-%% Args:    Index
-%% Returns: ok
+%% @spec currentPaletteMatrixARB(Index::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCurrentPaletteMatrixARB">External manpage: currentPaletteMatrixARB</a>
 %% C-API func: void glCurrentPaletteMatrixARB(GLint index)
 currentPaletteMatrixARB(Index) -> 
  currentPaletteMatrix(Index).
 currentPaletteMatrix(Index) -> 
  cast(?glCurrentPaletteMatrix, <<Index:32/?SN>>).
 
-%% Func:    matrixIndexubvARB 
-%% Args:    Size, <<[Indices]>>
-%% Returns: ok
+%% @spec matrixIndexubvARB(Size::integer(), Indices::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMatrixIndexubvARB">External manpage: matrixIndexubvARB</a>
 %% C-API func: void glMatrixIndexubvARB(GLint size,  const GLubyte * indices)
 matrixIndexubvARB(Size, Indices) -> 
  matrixIndexubv(Size, Indices).
@@ -5612,9 +5025,8 @@ matrixIndexubv(Size, Indices) ->
  end, 
  cast(?glMatrixIndexubv, [<<Size:32/?SN>>,NewIndices]).
 
-%% Func:    matrixIndexusvARB 
-%% Args:    Size, <<[Indices]>>
-%% Returns: ok
+%% @spec matrixIndexusvARB(Size::integer(), Indices::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMatrixIndexusvARB">External manpage: matrixIndexusvARB</a>
 %% C-API func: void glMatrixIndexusvARB(GLint size,  const GLushort * indices)
 matrixIndexusvARB(Size, Indices) -> 
  matrixIndexusv(Size, Indices).
@@ -5626,9 +5038,8 @@ matrixIndexusv(Size, Indices) ->
  end, 
  cast(?glMatrixIndexusv, [<<Size:32/?SN>>,NewIndices]).
 
-%% Func:    matrixIndexuivARB 
-%% Args:    Size, <<[Indices]>>
-%% Returns: ok
+%% @spec matrixIndexuivARB(Size::integer(), Indices::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMatrixIndexuivARB">External manpage: matrixIndexuivARB</a>
 %% C-API func: void glMatrixIndexuivARB(GLint size,  const GLuint * indices)
 matrixIndexuivARB(Size, Indices) -> 
  matrixIndexuiv(Size, Indices).
@@ -5640,9 +5051,8 @@ matrixIndexuiv(Size, Indices) ->
  end, 
  cast(?glMatrixIndexuiv, [<<Size:32/?SN>>,NewIndices]).
 
-%% Func:    matrixIndexPointerARB 
-%% Args:    Size, Type, Stride, <<[Pointer]>>
-%% Returns: ok
+%% @spec matrixIndexPointerARB(Size::integer(), Type::integer(), Stride::integer(), Pointer::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glMatrixIndexPointerARB">External manpage: matrixIndexPointerARB</a>
 %% C-API func: void glMatrixIndexPointerARB(GLint size, GLenum type, GLsizei stride,  const GLvoid * pointer)
 matrixIndexPointerARB(Size, Type, Stride, Pointer) -> 
  matrixIndexPointer(Size, Type, Stride, Pointer).
@@ -5656,9 +5066,8 @@ matrixIndexPointer(Size, Type, Stride, Pointer) ->
    end,
  cast(?glMatrixIndexPointer, [<<Size:32/?SN, Type:32/?UN, Stride:32/?SN, NewPointer:32/?SN>>]).
 
-%% Func:    programStringARB 
-%% Args:    Target, Format, Len, <<[String]>>
-%% Returns: ok
+%% @spec programStringARB(Target::integer(), Format::integer(), Len::integer(), String::binary() | [number()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glProgramStringARB">External manpage: programStringARB</a>
 %% C-API func: void glProgramStringARB(GLenum target, GLenum format, GLsizei len,  const GLvoid * string)
 programStringARB(Target, Format, Len, String) -> 
  programString(Target, Format, Len, String).
@@ -5672,18 +5081,16 @@ programString(Target, Format, Len, String) ->
    end,
  cast(?glProgramString, [<<Target:32/?UN, Format:32/?UN, Len:32/?SN, NewString:32/?SN>>]).
 
-%% Func:    bindProgramARB 
-%% Args:    Target, Program
-%% Returns: ok
+%% @spec bindProgramARB(Target::integer(), Program::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glBindProgramARB">External manpage: bindProgramARB</a>
 %% C-API func: void glBindProgramARB(GLenum target, GLuint program)
 bindProgramARB(Target, Program) -> 
  bindProgram(Target, Program).
 bindProgram(Target, Program) -> 
  cast(?glBindProgram, <<Target:32/?UN, Program:32/?UN>>).
 
-%% Func:    deleteProgramsARB 
-%% Args:    N, <<[Programs]>>
-%% Returns: ok
+%% @spec deleteProgramsARB(N::integer(), Programs::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDeleteProgramsARB">External manpage: deleteProgramsARB</a>
 %% C-API func: void glDeleteProgramsARB(GLsizei n,  const GLuint * programs)
 deleteProgramsARB(N, Programs) -> 
  deletePrograms(N, Programs).
@@ -5695,9 +5102,8 @@ deletePrograms(N, Programs) ->
  end, 
  cast(?glDeletePrograms, [<<N:32/?SN>>,NewPrograms]).
 
-%% Func:    genProgramsARB 
-%% Args:    N
-%% Returns: [Programs]
+%% @spec genProgramsARB(N::integer()) -> Programs::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGenProgramsARB">External manpage: genProgramsARB</a>
 %% C-API func: void glGenProgramsARB(GLsizei n, GLuint * programs)
 genProgramsARB(N) -> 
  genPrograms(N).
@@ -5709,18 +5115,16 @@ genPrograms(N) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    programEnvParameter4dARB 
-%% Args:    Target, Index, X, Y, Z, W
-%% Returns: ok
+%% @spec programEnvParameter4dARB(Target::integer(), Index::integer(), X::float(), Y::float(), Z::float(), W::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glProgramEnvParameterARB">External manpage: programEnvParameter4dARB</a>
 %% C-API func: void glProgramEnvParameter4dARB(GLenum target, GLuint index, GLdouble x, GLdouble y, GLdouble z, GLdouble w)
 programEnvParameter4dARB(Target, Index, X, Y, Z, W) -> 
  programEnvParameter4d(Target, Index, X, Y, Z, W).
 programEnvParameter4d(Target, Index, X, Y, Z, W) -> 
  cast(?glProgramEnvParameter4dv, <<Target:32/?UN, Index:32/?UN, X:64/?FN, Y:64/?FN, Z:64/?FN, W:64/?FN>>).
 
-%% Func:    programEnvParameter4dvARB 
-%% Args:    Target, Index, <<[Params]>>
-%% Returns: ok
+%% @spec programEnvParameter4dvARB(Target::integer(), Index::integer(), Params::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glProgramEnvParameter4dvARB">External manpage: programEnvParameter4dvARB</a>
 %% C-API func: void glProgramEnvParameter4dvARB(GLenum target, GLuint index,  const GLdouble * params)
 programEnvParameter4dvARB(Target, Index, Params) -> 
  programEnvParameter4dv(Target, Index, Params).
@@ -5732,18 +5136,16 @@ programEnvParameter4dv(Target, Index, Params) ->
  end, 
  cast(?glProgramEnvParameter4dv, [<<Target:32/?UN, Index:32/?UN>>,NewParams]).
 
-%% Func:    programEnvParameter4fARB 
-%% Args:    Target, Index, X, Y, Z, W
-%% Returns: ok
+%% @spec programEnvParameter4fARB(Target::integer(), Index::integer(), X::float(), Y::float(), Z::float(), W::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glProgramEnvParameterARB">External manpage: programEnvParameter4fARB</a>
 %% C-API func: void glProgramEnvParameter4fARB(GLenum target, GLuint index, GLfloat x, GLfloat y, GLfloat z, GLfloat w)
 programEnvParameter4fARB(Target, Index, X, Y, Z, W) -> 
  programEnvParameter4f(Target, Index, X, Y, Z, W).
 programEnvParameter4f(Target, Index, X, Y, Z, W) -> 
  cast(?glProgramEnvParameter4fv, <<Target:32/?UN, Index:32/?UN, X:32/?FN, Y:32/?FN, Z:32/?FN, W:32/?FN>>).
 
-%% Func:    programEnvParameter4fvARB 
-%% Args:    Target, Index, <<[Params]>>
-%% Returns: ok
+%% @spec programEnvParameter4fvARB(Target::integer(), Index::integer(), Params::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glProgramEnvParameter4fvARB">External manpage: programEnvParameter4fvARB</a>
 %% C-API func: void glProgramEnvParameter4fvARB(GLenum target, GLuint index,  const GLfloat * params)
 programEnvParameter4fvARB(Target, Index, Params) -> 
  programEnvParameter4fv(Target, Index, Params).
@@ -5755,18 +5157,16 @@ programEnvParameter4fv(Target, Index, Params) ->
  end, 
  cast(?glProgramEnvParameter4fv, [<<Target:32/?UN, Index:32/?UN>>,NewParams]).
 
-%% Func:    programLocalParameter4dARB 
-%% Args:    Target, Index, X, Y, Z, W
-%% Returns: ok
+%% @spec programLocalParameter4dARB(Target::integer(), Index::integer(), X::float(), Y::float(), Z::float(), W::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glProgramLocalParameterARB">External manpage: programLocalParameter4dARB</a>
 %% C-API func: void glProgramLocalParameter4dARB(GLenum target, GLuint index, GLdouble x, GLdouble y, GLdouble z, GLdouble w)
 programLocalParameter4dARB(Target, Index, X, Y, Z, W) -> 
  programLocalParameter4d(Target, Index, X, Y, Z, W).
 programLocalParameter4d(Target, Index, X, Y, Z, W) -> 
  cast(?glProgramLocalParameter4dv, <<Target:32/?UN, Index:32/?UN, X:64/?FN, Y:64/?FN, Z:64/?FN, W:64/?FN>>).
 
-%% Func:    programLocalParameter4dvARB 
-%% Args:    Target, Index, <<[Params]>>
-%% Returns: ok
+%% @spec programLocalParameter4dvARB(Target::integer(), Index::integer(), Params::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glProgramLocalParameter4dvARB">External manpage: programLocalParameter4dvARB</a>
 %% C-API func: void glProgramLocalParameter4dvARB(GLenum target, GLuint index,  const GLdouble * params)
 programLocalParameter4dvARB(Target, Index, Params) -> 
  programLocalParameter4dv(Target, Index, Params).
@@ -5778,18 +5178,16 @@ programLocalParameter4dv(Target, Index, Params) ->
  end, 
  cast(?glProgramLocalParameter4dv, [<<Target:32/?UN, Index:32/?UN>>,NewParams]).
 
-%% Func:    programLocalParameter4fARB 
-%% Args:    Target, Index, X, Y, Z, W
-%% Returns: ok
+%% @spec programLocalParameter4fARB(Target::integer(), Index::integer(), X::float(), Y::float(), Z::float(), W::float()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glProgramLocalParameterARB">External manpage: programLocalParameter4fARB</a>
 %% C-API func: void glProgramLocalParameter4fARB(GLenum target, GLuint index, GLfloat x, GLfloat y, GLfloat z, GLfloat w)
 programLocalParameter4fARB(Target, Index, X, Y, Z, W) -> 
  programLocalParameter4f(Target, Index, X, Y, Z, W).
 programLocalParameter4f(Target, Index, X, Y, Z, W) -> 
  cast(?glProgramLocalParameter4fv, <<Target:32/?UN, Index:32/?UN, X:32/?FN, Y:32/?FN, Z:32/?FN, W:32/?FN>>).
 
-%% Func:    programLocalParameter4fvARB 
-%% Args:    Target, Index, <<[Params]>>
-%% Returns: ok
+%% @spec programLocalParameter4fvARB(Target::integer(), Index::integer(), Params::binary() | [float()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glProgramLocalParameter4fvARB">External manpage: programLocalParameter4fvARB</a>
 %% C-API func: void glProgramLocalParameter4fvARB(GLenum target, GLuint index,  const GLfloat * params)
 programLocalParameter4fvARB(Target, Index, Params) -> 
  programLocalParameter4fv(Target, Index, Params).
@@ -5801,9 +5199,8 @@ programLocalParameter4fv(Target, Index, Params) ->
  end, 
  cast(?glProgramLocalParameter4fv, [<<Target:32/?UN, Index:32/?UN>>,NewParams]).
 
-%% Func:    getProgramEnvParameterdvARB 
-%% Args:    Target, Index
-%% Returns: [Params]
+%% @spec getProgramEnvParameterdvARB(Target::integer(), Index::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetProgramEnvParameterdvARB">External manpage: getProgramEnvParameterdvARB</a>
 %% C-API func: void glGetProgramEnvParameterdvARB(GLenum target, GLuint index, GLdouble * params)
 getProgramEnvParameterdvARB(Target, Index) -> 
  getProgramEnvParameterdv(Target, Index).
@@ -5815,9 +5212,8 @@ getProgramEnvParameterdv(Target, Index) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getProgramEnvParameterfvARB 
-%% Args:    Target, Index
-%% Returns: [Params]
+%% @spec getProgramEnvParameterfvARB(Target::integer(), Index::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetProgramEnvParameterfvARB">External manpage: getProgramEnvParameterfvARB</a>
 %% C-API func: void glGetProgramEnvParameterfvARB(GLenum target, GLuint index, GLfloat * params)
 getProgramEnvParameterfvARB(Target, Index) -> 
  getProgramEnvParameterfv(Target, Index).
@@ -5829,9 +5225,8 @@ getProgramEnvParameterfv(Target, Index) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getProgramLocalParameterdvARB 
-%% Args:    Target, Index
-%% Returns: [Params]
+%% @spec getProgramLocalParameterdvARB(Target::integer(), Index::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetProgramLocalParameterdvARB">External manpage: getProgramLocalParameterdvARB</a>
 %% C-API func: void glGetProgramLocalParameterdvARB(GLenum target, GLuint index, GLdouble * params)
 getProgramLocalParameterdvARB(Target, Index) -> 
  getProgramLocalParameterdv(Target, Index).
@@ -5843,9 +5238,8 @@ getProgramLocalParameterdv(Target, Index) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getProgramLocalParameterfvARB 
-%% Args:    Target, Index
-%% Returns: [Params]
+%% @spec getProgramLocalParameterfvARB(Target::integer(), Index::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetProgramLocalParameterfvARB">External manpage: getProgramLocalParameterfvARB</a>
 %% C-API func: void glGetProgramLocalParameterfvARB(GLenum target, GLuint index, GLfloat * params)
 getProgramLocalParameterfvARB(Target, Index) -> 
  getProgramLocalParameterfv(Target, Index).
@@ -5857,9 +5251,8 @@ getProgramLocalParameterfv(Target, Index) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getProgramStringARB 
-%% Args:    Target, Pname, #sdlmem{} = String
-%% Returns: ok
+%% @spec getProgramStringARB(Target::integer(), Pname::integer(), String::sdlmem()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetProgramStringARB">External manpage: getProgramStringARB</a>
 %% C-API func: void glGetProgramStringARB(GLenum target, GLenum pname, GLvoid * string)
 getProgramStringARB(Target, Pname, #sdlmem{bin=String}) -> 
  getProgramString(Target, Pname, #sdlmem{bin=String}).
@@ -5867,19 +5260,18 @@ getProgramString(Target, Pname, #sdlmem{bin=String}) ->
  sdl:send_bin(String, ?MODULE, ?LINE),
  cast(?glGetProgramString, <<Target:32/?UN, Pname:32/?UN>>).
 
-%% Func:    deleteObjectARB 
-%% Args:    Obj
-%% Returns: ok
+%% @spec deleteObjectARB(Obj::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDeleteObjectARB">External manpage: deleteObjectARB</a>
 %% C-API func: void glDeleteObjectARB(GLhandleARB obj)
 deleteObjectARB(Obj) -> 
  try deleteProgram(Obj)
  catch error:_ -> glDeleteObjectARB_fallback(Obj) end.
+%% @hidden
 glDeleteObjectARB_fallback(Obj) -> 
  cast(?glDeleteObjectARB, <<Obj:32/?UN>>).
 
-%% Func:    getHandleARB 
-%% Args:    Pname
-%% Returns: ?GL_UNSIGNED_INT
+%% @spec getHandleARB(Pname::integer()) -> integer()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetHandleARB">External manpage: getHandleARB</a>
 %% C-API func: GLhandleARB glGetHandleARB(GLenum pname)
 getHandleARB(Pname) -> 
  getHandle(Pname).
@@ -5891,23 +5283,23 @@ getHandle(Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    detachObjectARB 
-%% Args:    ContainerObj, AttachedObj
-%% Returns: ok
+%% @spec detachObjectARB(ContainerObj::integer(), AttachedObj::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDetachObjectARB">External manpage: detachObjectARB</a>
 %% C-API func: void glDetachObjectARB(GLhandleARB containerObj, GLhandleARB attachedObj)
 detachObjectARB(ContainerObj, AttachedObj) -> 
  try detachShader(ContainerObj, AttachedObj)
  catch error:_ -> glDetachObjectARB_fallback(ContainerObj, AttachedObj) end.
+%% @hidden
 glDetachObjectARB_fallback(ContainerObj, AttachedObj) -> 
  cast(?glDetachObjectARB, <<ContainerObj:32/?UN, AttachedObj:32/?UN>>).
 
-%% Func:    createShaderObjectARB 
-%% Args:    ShaderType
-%% Returns: ?GL_UNSIGNED_INT
+%% @spec createShaderObjectARB(ShaderType::integer()) -> integer()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCreateShaderObjectARB">External manpage: createShaderObjectARB</a>
 %% C-API func: GLhandleARB glCreateShaderObjectARB(GLenum shaderType)
 createShaderObjectARB(ShaderType) -> 
  try createShader(ShaderType)
  catch error:_ -> glCreateShaderObjectARB_fallback(ShaderType) end.
+%% @hidden
 glCreateShaderObjectARB_fallback(ShaderType) -> 
  Bin = call(?glCreateShaderObjectARB, <<ShaderType:32/?UN>>), 
  case Bin of 
@@ -5916,13 +5308,13 @@ glCreateShaderObjectARB_fallback(ShaderType) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    createProgramObjectARB 
-%% Args:    
-%% Returns: ?GL_UNSIGNED_INT
+%% @spec createProgramObjectARB() -> integer()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCreateProgramObjectARB">External manpage: createProgramObjectARB</a>
 %% C-API func: GLhandleARB glCreateProgramObjectARB()
 createProgramObjectARB() -> 
  try createProgram()
  catch error:_ -> glCreateProgramObjectARB_fallback() end.
+%% @hidden
 glCreateProgramObjectARB_fallback() -> 
  Bin = call(?glCreateProgramObjectARB, []), 
  case Bin of 
@@ -5931,29 +5323,28 @@ glCreateProgramObjectARB_fallback() ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    attachObjectARB 
-%% Args:    ContainerObj, Obj
-%% Returns: ok
+%% @spec attachObjectARB(ContainerObj::integer(), Obj::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glAttachObjectARB">External manpage: attachObjectARB</a>
 %% C-API func: void glAttachObjectARB(GLhandleARB containerObj, GLhandleARB obj)
 attachObjectARB(ContainerObj, Obj) -> 
  try attachShader(ContainerObj, Obj)
  catch error:_ -> glAttachObjectARB_fallback(ContainerObj, Obj) end.
+%% @hidden
 glAttachObjectARB_fallback(ContainerObj, Obj) -> 
  cast(?glAttachObjectARB, <<ContainerObj:32/?UN, Obj:32/?UN>>).
 
-%% Func:    useProgramObjectARB 
-%% Args:    ProgramObj
-%% Returns: ok
+%% @spec useProgramObjectARB(ProgramObj::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glUseProgramObjectARB">External manpage: useProgramObjectARB</a>
 %% C-API func: void glUseProgramObjectARB(GLhandleARB programObj)
 useProgramObjectARB(ProgramObj) -> 
  try useProgram(ProgramObj)
  catch error:_ -> glUseProgramObjectARB_fallback(ProgramObj) end.
+%% @hidden
 glUseProgramObjectARB_fallback(ProgramObj) -> 
  cast(?glUseProgramObjectARB, <<ProgramObj:32/?UN>>).
 
-%% Func:    getObjectParameterfvARB 
-%% Args:    Obj, Pname
-%% Returns: [Params]
+%% @spec getObjectParameterfvARB(Obj::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetObjectParameterfvARB">External manpage: getObjectParameterfvARB</a>
 %% C-API func: void glGetObjectParameterfvARB(GLhandleARB obj, GLenum pname, GLfloat * params)
 getObjectParameterfvARB(Obj, Pname) -> 
  getObjectParameterfv(Obj, Pname).
@@ -5965,9 +5356,8 @@ getObjectParameterfv(Obj, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getObjectParameterivARB 
-%% Args:    Obj, Pname
-%% Returns: [Params]
+%% @spec getObjectParameterivARB(Obj::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetObjectParameterivARB">External manpage: getObjectParameterivARB</a>
 %% C-API func: void glGetObjectParameterivARB(GLhandleARB obj, GLenum pname, GLint * params)
 getObjectParameterivARB(Obj, Pname) -> 
  getObjectParameteriv(Obj, Pname).
@@ -5979,9 +5369,8 @@ getObjectParameteriv(Obj, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getInfoLogARB 
-%% Args:    Obj, MaxLength
-%% Returns: {[Length], [InfoLog]}
+%% @spec getInfoLogARB(Obj::integer(), MaxLength::integer()) -> {[Length::integer()], [InfoLog::integer()]}
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetInfoLogARB">External manpage: getInfoLogARB</a>
 %% C-API func: void glGetInfoLogARB(GLhandleARB obj, GLsizei maxLength, GLsizei * length, GLcharARB * infoLog)
 getInfoLogARB(Obj, MaxLength) -> 
  getInfoLog(Obj, MaxLength).
@@ -5993,13 +5382,13 @@ getInfoLog(Obj, MaxLength) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    getAttachedObjectsARB 
-%% Args:    ContainerObj, MaxCount
-%% Returns: {[Count], [Obj]}
+%% @spec getAttachedObjectsARB(ContainerObj::integer(), MaxCount::integer()) -> {[Count::integer()], [Obj::integer()]}
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetAttachedObjectsARB">External manpage: getAttachedObjectsARB</a>
 %% C-API func: void glGetAttachedObjectsARB(GLhandleARB containerObj, GLsizei maxCount, GLsizei * count, GLhandleARB * obj)
 getAttachedObjectsARB(ContainerObj, MaxCount) -> 
  try getAttachedShaders(ContainerObj, MaxCount)
  catch error:_ -> glGetAttachedObjectsARB_fallback(ContainerObj, MaxCount) end.
+%% @hidden
 glGetAttachedObjectsARB_fallback(ContainerObj, MaxCount) -> 
  Bin = call(?glGetAttachedObjectsARB, <<ContainerObj:32/?UN, MaxCount:32/?SN>>), 
  case Bin of 
@@ -6008,23 +5397,20 @@ glGetAttachedObjectsARB_fallback(ContainerObj, MaxCount) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    stencilOpSeparateATI 
-%% Args:    Face, Sfail, Dpfail, Dppass
-%% Returns: ok
+%% @spec stencilOpSeparateATI(Face::integer(), Sfail::integer(), Dpfail::integer(), Dppass::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glStencilOpSeparateATI">External manpage: stencilOpSeparateATI</a>
 %% C-API func: void glStencilOpSeparateATI(GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass)
 stencilOpSeparateATI(Face, Sfail, Dpfail, Dppass) -> 
  cast(?glStencilOpSeparateATI, <<Face:32/?UN, Sfail:32/?UN, Dpfail:32/?UN, Dppass:32/?UN>>).
 
-%% Func:    stencilFuncSeparateATI 
-%% Args:    Frontfunc, Backfunc, Ref, Mask
-%% Returns: ok
+%% @spec stencilFuncSeparateATI(Frontfunc::integer(), Backfunc::integer(), Ref::integer(), Mask::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glStencilFuncSeparateATI">External manpage: stencilFuncSeparateATI</a>
 %% C-API func: void glStencilFuncSeparateATI(GLenum frontfunc, GLenum backfunc, GLint ref, GLuint mask)
 stencilFuncSeparateATI(Frontfunc, Backfunc, Ref, Mask) -> 
  cast(?glStencilFuncSeparateATI, <<Frontfunc:32/?UN, Backfunc:32/?UN, Ref:32/?SN, Mask:32/?UN>>).
 
-%% Func:    isRenderbufferEXT 
-%% Args:    Renderbuffer
-%% Returns: ?GL_BYTE
+%% @spec isRenderbufferEXT(Renderbuffer::integer()) -> bool()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glIsRenderbufferEXT">External manpage: isRenderbufferEXT</a>
 %% C-API func: GLboolean glIsRenderbufferEXT(GLuint renderbuffer)
 isRenderbufferEXT(Renderbuffer) -> 
  Bin = call(?glIsRenderbufferEXT, <<Renderbuffer:32/?UN>>), 
@@ -6034,16 +5420,14 @@ isRenderbufferEXT(Renderbuffer) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    bindRenderbufferEXT 
-%% Args:    Target, Renderbuffer
-%% Returns: ok
+%% @spec bindRenderbufferEXT(Target::integer(), Renderbuffer::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glBindRenderbufferEXT">External manpage: bindRenderbufferEXT</a>
 %% C-API func: void glBindRenderbufferEXT(GLenum target, GLuint renderbuffer)
 bindRenderbufferEXT(Target, Renderbuffer) -> 
  cast(?glBindRenderbufferEXT, <<Target:32/?UN, Renderbuffer:32/?UN>>).
 
-%% Func:    deleteRenderbuffersEXT 
-%% Args:    N, <<[Renderbuffers]>>
-%% Returns: ok
+%% @spec deleteRenderbuffersEXT(N::integer(), Renderbuffers::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDeleteRenderbuffersEXT">External manpage: deleteRenderbuffersEXT</a>
 %% C-API func: void glDeleteRenderbuffersEXT(GLsizei n,  const GLuint * renderbuffers)
 deleteRenderbuffersEXT(N, Renderbuffers) -> 
  NewRenderbuffers = if
@@ -6053,9 +5437,8 @@ deleteRenderbuffersEXT(N, Renderbuffers) ->
  end, 
  cast(?glDeleteRenderbuffersEXT, [<<N:32/?SN>>,NewRenderbuffers]).
 
-%% Func:    genRenderbuffersEXT 
-%% Args:    N
-%% Returns: [Renderbuffers]
+%% @spec genRenderbuffersEXT(N::integer()) -> Renderbuffers::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGenRenderbuffersEXT">External manpage: genRenderbuffersEXT</a>
 %% C-API func: void glGenRenderbuffersEXT(GLsizei n, GLuint * renderbuffers)
 genRenderbuffersEXT(N) -> 
  Bin = call(?glGenRenderbuffersEXT, <<N:32/?SN>>), 
@@ -6065,16 +5448,14 @@ genRenderbuffersEXT(N) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    renderbufferStorageEXT 
-%% Args:    Target, Internalformat, Width, Height
-%% Returns: ok
+%% @spec renderbufferStorageEXT(Target::integer(), Internalformat::integer(), Width::integer(), Height::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glRenderbufferStorageEXT">External manpage: renderbufferStorageEXT</a>
 %% C-API func: void glRenderbufferStorageEXT(GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
 renderbufferStorageEXT(Target, Internalformat, Width, Height) -> 
  cast(?glRenderbufferStorageEXT, <<Target:32/?UN, Internalformat:32/?UN, Width:32/?SN, Height:32/?SN>>).
 
-%% Func:    getRenderbufferParameterivEXT 
-%% Args:    Target, Pname
-%% Returns: [Params]
+%% @spec getRenderbufferParameterivEXT(Target::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetRenderbufferParameterivEXT">External manpage: getRenderbufferParameterivEXT</a>
 %% C-API func: void glGetRenderbufferParameterivEXT(GLenum target, GLenum pname, GLint * params)
 getRenderbufferParameterivEXT(Target, Pname) -> 
  Bin = call(?glGetRenderbufferParameterivEXT, <<Target:32/?UN, Pname:32/?UN>>), 
@@ -6084,9 +5465,8 @@ getRenderbufferParameterivEXT(Target, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    isFramebufferEXT 
-%% Args:    Framebuffer
-%% Returns: ?GL_BYTE
+%% @spec isFramebufferEXT(Framebuffer::integer()) -> bool()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glIsFramebufferEXT">External manpage: isFramebufferEXT</a>
 %% C-API func: GLboolean glIsFramebufferEXT(GLuint framebuffer)
 isFramebufferEXT(Framebuffer) -> 
  Bin = call(?glIsFramebufferEXT, <<Framebuffer:32/?UN>>), 
@@ -6096,16 +5476,14 @@ isFramebufferEXT(Framebuffer) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    bindFramebufferEXT 
-%% Args:    Target, Framebuffer
-%% Returns: ok
+%% @spec bindFramebufferEXT(Target::integer(), Framebuffer::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glBindFramebufferEXT">External manpage: bindFramebufferEXT</a>
 %% C-API func: void glBindFramebufferEXT(GLenum target, GLuint framebuffer)
 bindFramebufferEXT(Target, Framebuffer) -> 
  cast(?glBindFramebufferEXT, <<Target:32/?UN, Framebuffer:32/?UN>>).
 
-%% Func:    deleteFramebuffersEXT 
-%% Args:    N, <<[Framebuffers]>>
-%% Returns: ok
+%% @spec deleteFramebuffersEXT(N::integer(), Framebuffers::binary() | [integer()]) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glDeleteFramebuffersEXT">External manpage: deleteFramebuffersEXT</a>
 %% C-API func: void glDeleteFramebuffersEXT(GLsizei n,  const GLuint * framebuffers)
 deleteFramebuffersEXT(N, Framebuffers) -> 
  NewFramebuffers = if
@@ -6115,9 +5493,8 @@ deleteFramebuffersEXT(N, Framebuffers) ->
  end, 
  cast(?glDeleteFramebuffersEXT, [<<N:32/?SN>>,NewFramebuffers]).
 
-%% Func:    genFramebuffersEXT 
-%% Args:    N
-%% Returns: [Framebuffers]
+%% @spec genFramebuffersEXT(N::integer()) -> Framebuffers::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGenFramebuffersEXT">External manpage: genFramebuffersEXT</a>
 %% C-API func: void glGenFramebuffersEXT(GLsizei n, GLuint * framebuffers)
 genFramebuffersEXT(N) -> 
  Bin = call(?glGenFramebuffersEXT, <<N:32/?SN>>), 
@@ -6127,9 +5504,8 @@ genFramebuffersEXT(N) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    checkFramebufferStatusEXT 
-%% Args:    Target
-%% Returns: ?GL_INT
+%% @spec checkFramebufferStatusEXT(Target::integer()) -> integer()
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glCheckFramebufferStatusEXT">External manpage: checkFramebufferStatusEXT</a>
 %% C-API func: GLenum glCheckFramebufferStatusEXT(GLenum target)
 checkFramebufferStatusEXT(Target) -> 
  Bin = call(?glCheckFramebufferStatusEXT, <<Target:32/?UN>>), 
@@ -6139,37 +5515,32 @@ checkFramebufferStatusEXT(Target) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    framebufferTexture1DEXT 
-%% Args:    Target, Attachment, Textarget, Texture, Level
-%% Returns: ok
+%% @spec framebufferTexture1DEXT(Target::integer(), Attachment::integer(), Textarget::integer(), Texture::integer(), Level::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glFramebufferTexture1DEXT">External manpage: framebufferTexture1DEXT</a>
 %% C-API func: void glFramebufferTexture1DEXT(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level)
 framebufferTexture1DEXT(Target, Attachment, Textarget, Texture, Level) -> 
  cast(?glFramebufferTexture1DEXT, <<Target:32/?UN, Attachment:32/?UN, Textarget:32/?UN, Texture:32/?UN, Level:32/?SN>>).
 
-%% Func:    framebufferTexture2DEXT 
-%% Args:    Target, Attachment, Textarget, Texture, Level
-%% Returns: ok
+%% @spec framebufferTexture2DEXT(Target::integer(), Attachment::integer(), Textarget::integer(), Texture::integer(), Level::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glFramebufferTexture2DEXT">External manpage: framebufferTexture2DEXT</a>
 %% C-API func: void glFramebufferTexture2DEXT(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level)
 framebufferTexture2DEXT(Target, Attachment, Textarget, Texture, Level) -> 
  cast(?glFramebufferTexture2DEXT, <<Target:32/?UN, Attachment:32/?UN, Textarget:32/?UN, Texture:32/?UN, Level:32/?SN>>).
 
-%% Func:    framebufferTexture3DEXT 
-%% Args:    Target, Attachment, Textarget, Texture, Level, Zoffset
-%% Returns: ok
+%% @spec framebufferTexture3DEXT(Target::integer(), Attachment::integer(), Textarget::integer(), Texture::integer(), Level::integer(), Zoffset::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glFramebufferTexture3DEXT">External manpage: framebufferTexture3DEXT</a>
 %% C-API func: void glFramebufferTexture3DEXT(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level, GLint zoffset)
 framebufferTexture3DEXT(Target, Attachment, Textarget, Texture, Level, Zoffset) -> 
  cast(?glFramebufferTexture3DEXT, <<Target:32/?UN, Attachment:32/?UN, Textarget:32/?UN, Texture:32/?UN, Level:32/?SN, Zoffset:32/?SN>>).
 
-%% Func:    framebufferRenderbufferEXT 
-%% Args:    Target, Attachment, Renderbuffertarget, Renderbuffer
-%% Returns: ok
+%% @spec framebufferRenderbufferEXT(Target::integer(), Attachment::integer(), Renderbuffertarget::integer(), Renderbuffer::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glFramebufferRenderbufferEXT">External manpage: framebufferRenderbufferEXT</a>
 %% C-API func: void glFramebufferRenderbufferEXT(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer)
 framebufferRenderbufferEXT(Target, Attachment, Renderbuffertarget, Renderbuffer) -> 
  cast(?glFramebufferRenderbufferEXT, <<Target:32/?UN, Attachment:32/?UN, Renderbuffertarget:32/?UN, Renderbuffer:32/?UN>>).
 
-%% Func:    getFramebufferAttachmentParameterivEXT 
-%% Args:    Target, Attachment, Pname
-%% Returns: [Params]
+%% @spec getFramebufferAttachmentParameterivEXT(Target::integer(), Attachment::integer(), Pname::integer()) -> Params::[term()]
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGetFramebufferAttachmentParameterivEXT">External manpage: getFramebufferAttachmentParameterivEXT</a>
 %% C-API func: void glGetFramebufferAttachmentParameterivEXT(GLenum target, GLenum attachment, GLenum pname, GLint * params)
 getFramebufferAttachmentParameterivEXT(Target, Attachment, Pname) -> 
  Bin = call(?glGetFramebufferAttachmentParameterivEXT, <<Target:32/?UN, Attachment:32/?UN, Pname:32/?UN>>), 
@@ -6179,9 +5550,8 @@ getFramebufferAttachmentParameterivEXT(Target, Attachment, Pname) ->
 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
  end.
 
-%% Func:    generateMipmapEXT 
-%% Args:    Target
-%% Returns: ok
+%% @spec generateMipmapEXT(Target::integer()) -> ok
+%% @doc <a href="http://www.google.com/search?btnI=I%27m+Feeling+Lucky&amp;q=manual+pages+glGenerateMipmapEXT">External manpage: generateMipmapEXT</a>
 %% C-API func: void glGenerateMipmapEXT(GLenum target)
 generateMipmapEXT(Target) -> 
  cast(?glGenerateMipmapEXT, <<Target:32/?UN>>).

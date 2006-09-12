@@ -679,13 +679,19 @@ void egl_drawElements(sdl_data *egl_sd, int egl_len, char *egl_buff)
  GLenum * mode;
  GLsizei * count;
  GLenum * type;
- GLvoid * indices = NULL; 
+ GLvoid * indices = NULL;
  bp = egl_buff;
  mode = (GLenum *) bp; bp += sizeof(GLenum); 
  count = (GLsizei *) bp; bp += sizeof(GLsizei); 
  type = (GLenum *) bp; bp += sizeof(GLenum); 
- indices = (GLvoid *) bp;
+ if(egl_sd->next_bin == 0) {
+  indices = (GLvoid *) *(GLint *)bp;
+ } else {
+  indices = (GLvoid *) egl_sd->bin[0].base;
+ };
+ bp += sizeof(GLint);
  glDrawElements(*mode, *count, *type, indices);
+ sdl_free_binaries(egl_sd);
 }
 
 
@@ -1311,7 +1317,7 @@ void egl_getPointerv(sdl_data *egl_sd, int egl_len, char *egl_buff)
  pname = (GLenum *) bp; bp += sizeof(GLenum); 
  glGetPointerv(*pname, &params);
  bp = egl_start = sdl_get_temp_buff(egl_sd, sizeof(GLvoid*));
- /* putPointer(bp, params); BUGBUG not implemented */
+ PUSHGLPTR(params,bp);
  egl_sendlen = bp - egl_start;
  sdl_send(egl_sd, egl_sendlen);
 }
