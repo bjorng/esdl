@@ -13,46 +13,44 @@
 
 -record(f, {func, args, ret, capi, desc, ef}).
 
+-define(sdl_www, "http://www.libsdl.org/docs/html/").
+-define(gl_www, "http://www.sun.com/software/graphics/OpenGL/manpages/").
+
 start() ->
-    SdlWWW = "http://www.libsdl.org/docs/", %%video/functions.html#SDL_GetVideoSurface",
-    make(sdl, SdlWWW),
-    make(sdl_active, SdlWWW),     
-    make(sdl_audio, SdlWWW),
-    make(sdl_events, SdlWWW),
-    make(sdl_keyboard, SdlWWW),
-    make(sdl_mouse,  SdlWWW),
-    make(sdl_video, SdlWWW),
-    GLWWW = "http://www.sun.com/software/graphics/OpenGL/manpages/",
-    make(gl,  GLWWW),
-    make(glu, GLWWW),
+    make(sdl, ?sdl_www),
+    make(sdl_active, ?sdl_www),     
+    make(sdl_audio, ?sdl_www),
+    make(sdl_events, ?sdl_www),
+    make(sdl_keyboard, ?sdl_www),
+    make(sdl_mouse,  ?sdl_www),
+    make(sdl_video, ?sdl_www),
+    make(gl,  ?gl_www),
+    make(glu, ?gl_www),
     make(sdl_util, ""),
     ok.
 
 start([File]) ->
-    SdlWWW = "http://www.libsdl.org/docs/", %%video/functions.html#SDL_GetVideoSurface",
-    GLWWW = "http://www.sun.com/software/graphics/OpenGL/manpages/",
-%%    io:format("Makedoc: ~p~n", [File]),
     case File of 
 	'../src/sdl.erl' ->
-	    make(sdl, SdlWWW);
+	    make(sdl, ?sdl_www);
 	'../src/sdl_active.erl' ->
-	    make(sdl_active, SdlWWW);     
+	    make(sdl_active, ?sdl_www);     
 	'../src/sdl_audio.erl' ->
-	    make(sdl_audio, SdlWWW);
+	    make(sdl_audio, ?sdl_www);
 	'../src/sdl_events.erl' ->
-	    make(sdl_events, SdlWWW);
+	    make(sdl_events, ?sdl_www);
 	'../src/sdl_keyboard.erl' ->
-	    make(sdl_keyboard, SdlWWW);
+	    make(sdl_keyboard, ?sdl_www);
 	'../src/sdl_mouse.erl' ->
-	    make(sdl_mouse,  SdlWWW);
+	    make(sdl_mouse,  ?sdl_www);
 	'../src/sdl_joystick.erl' ->
-	    make(sdl_joystick,  SdlWWW);
+	    make(sdl_joystick,  ?sdl_www);
 	'../src/sdl_video.erl' ->
-	    make(sdl_video, SdlWWW);
+	    make(sdl_video, ?sdl_www);
 	'../src/gl.erl' ->
-	    make(gl,  GLWWW);
+	    make(gl,  ?gl_www);
 	'../src/glu.erl' ->
-	    make(glu, GLWWW);
+	    make(glu, ?gl_www);
 	'../src/sdl_util.erl'  ->
 	    make(sdl_util, "")
     end,
