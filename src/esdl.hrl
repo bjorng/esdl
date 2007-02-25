@@ -19,8 +19,10 @@
 -define(SDL_JOYSTICK_HRL,          133).
 -define(SDL_AUDIO_HRL,             150).
 -define(SDL_UTIL_HRL,              180).
--define(SDL_OPENGL_HRL,            200).
--define(SDL_OPENGLU_HRL,           600).
--define(SDL_OPENGL_EXTS_HRL,       700).   %/* Must be last */
--define(SDL_MAX_FUNCTIONS_HRL,    1023).   %/* Current Max.. Increase if needed */
+-define(SDL_TTF_HRL,               200).
+-define(SDL_IMG_HRL,               300).
+-define(SDL_OPENGL_HRL,            400).
+-define(SDL_OPENGLU_HRL,           800).
+-define(SDL_OPENGL_EXTS_HRL,       900).   %/* Must be last */
+-define(SDL_MAX_FUNCTIONS_HRL,    1279).   %/* Current Max.. Increase if needed */
 -endif.
