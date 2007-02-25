@@ -11,6 +11,11 @@ DATE    = $(shell date +%m%d)
 REL     = esdl-0.96.$(DATE)
 RELDIR  = /tmp/$(REL)
 
+# Include SDL_ttf and SDL_image support (yes/no)?
+# See c_src/Makefile for include paths etc.
+ENABLE_SDL_TTF = no
+ENABLE_SDL_IMAGE = no
+
 ifeq ($(OS_FLAG),mingw)
 TAR = tar
 SDL_DLL_DIR = $(SDLROOT)/lib
@@ -34,7 +39,8 @@ target clean:
                if test -f $$d/ignore_config_record.inf; then \
                   xflag=$$tflag ; \
                fi ;                    \
-              (cd $$d && $(MAKE) $$xflag $@) ; \
+	       eflags="ENABLE_SDL_TTF=$(ENABLE_SDL_TTF) ENABLE_SDL_IMAGE=$(ENABLE_SDL_IMAGE)" ; \
+              (cd $$d && $(MAKE) $$xflag $$eflags $@) ; \
             fi ;                           \
         done
 
