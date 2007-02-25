@@ -55,8 +55,12 @@ init(Flags) when is_integer(Flags) ->
 	    ignore
     end,
     case catch erl_ddll:load_driver(Path, "sdl_driver") of
-	ok -> ok;
-	R -> io:format("Driver Failed ~p ~n", [R])
+	ok -> 
+	    ok;
+	{error, R} -> 
+	    io:format("Driver failed: ~s ~n", [erl_ddll:format_error(R)]);
+	Other ->
+	    io:format("Driver crashed: ~p ~n", [Other])
     end,
     Port = open_port({spawn, "sdl_driver"}, [binary]),
     register(esdl_port, Port), 
