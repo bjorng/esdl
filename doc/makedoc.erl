@@ -215,7 +215,7 @@ lc([]) ->
     [];
 lc([$_|R]) ->
     lc(R);
-lc([A|R]) when A > $A, A < $a ->
+lc([A|R]) when A >= $A, A < $a ->
     [(A - $A + $a) | lc(R)];
 lc([A|R]) ->
     [A|lc(R)].
