@@ -24,11 +24,29 @@ else
   SDL_LIBS		= $(shell sdl-config --libs)
   SDL_INCS		= $(shell sdl-config --cflags)
 
-  LIBS			= $(GL_LIBS) $(SDL_LIBS) -lm 
+ifeq ($(ENABLE_SDL_TTF), yes)
+  SDL_TTF_LIBS          = -lSDL_ttf
+  SDL_TTF_INCS          =                     # specify if different from SDL
+  SDL_TTF_HELPER        = esdl_ttf
+  USE_SDL_TTF           = -D_USE_SDL_TTF
+endif
+
+ifeq ($(ENABLE_SDL_IMAGE), yes)
+  SDL_IMAGE_LIBS        = -lSDL_image
+  SDL_IMAGE_INCS        =                     # specify if different from SDL
+  SDL_IMAGE_HELPER      = esdl_img
+  USE_SDL_IMAGE         = -D_USE_SDL_IMAGE
+endif
+
+  LIBS			= $(GL_LIBS) $(SDL_LIBS) $(SDL_TTF_LIBS) \
+                          $(SDL_IMAGE_LIBS) -lm 
+  INCS                  = $(GL_INCS) $(SDL_INCS)  $(SDL_TTF_INCS) \
+                          $(SDL_IMAGE_INCS) $(ERL_INCS)
 
   CFLAGS		= -g -O2 -funroll-loops -Wall -ffast-math -fpic \
 			-fomit-frame-pointer $(USE_GL_INCLUDE_DIR) -DSHM \
-			-DPTHREADS $(GL_INCS) $(SDL_INCS) $(ERL_INCS)
+                        $(USE_SDL_TTF) $(USE_SDL_IMAGE) \
+			-DPTHREADS $(INCS)
 
   CLINKFLAGS 		=  -fpic -shared  
 
@@ -50,7 +68,8 @@ GCC_O	= $(CC) -c $(CFLAGS) $<
 
 Helpers		= esdl_wrapper esdl_gen esdl_spec esdl_util \
 			esdl_video esdl_events esdl_audio \
-			esdl_gl esdl_glu esdl_glext
+			esdl_gl esdl_glu esdl_glext \
+			$(SDL_TTF_HELPER) $(SDL_IMAGE_HELPER)
 
 HelpersObjects	= $(Helpers:%=%.o)
 
