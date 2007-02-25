@@ -98,10 +98,12 @@ void init_glexts(sdl_data*);
 #define JOYSTICK_H          133
 #define AUDIO_H             150
 #define SDL_UTIL_H          180
-#define OPENGL_H            200
-#define OPENGLU_H           600
-#define OPENGL_EXTS_H       700  /* Must be last */
-#define MAX_FUNCTIONS_H    1023  /* Current Max.. Increase if needed */
+#define TTF_H               200
+#define IMG_H               300
+#define OPENGL_H            400
+#define OPENGLU_H           800
+#define OPENGL_EXTS_H       900  /* Must be last */
+#define MAX_FUNCTIONS_H    1279  /* Current Max.. Increase if needed */
 
 #define SDL_InitFunc (SDL_H + 1)
 #define SDL_QuitFunc (SDL_InitFunc + 1)
@@ -111,6 +113,8 @@ void init_glexts(sdl_data*);
 #include "esdl_events.h"
 #include "esdl_audio.h"
 #include "esdl_util.h"
+#include "esdl_ttf.h"
+#include "esdl_img.h"
 
 void es_init(sdl_data *sd, int len, char * buff);
 void es_quit(sdl_data *sd, int len, char * buff);
