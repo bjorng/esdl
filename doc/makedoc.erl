@@ -14,6 +14,8 @@
 -record(f, {func, args, ret, capi, desc, ef}).
 
 -define(sdl_www, "http://www.libsdl.org/docs/html/").
+-define(sdl_ttf_www, "http://jcatki.no-ip.org/SDL_ttf/").
+-define(sdl_img_www, "http://jcatki.no-ip.org/SDL_image/").
 -define(gl_www, "http://www.sun.com/software/graphics/OpenGL/manpages/").
 
 start() ->
@@ -24,6 +26,8 @@ start() ->
     make(sdl_keyboard, ?sdl_www),
     make(sdl_mouse,  ?sdl_www),
     make(sdl_video, ?sdl_www),
+    make(sdl_ttf, ?sdl_ttf_www),
+    make(sdl_img, ?sdl_img_www),
     make(gl,  ?gl_www),
     make(glu, ?gl_www),
     make(sdl_util, ""),
@@ -47,6 +51,10 @@ start([File]) ->
 	    make(sdl_joystick,  ?sdl_www);
 	'../src/sdl_video.erl' ->
 	    make(sdl_video, ?sdl_www);
+	'../src/sdl_ttf.erl' ->
+	    make(sdl_ttf, ?sdl_ttf_www);
+	'../src/sdl_img.erl' ->
+	    make(sdl_img, ?sdl_img_www);
 	'../src/gl.erl' ->
 	    make(gl,  ?gl_www);
 	'../src/glu.erl' ->
@@ -189,6 +197,10 @@ gen_ext_ref(gl, Func, W) ->
     "<a href=\"" ++ W ++ get_capi_funcname(Func) ++ ".html\">C-API:</a>";
 gen_ext_ref(glu, Func, W) ->
     "<a href=\"" ++ W ++ get_capi_funcname(Func) ++ ".html\">C-API:</a>";
+gen_ext_ref(sdl_ttf, Func, W) ->
+    "<a href=\""++W++"SDL_ttf.html#"++get_capi_funcname(Func)++"\">C-API:</a>";
+gen_ext_ref(sdl_img, Func, W) ->
+    "<a href=\""++W++"SDL_image.html#"++get_capi_funcname(Func)++"\">C-API:</a>";
 gen_ext_ref(_, Func, W) ->
     "<a href=\"" ++ W ++ lc(get_capi_funcname(Func)) ++ ".html\">C-API:</a>".
 

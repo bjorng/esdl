@@ -5,7 +5,7 @@ ERLC = erlc
 DOCG = makedoc.beam
 DOC  = gl.html glu.html sdl.html sdl_active.html \
 	sdl_audio.html sdl_events.html sdl_keyboard.html sdl_mouse.html sdl_joystick.html \
-	sdl_util.html sdl_video.html
+	sdl_util.html sdl_video.html sdl_ttf.html sdl_img.html
 
 
 target: $(DOCG) $(DOC) 
