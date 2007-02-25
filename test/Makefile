@@ -5,7 +5,7 @@
 #     $Id$
 #
 
-TestMods	= testsprite testgl testbin erldemo testaudio testjoy testglutess
+TestMods	= testsprite testgl testbin erldemo testaudio testjoy testglutess test_glfont test_ttf test_glimg
 TestTargets	= $(TestMods:%=%.beam)
 
 # Targets
