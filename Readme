@@ -9,6 +9,9 @@ SDL (Simple DirectMedia Layer) is as said on the web page (www.libsdl.org):
 Simple DirectMedia Layer is a cross-platform multimedia library
 designed to provide fast access to the graphics framebuffer and audio
 device. It also do event handling from mouse, keyboards and joysticks.
+It is also possible to use TrueType fonts through SDL_ttf
+(www.libsdl.org/projects/SDL_ttf/) and images through SDL_image
+(www.libsdl.org/projects/SDL_image/).
 
 OpenGL is a cross-platform standard for 3D rendering and
 3D hardware acceleration. 
@@ -21,6 +24,9 @@ You need erlang (www.erlang.org) version R9B.
 You need libsdl (www.libsdl.org) (the development package) version > 1.2.5
 You need opengl (with glu-1.2 (full version) libraries from your 
 	        hardware manufacturer or a software version from www.mesa3d.org.
+And optionally you'll need:
+* SDL_ttf (www.libsdl.org/projects/SDL_ttf/) version > 2.0.7
+* SDL_image (www.libsdl.org/projects/SDL_image/) version > 1.2.4
 
 Precompiled versions are available for windows. 
 
@@ -34,7 +40,17 @@ to header files and libraries.
 To sucessfully build esdl you need complete GLU version 1.2 or later,
 many linux system has a mesa-glu which don't have the correct tesselation
 routines, download the prebuilt sgi-version from www.mesa3d.org and click 
-on SGI-GLU link to find a rpm.
+on SGI-GLU link to find a rpm.  Optionally you'll also need SDL_ttf
+for the font support and SDL_image for the image support.
+
+    Note: SDL_ttf and SDL_image are disabled by default, since they
+          depend on libraries not in the plain vanilla SDL packages.
+          By making them optional one can compile and run esdl without
+          having to bother about getting hold of the SDL_ttf and
+          SDL_image libraries.  Enable them in the Makefile:
+
+              ENABLE_SDL_TTF = yes
+              ENABLE_SDL_IMAGE = yes
 
 Install sdl so that the os can find the dynamic libraries:
 On windows: put the .dll's somewhere in your path or in $ESDL_PATH/priv
@@ -52,6 +68,9 @@ Eshell V5.1.1  (abort with ^G)
 3> erldemo:go().
 4> testaudio:go(). 
 5> testjoy:go().
+6> test_ttf:go("/usr/share/fonts/truetype/freefont/FreeSerif.ttf", 20).
+7> test_glfont:go("/usr/share/fonts/truetype/freefont/FreeSans.ttf").
+8> test_glimg:go().
 
 Note: Using esdl on nvidia cards and their drivers requires that erlang
 was built with threads. 
@@ -86,6 +105,13 @@ sdl_event.erl, sdl_active.erl, sdl_keyboard.erl, sdl_mouse.erl.
 sdl_audio.erl handles some of the audio functions, the audio part needs
 more work.
 The cdrom, threads and time functions are not implemented.
+
+sdl_ttf.erl takes care of the TrueType fonts.
+
+sdl_img.erl loads images onto SDL surfaces.  None of the SDL_RWops
+functions (which are the greater part of the API) are implemented.
+The existing support will suffice in most cases though (e.g. loading
+images from file).
 
 Opengl is defined in the gl.erl module, everything in opengl-1.4 is
 implemented, note that it depends on the dirvers which functions are
