@@ -462,7 +462,7 @@ void es_createRGBSurface(sdl_data *sd, int len, char *buff){
    rmask  = get32be(bp);
    gmask  = get32be(bp);
    bmask  = get32be(bp);
-   amask  = get16be(bp);
+   amask  = get32be(bp);
      }
    else
      {
