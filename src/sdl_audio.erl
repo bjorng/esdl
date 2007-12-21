@@ -115,7 +115,7 @@ loadWAV(File) ->
 			samples=Samps, padding=Padding, size=Size}, 
 	     #audiop{ptr=BufferPtr,size=BufferLen}};
 	Else ->
-	    erlang:fault({load_wav_failed, Else})
+	    erlang:error({load_wav_failed, Else})
     end.
 
 %% Func:    freeWAV
@@ -166,5 +166,5 @@ convertAudio(FromAS, ToAS, #audiop{ptr=Ptr,size=Size}) ->
 	<<NBufferPtr:64/unsigned-native, NBufferLen:32/unsigned>> when NBufferPtr /= 0 ->
 	    #audiop{ptr=NBufferPtr,size=NBufferLen};
 	_ ->
-	    erlang:fault({error, Res})
+	    erlang:error({error, Res})
     end.

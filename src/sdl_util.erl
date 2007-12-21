@@ -90,7 +90,7 @@ readBin(#sdlmem{type=Type,bin=Bin}, Size) ->
 	    list_to_binary([Data]);
 	true ->
 	    %% Non-byte type. No longer supported.
-            erlang:fault({non_byte_type,Type})
+            erlang:error({non_byte_type,Type})
     end.
 
 %% Func:    write

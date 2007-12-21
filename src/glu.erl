@@ -158,7 +158,7 @@ build1DMipmaps(Target, InternalFormat, Width, Format, Type, Data) ->
 		Type:32/unsigned-native>>),
     case Bin of 
 	<<Ret:32/signed-native>> -> Ret;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
     end.
 
 %% Func:    build2DMipmaps 
@@ -173,7 +173,7 @@ build2DMipmaps(Target, InternalFormat, Width, Height, Format, Type, Data) ->
 		Format:32/unsigned-native, Type:32/unsigned-native>>), 
     case Bin of 
 	<<Ret:32/signed-native>> ->  Ret;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
     end.
 
 % %% Func:    build3DMipmaps 
@@ -184,13 +184,13 @@ build2DMipmaps(Target, InternalFormat, Width, Height, Format, Type, Data) ->
 %  NewData = if
 % 	is_binary(Data) -> [<<0:32/native, (size(Data)):32/native-unsigned>>, Data];
 % 	record(Data, sdlmem) -><<1:32/native, (Data#sdlmem.ptr):32/big-unsigned>>;
-% 	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Data})
+% 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Data})
 %  end, 
 %  Bin = call(?gluBuild3DMipmaps, [<<Target:32/unsigned-native, InternalFormat:32/signed-native, Width:32/signed-native, Height:32/signed-native, Depth:32/signed-native, Format:32/unsigned-native, Type:32/unsigned-native>>,NewData]), 
 %  case Bin of 
 % 	<<Ret:32/signed-native>> -> 
 %    Ret;
-% 	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+% 	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
 %  end.
 
 %% Func:    cylinder 
@@ -257,7 +257,7 @@ errorString(Error) ->
  Bin = call(?gluErrorString, <<Error:32/unsigned-native>>), 
  case Bin of 
 	Ret -> bin2list(undefined,?GL_UNSIGNED_BYTE,Ret);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% Func:    getNurbsProperty 
@@ -269,7 +269,7 @@ getNurbsProperty(Nurb=#nurbsPtr{}, Property) ->
  case Bin of 
 	<<Data:32/float-native>> -> 
 	 Data;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% Func:    getString 
@@ -280,7 +280,7 @@ getString(Name) ->
  Bin = call(?gluGetString, <<Name:32/unsigned-native>>), 
  case Bin of 
 	Ret -> bin2list(undefined,?GL_UNSIGNED_BYTE,Ret);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% Func:    getTessProperty 
@@ -292,7 +292,7 @@ getTessProperty(Tess=#tessPtr{}, Which) ->
  case Bin of 
 	<<Data:64/float-native>> -> 
 	 Data;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% Func:    loadSamplingMatrices 
@@ -303,17 +303,17 @@ loadSamplingMatrices(Nurb=#nurbsPtr{}, Model, Perspective, View) ->
  NewModel = if
 	is_list(Model) ; is_tuple(Model) -> matrix2bin(Model, ?GL_FLOAT);
 	binary(Model) -> Model;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Model})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Model})
  end, 
  NewPerspective = if
 	is_list(Perspective) ; is_tuple(Perspective) -> term2bin(Perspective, 16, ?GL_FLOAT);
 	binary(Perspective) -> Perspective;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Perspective})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Perspective})
  end, 
  NewView = if
 	is_list(View) ; is_tuple(View) -> term2bin(View, 16, ?GL_INT);
 	binary(View) -> View;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, View})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, View})
  end, 
  cast(?gluLoadSamplingMatrices, [<<(Nurb#nurbsPtr.ptr):?_PTR>>,NewModel, NewPerspective, NewView]).
 
@@ -333,7 +333,7 @@ newNurbsRenderer() ->
  case Bin of 
 	<<Ret:?_PTR>> -> 
   #nurbsPtr{ptr=Ret};
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% Func:    newQuadric 
@@ -345,7 +345,7 @@ newQuadric() ->
  case Bin of 
 	<<Ret:?_PTR>> -> 
   #quadricPtr{ptr=Ret};
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% Func:    newTess 
@@ -357,7 +357,7 @@ newTess() ->
  case Bin of 
      <<Ret:?_PTR>> -> 
 	 #tessPtr{ptr=Ret};
-     Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+     Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% Func:    nurbsCurve 
@@ -368,7 +368,7 @@ nurbsCurve(Nurb=#nurbsPtr{}, KnotCount, Knots, Stride, Control, Order, Type) ->
     NewKnots = if
 		   is_list(Knots) ; is_tuple(Knots) -> term2bin(Knots, KnotCount, ?GL_FLOAT);
 		   is_binary(Knots) -> Knots;
-		   true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Knots})
+		   true -> erlang:error({?MODULE, ?LINE, unsupported_type, Knots})
 	       end, 
     sdl:send_bin(Control, ?MODULE, ?LINE),
     cast(?gluNurbsCurve, [<<(Nurb#nurbsPtr.ptr):?_PTR,
@@ -391,12 +391,12 @@ nurbsSurface(Nurb=#nurbsPtr{}, SKnotCount, SKnots, TKnotCount, TKnots, SStride, 
     NewSKnots = if
 		    is_list(SKnots) ; is_tuple(SKnots) -> term2bin(SKnots, SKnotCount, ?GL_FLOAT);
 		    is_binary(SKnots) -> SKnots;
-		    true -> erlang:fault({?MODULE, ?LINE, unsupported_type, SKnots})
+		    true -> erlang:error({?MODULE, ?LINE, unsupported_type, SKnots})
 		end, 
     NewTKnots = if
 		    is_list(TKnots) ; is_tuple(TKnots) -> term2bin(TKnots, TKnotCount, ?GL_FLOAT);
 		    is_binary(TKnots) -> TKnots;
-		    true -> erlang:fault({?MODULE, ?LINE, unsupported_type, TKnots})
+		    true -> erlang:error({?MODULE, ?LINE, unsupported_type, TKnots})
 		end, 
     sdl:send_bin(Control, ?MODULE, ?LINE),
  cast(?gluNurbsSurface,
@@ -434,7 +434,7 @@ pickMatrix(X, Y, DelX, DelY, Viewport) ->
  NewViewport = if
 	is_list(Viewport) ; is_tuple(Viewport) -> term2bin(Viewport, 4, ?GL_INT);
 	binary(Viewport) -> Viewport;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Viewport})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Viewport})
  end, 
  cast(?gluPickMatrix, [<<X:64/float-native, Y:64/float-native, DelX:64/float-native, DelY:64/float-native>>,NewViewport]).
 
@@ -446,17 +446,17 @@ project(ObjX, ObjY, ObjZ, Model, Proj, View) ->
  NewModel = if
 	is_list(Model) ; is_tuple(Model) -> term2bin(Model, 16, ?GL_DOUBLE);
 	binary(Model) -> Model;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Model})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Model})
  end, 
  NewProj = if
 	is_list(Proj) ; is_tuple(Proj) -> term2bin(Proj, 16, ?GL_DOUBLE);
 	binary(Proj) -> Proj;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Proj})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Proj})
  end, 
  NewView = if
 	is_list(View) ; is_tuple(View) -> term2bin(View, 4, ?GL_INT);
 	binary(View) -> View;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, View})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, View})
  end, 
  Res = call(?gluProject, [<<ObjX:64/float-native, ObjY:64/float-native, ObjZ:64/float-native>>,NewModel, NewProj, NewView]), 
  case Res of
@@ -514,7 +514,7 @@ scaleImage(Format, WIn, HIn, TypeIn, DataIn, WOut, HOut, TypeOut, #sdlmem{bin=Da
  case Bin of 
 	<<Ret:32/signed-native>> -> 
    Ret;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% Func:    sphere 
@@ -568,17 +568,17 @@ unProject(WinX, WinY, WinZ, Model, Proj, View) ->
  NewModel = if
 	is_list(Model) ; is_tuple(Model) -> term2bin(Model, 16, ?GL_DOUBLE);
 	binary(Model) -> Model;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Model})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Model})
  end, 
  NewProj = if
 	is_list(Proj) ; is_tuple(Proj) -> term2bin(Proj, 16, ?GL_DOUBLE);
 	binary(Proj) -> Proj;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Proj})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Proj})
  end, 
  NewView = if
 	is_list(View) ; is_tuple(View) -> term2bin(View, 4, ?GL_INT);
 	binary(View) -> View;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, View})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, View})
  end, 
  Res = call(?gluUnProject, [<<WinX:64/float-native, WinY:64/float-native, WinZ:64/float-native>>,NewModel, NewProj, NewView]), 
  case Res of

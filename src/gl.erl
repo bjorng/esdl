@@ -388,13 +388,13 @@ areTexturesResident(N, Textures) ->
  NewTextures = if
 	is_list(Textures) ; is_tuple(Textures) -> term2bin(Textures, N, ?GL_UNSIGNED_INT);
 	is_binary(Textures) -> Textures;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Textures})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Textures})
  end, 
  Bin = call(?glAreTexturesResident, [<<N:32/?SN>>,NewTextures]), 
  case Bin of 
 	<<Ret:8/unsigned, Residences:N/binary-unit:?GL_BYTE_SIZE>> -> 
 	 {Ret /= ?GL_FALSE, bin2list(N, ?GL_BYTE, Residences)};
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec arrayElement(I::integer()) -> ok
@@ -447,7 +447,7 @@ callLists(N, Type, Lists) ->
  NewLists = if
 	is_list(Lists) ; is_tuple(Lists) -> term2bin(Lists, N, Type);
 	is_binary(Lists) -> Lists;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Lists})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Lists})
  end, 
  cast(?glCallLists, [<<N:32/?SN, Type:32/?UN>>,NewLists]).
 
@@ -494,7 +494,7 @@ clipPlane(Plane, Equation) ->
  NewEquation = if
 	is_list(Equation) ; is_tuple(Equation) -> term2bin(Equation, 4, ?GL_DOUBLE);
 	binary(Equation) -> Equation;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Equation})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Equation})
  end, 
  cast(?glClipPlane, [<<Plane:32/?UN>>,NewEquation]).
 
@@ -764,7 +764,7 @@ deleteTextures(N, Textures) ->
  NewTextures = if
 	is_list(Textures) ; is_tuple(Textures) -> term2bin(Textures, N, ?GL_UNSIGNED_INT);
 	is_binary(Textures) -> Textures;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Textures})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Textures})
  end, 
  cast(?glDeleteTextures, [<<N:32/?SN>>,NewTextures]).
 
@@ -818,7 +818,7 @@ drawElements(Mode, Count, Type, Indices) ->
  NewIndices = if is_integer(Indices) -> Indices; 
 	is_list(Indices) ; is_tuple(Indices) -> sdl:send_bin(list_to_binary(term2bin(Indices, Count, Type)),?MODULE,?LINE),0;
 	is_binary(Indices) -> sdl:send_bin(Indices, ?MODULE, ?LINE),0;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Indices})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Indices})
  end, 
  cast(?glDrawElements, [<<Mode:32/?UN, Count:32/?SN, Type:32/?UN, NewIndices:32/?SN>>]).
 
@@ -861,7 +861,7 @@ edgeFlagv(Flag) ->
  NewFlag = if
 	is_list(Flag) ; is_tuple(Flag) -> term2bin(Flag, 1, ?GL_BYTE);
 	binary(Flag) -> Flag;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Flag})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Flag})
  end, 
  cast(?glEdgeFlagv, [ NewFlag]).
 
@@ -996,7 +996,7 @@ fogfv(Pname, Params) ->
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_FLOAT)];
 	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glFogfv, [<<Pname:32/?UN>>,NewParams]).
 
@@ -1016,7 +1016,7 @@ fogiv(Pname, Params) ->
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_INT)];
 	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glFogiv, [<<Pname:32/?UN>>,NewParams]).
 
@@ -1040,7 +1040,7 @@ genLists(Range) ->
  case Bin of 
 	<<Ret:32/?UN>> -> 
    Ret;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec genTextures(N::integer()) -> Textures::[term()]
@@ -1051,7 +1051,7 @@ genTextures(N) ->
  case Bin of 
 	<<Textures:N/binary-unit:?GL_UNSIGNED_INT_SIZE>> -> 
 	 bin2list(N, ?GL_UNSIGNED_INT, Textures);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getBooleanv(Pname::integer()) -> Params::[term()]
@@ -1064,7 +1064,7 @@ getBooleanv(Pname) ->
  case Bin of 
 	<<Params:ParamsLen/binary-unit:?GL_BYTE_SIZE,_:ParamsBump/binary-unit:?GL_BYTE_SIZE>> -> 
 	 bin2list(ParamsLen, ?GL_BYTE, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getClipPlane(Plane::integer()) -> Equation::[term()]
@@ -1075,7 +1075,7 @@ getClipPlane(Plane) ->
  case Bin of 
 	<<Equation:4/binary-unit:?GL_DOUBLE_SIZE>> -> 
 	 bin2list(4, ?GL_DOUBLE, Equation);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getDoublev(Pname::integer()) -> Params::[term()]
@@ -1088,7 +1088,7 @@ getDoublev(Pname) ->
  case Bin of 
 	<<Params:ParamsLen/binary-unit:?GL_DOUBLE_SIZE,_:ParamsBump/binary-unit:?GL_DOUBLE_SIZE>> -> 
 	 bin2list(ParamsLen, ?GL_DOUBLE, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getError() -> integer()
@@ -1099,7 +1099,7 @@ getError() ->
  case Bin of 
 	<<Ret:32/?UN>> -> 
    Ret;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getFloatv(Pname::integer()) -> Params::[term()]
@@ -1112,7 +1112,7 @@ getFloatv(Pname) ->
  case Bin of 
 	<<Params:ParamsLen/binary-unit:?GL_FLOAT_SIZE,_:ParamsBump/binary-unit:?GL_FLOAT_SIZE>> -> 
 	 bin2list(ParamsLen, ?GL_FLOAT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getIntegerv(Pname::integer()) -> Params::[term()]
@@ -1125,7 +1125,7 @@ getIntegerv(Pname) ->
  case Bin of 
 	<<Params:ParamsLen/binary-unit:?GL_INT_SIZE,_:ParamsBump/binary-unit:?GL_INT_SIZE>> -> 
 	 bin2list(ParamsLen, ?GL_INT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getLightfv(Light::integer(), Pname::integer()) -> Params::[term()]
@@ -1138,7 +1138,7 @@ getLightfv(Light, Pname) ->
  case Bin of 
 	<<Params:ParamsLen/binary-unit:?GL_FLOAT_SIZE,_:ParamsBump/binary-unit:?GL_FLOAT_SIZE>> -> 
 	 bin2list(ParamsLen, ?GL_FLOAT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getLightiv(Light::integer(), Pname::integer()) -> Params::[term()]
@@ -1151,7 +1151,7 @@ getLightiv(Light, Pname) ->
  case Bin of 
 	<<Params:ParamsLen/binary-unit:?GL_INT_SIZE,_:ParamsBump/binary-unit:?GL_INT_SIZE>> -> 
 	 bin2list(ParamsLen, ?GL_INT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getMapdv(Target::integer(), Query::integer(), V::sdlmem()) -> ok
@@ -1185,7 +1185,7 @@ getMaterialfv(Face, Pname) ->
  case Bin of 
 	<<Params:ParamsLen/binary-unit:?GL_FLOAT_SIZE,_:ParamsBump/binary-unit:?GL_FLOAT_SIZE>> -> 
 	 bin2list(ParamsLen, ?GL_FLOAT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getMaterialiv(Face::integer(), Pname::integer()) -> Params::[term()]
@@ -1198,7 +1198,7 @@ getMaterialiv(Face, Pname) ->
  case Bin of 
 	<<Params:ParamsLen/binary-unit:?GL_INT_SIZE,_:ParamsBump/binary-unit:?GL_INT_SIZE>> -> 
 	 bin2list(ParamsLen, ?GL_INT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getPixelMapfv(Map::integer(), Values::sdlmem()) -> ok
@@ -1229,8 +1229,8 @@ getPointerv(Pname) ->
  Bin = call(?glGetPointerv, <<Pname:32/?UN>>), 
  case Bin of 
 	<<Params:32/big-unsigned>> -> 
-	 erlang:fault({nyi, ?MODULE,?LINE});
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	 erlang:error({nyi, ?MODULE,?LINE});
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getPolygonStipple() -> Mask::[term()]
@@ -1241,7 +1241,7 @@ getPolygonStipple() ->
  case Bin of 
 	<<Mask:128/binary-unit:?GL_UNSIGNED_BYTE_SIZE>> -> 
 	 bin2list(128, ?GL_UNSIGNED_BYTE, Mask);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getString(Name::integer()) -> [integer()]
@@ -1251,7 +1251,7 @@ getString(Name) ->
  Bin = call(?glGetString, <<Name:32/?UN>>), 
  case Bin of 
 	Ret -> bin2list(undefined,?GL_UNSIGNED_BYTE,Ret);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getTexEnvfv(Target::integer(), Pname::integer()) -> Params::[term()]
@@ -1264,7 +1264,7 @@ getTexEnvfv(Target, Pname) ->
  case Bin of 
 	<<Params:ParamsLen/binary-unit:?GL_FLOAT_SIZE,_:ParamsBump/binary-unit:?GL_FLOAT_SIZE>> -> 
 	 bin2list(ParamsLen, ?GL_FLOAT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getTexEnviv(Target::integer(), Pname::integer()) -> Params::[term()]
@@ -1277,7 +1277,7 @@ getTexEnviv(Target, Pname) ->
  case Bin of 
 	<<Params:ParamsLen/binary-unit:?GL_INT_SIZE,_:ParamsBump/binary-unit:?GL_INT_SIZE>> -> 
 	 bin2list(ParamsLen, ?GL_INT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getTexGendv(Coord::integer(), Pname::integer()) -> Params::[term()]
@@ -1290,7 +1290,7 @@ getTexGendv(Coord, Pname) ->
  case Bin of 
 	<<Params:ParamsLen/binary-unit:?GL_DOUBLE_SIZE,_:ParamsBump/binary-unit:?GL_DOUBLE_SIZE>> -> 
 	 bin2list(ParamsLen, ?GL_DOUBLE, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getTexGenfv(Coord::integer(), Pname::integer()) -> Params::[term()]
@@ -1303,7 +1303,7 @@ getTexGenfv(Coord, Pname) ->
  case Bin of 
 	<<Params:ParamsLen/binary-unit:?GL_FLOAT_SIZE,_:ParamsBump/binary-unit:?GL_FLOAT_SIZE>> -> 
 	 bin2list(ParamsLen, ?GL_FLOAT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getTexGeniv(Coord::integer(), Pname::integer()) -> Params::[term()]
@@ -1316,7 +1316,7 @@ getTexGeniv(Coord, Pname) ->
  case Bin of 
 	<<Params:ParamsLen/binary-unit:?GL_INT_SIZE,_:ParamsBump/binary-unit:?GL_INT_SIZE>> -> 
 	 bin2list(ParamsLen, ?GL_INT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getTexImage(Target::integer(), Level::integer(), Format::integer(), Type::integer(), Pixels::sdlmem()) -> ok
@@ -1334,7 +1334,7 @@ getTexLevelParameterfv(Target, Level, Pname) ->
  case Bin of 
 	<<Params:32/?FN>> -> 
 	 Params;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getTexLevelParameteriv(Target::integer(), Level::integer(), Pname::integer()) -> Params::[term()]
@@ -1345,7 +1345,7 @@ getTexLevelParameteriv(Target, Level, Pname) ->
  case Bin of 
 	<<Params:32/?SN>> -> 
 	 Params;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getTexParameterfv(Target::integer(), Pname::integer()) -> Params::[term()]
@@ -1358,7 +1358,7 @@ getTexParameterfv(Target, Pname) ->
  case Bin of 
 	<<Params:ParamsLen/binary-unit:?GL_FLOAT_SIZE,_:ParamsBump/binary-unit:?GL_FLOAT_SIZE>> -> 
 	 bin2list(ParamsLen, ?GL_FLOAT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getTexParameteriv(Target::integer(), Pname::integer()) -> Params::[term()]
@@ -1371,7 +1371,7 @@ getTexParameteriv(Target, Pname) ->
  case Bin of 
 	<<Params:ParamsLen/binary-unit:?GL_INT_SIZE,_:ParamsBump/binary-unit:?GL_INT_SIZE>> -> 
 	 bin2list(ParamsLen, ?GL_INT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec hint(Target::integer(), Mode::integer()) -> ok
@@ -1412,7 +1412,7 @@ indexdv(C) ->
  NewC = if
 	is_list(C) ; is_tuple(C) -> term2bin(C, 1, ?GL_DOUBLE);
 	binary(C) -> C;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, C})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, C})
  end, 
  cast(?glIndexdv, [ NewC]).
 
@@ -1429,7 +1429,7 @@ indexfv(C) ->
  NewC = if
 	is_list(C) ; is_tuple(C) -> term2bin(C, 1, ?GL_FLOAT);
 	binary(C) -> C;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, C})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, C})
  end, 
  cast(?glIndexfv, [ NewC]).
 
@@ -1446,7 +1446,7 @@ indexiv(C) ->
  NewC = if
 	is_list(C) ; is_tuple(C) -> term2bin(C, 1, ?GL_INT);
 	binary(C) -> C;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, C})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, C})
  end, 
  cast(?glIndexiv, [ NewC]).
 
@@ -1463,7 +1463,7 @@ indexsv(C) ->
  NewC = if
 	is_list(C) ; is_tuple(C) -> term2bin(C, 1, ?GL_SHORT);
 	binary(C) -> C;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, C})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, C})
  end, 
  cast(?glIndexsv, [ NewC]).
 
@@ -1480,7 +1480,7 @@ indexubv(C) ->
  NewC = if
 	is_list(C) ; is_tuple(C) -> term2bin(C, 1, ?GL_UNSIGNED_BYTE);
 	binary(C) -> C;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, C})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, C})
  end, 
  cast(?glIndexubv, [ NewC]).
 
@@ -1511,7 +1511,7 @@ isEnabled(Cap) ->
  case Bin of 
 	<<Ret:8/unsigned>> -> 
    Ret /= ?GL_FALSE;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec isList(List::integer()) -> bool()
@@ -1522,7 +1522,7 @@ isList(List) ->
  case Bin of 
 	<<Ret:8/unsigned>> -> 
    Ret /= ?GL_FALSE;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec isTexture(Texture::integer()) -> bool()
@@ -1533,7 +1533,7 @@ isTexture(Texture) ->
  case Bin of 
 	<<Ret:8/unsigned>> -> 
    Ret /= ?GL_FALSE;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec lightModelf(Pname::integer(), Param::float()) -> ok
@@ -1552,7 +1552,7 @@ lightModelfv(Pname, Params) ->
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_FLOAT)];
 	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glLightModelfv, [<<Pname:32/?UN>>,NewParams]).
 
@@ -1572,7 +1572,7 @@ lightModeliv(Pname, Params) ->
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_INT)];
 	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glLightModeliv, [<<Pname:32/?UN>>,NewParams]).
 
@@ -1592,7 +1592,7 @@ lightfv(Light, Pname, Params) ->
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_FLOAT)];
 	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glLightfv, [<<Light:32/?UN, Pname:32/?UN>>,NewParams]).
 
@@ -1612,7 +1612,7 @@ lightiv(Light, Pname, Params) ->
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_INT)];
 	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glLightiv, [<<Light:32/?UN, Pname:32/?UN>>,NewParams]).
 
@@ -1647,7 +1647,7 @@ loadMatrixd(M) ->
  NewM = if
 	is_list(M) ; is_tuple(M) -> matrix2bin(M, ?GL_DOUBLE);
 	binary(M) -> M;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, M})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, M})
  end, 
  cast(?glLoadMatrixd, [ NewM]).
 
@@ -1658,7 +1658,7 @@ loadMatrixf(M) ->
  NewM = if
 	is_list(M) ; is_tuple(M) -> matrix2bin(M, ?GL_FLOAT);
 	binary(M) -> M;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, M})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, M})
  end, 
  cast(?glLoadMatrixf, [ NewM]).
 
@@ -1684,7 +1684,7 @@ map1d(Target, U1, U2, Stride, Order, Points) ->
 	is_tuple(Points) ->  PointsLen = size(Points), 
 	  [<<PointsLen:32/native>>, term2bin(Points, PointsLen, ?GL_DOUBLE)];
 	is_binary(Points) -> [<<(size(Points) div 8):32/native>>,Points];
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Points})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Points})
  end, 
  cast(?glMap1d, [<<Target:32/?UN, U1:64/?FN, U2:64/?FN, Stride:32/?SN, Order:32/?SN>>,NewPoints]).
 
@@ -1698,7 +1698,7 @@ map1f(Target, U1, U2, Stride, Order, Points) ->
 	is_tuple(Points) ->  PointsLen = size(Points), 
 	  [<<PointsLen:32/native>>, term2bin(Points, PointsLen, ?GL_FLOAT)];
 	is_binary(Points) -> [<<(size(Points) div 4):32/native>>,Points];
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Points})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Points})
  end, 
  cast(?glMap1f, [<<Target:32/?UN, U1:32/?FN, U2:32/?FN, Stride:32/?SN, Order:32/?SN>>,NewPoints]).
 
@@ -1712,7 +1712,7 @@ map2d(Target, U1, U2, Ustride, Uorder, V1, V2, Vstride, Vorder, Points) ->
 	is_tuple(Points) ->  PointsLen = size(Points), 
 	  [<<PointsLen:32/native>>, term2bin(Points, PointsLen, ?GL_DOUBLE)];
 	is_binary(Points) -> [<<(size(Points) div 8):32/native>>,Points];
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Points})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Points})
  end, 
  cast(?glMap2d, [<<Target:32/?UN, U1:64/?FN, U2:64/?FN, Ustride:32/?SN, Uorder:32/?SN, V1:64/?FN, V2:64/?FN, Vstride:32/?SN, Vorder:32/?SN>>,NewPoints]).
 
@@ -1726,7 +1726,7 @@ map2f(Target, U1, U2, Ustride, Uorder, V1, V2, Vstride, Vorder, Points) ->
 	is_tuple(Points) ->  PointsLen = size(Points), 
 	  [<<PointsLen:32/native>>, term2bin(Points, PointsLen, ?GL_FLOAT)];
 	is_binary(Points) -> [<<(size(Points) div 4):32/native>>,Points];
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Points})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Points})
  end, 
  cast(?glMap2f, [<<Target:32/?UN, U1:32/?FN, U2:32/?FN, Ustride:32/?SN, Uorder:32/?SN, V1:32/?FN, V2:32/?FN, Vstride:32/?SN, Vorder:32/?SN>>,NewPoints]).
 
@@ -1770,7 +1770,7 @@ materialfv(Face, Pname, Params) ->
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_FLOAT)];
 	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glMaterialfv, [<<Face:32/?UN, Pname:32/?UN>>,NewParams]).
 
@@ -1790,7 +1790,7 @@ materialiv(Face, Pname, Params) ->
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_INT)];
 	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glMaterialiv, [<<Face:32/?UN, Pname:32/?UN>>,NewParams]).
 
@@ -1807,7 +1807,7 @@ multMatrixd(M) ->
  NewM = if
 	is_list(M) ; is_tuple(M) -> matrix2bin(M, ?GL_DOUBLE);
 	binary(M) -> M;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, M})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, M})
  end, 
  cast(?glMultMatrixd, [ NewM]).
 
@@ -1818,7 +1818,7 @@ multMatrixf(M) ->
  NewM = if
 	is_list(M) ; is_tuple(M) -> matrix2bin(M, ?GL_FLOAT);
 	binary(M) -> M;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, M})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, M})
  end, 
  cast(?glMultMatrixf, [ NewM]).
 
@@ -1920,7 +1920,7 @@ pixelMapfv(Map, Mapsize, Values) ->
  NewValues = if
 	is_list(Values) ; is_tuple(Values) -> term2bin(Values, Mapsize, ?GL_FLOAT);
 	is_binary(Values) -> Values;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Values})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Values})
  end, 
  cast(?glPixelMapfv, [<<Map:32/?UN, Mapsize:32/?SN>>,NewValues]).
 
@@ -1931,7 +1931,7 @@ pixelMapuiv(Map, Mapsize, Values) ->
  NewValues = if
 	is_list(Values) ; is_tuple(Values) -> term2bin(Values, Mapsize, ?GL_UNSIGNED_INT);
 	is_binary(Values) -> Values;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Values})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Values})
  end, 
  cast(?glPixelMapuiv, [<<Map:32/?UN, Mapsize:32/?SN>>,NewValues]).
 
@@ -1942,7 +1942,7 @@ pixelMapusv(Map, Mapsize, Values) ->
  NewValues = if
 	is_list(Values) ; is_tuple(Values) -> term2bin(Values, Mapsize, ?GL_UNSIGNED_SHORT);
 	is_binary(Values) -> Values;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Values})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Values})
  end, 
  cast(?glPixelMapusv, [<<Map:32/?UN, Mapsize:32/?SN>>,NewValues]).
 
@@ -2001,7 +2001,7 @@ polygonStipple(Mask) ->
  NewMask = if
 	is_list(Mask) ; is_tuple(Mask) -> term2bin(Mask, 128, ?GL_UNSIGNED_BYTE);
 	binary(Mask) -> Mask;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Mask})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Mask})
  end, 
  cast(?glPolygonStipple, [ NewMask]).
 
@@ -2036,12 +2036,12 @@ prioritizeTextures(N, Textures, Priorities) ->
  NewTextures = if
 	is_list(Textures) ; is_tuple(Textures) -> term2bin(Textures, N, ?GL_UNSIGNED_INT);
 	is_binary(Textures) -> Textures;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Textures})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Textures})
  end, 
  NewPriorities = if
 	is_list(Priorities) ; is_tuple(Priorities) -> term2bin(Priorities, N, ?GL_FLOAT);
 	is_binary(Priorities) -> Priorities;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Priorities})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Priorities})
  end, 
  cast(?glPrioritizeTextures, [<<N:32/?SN>>,NewTextures, NewPriorities]).
 
@@ -2239,12 +2239,12 @@ rectdv(V1, V2) ->
  NewV1 = if
 	is_list(V1) ; is_tuple(V1) -> term2bin(V1, 2, ?GL_DOUBLE);
 	binary(V1) -> V1;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V1})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V1})
  end, 
  NewV2 = if
 	is_list(V2) ; is_tuple(V2) -> term2bin(V2, 2, ?GL_DOUBLE);
 	binary(V2) -> V2;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V2})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V2})
  end, 
  cast(?glRectdv, [ NewV1, NewV2]).
 
@@ -2261,12 +2261,12 @@ rectfv(V1, V2) ->
  NewV1 = if
 	is_list(V1) ; is_tuple(V1) -> term2bin(V1, 2, ?GL_FLOAT);
 	binary(V1) -> V1;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V1})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V1})
  end, 
  NewV2 = if
 	is_list(V2) ; is_tuple(V2) -> term2bin(V2, 2, ?GL_FLOAT);
 	binary(V2) -> V2;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V2})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V2})
  end, 
  cast(?glRectfv, [ NewV1, NewV2]).
 
@@ -2283,12 +2283,12 @@ rectiv(V1, V2) ->
  NewV1 = if
 	is_list(V1) ; is_tuple(V1) -> term2bin(V1, 2, ?GL_INT);
 	binary(V1) -> V1;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V1})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V1})
  end, 
  NewV2 = if
 	is_list(V2) ; is_tuple(V2) -> term2bin(V2, 2, ?GL_INT);
 	binary(V2) -> V2;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V2})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V2})
  end, 
  cast(?glRectiv, [ NewV1, NewV2]).
 
@@ -2305,12 +2305,12 @@ rectsv(V1, V2) ->
  NewV1 = if
 	is_list(V1) ; is_tuple(V1) -> term2bin(V1, 2, ?GL_SHORT);
 	binary(V1) -> V1;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V1})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V1})
  end, 
  NewV2 = if
 	is_list(V2) ; is_tuple(V2) -> term2bin(V2, 2, ?GL_SHORT);
 	binary(V2) -> V2;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V2})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V2})
  end, 
  cast(?glRectsv, [ NewV1, NewV2]).
 
@@ -2322,7 +2322,7 @@ renderMode(Mode) ->
  case Bin of 
 	<<Ret:32/?SN>> -> 
    Ret;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec rotated(Angle::float(), X::float(), Y::float(), Z::float()) -> ok
@@ -2607,7 +2607,7 @@ texEnvfv(Target, Pname, Params) ->
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_FLOAT)];
 	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glTexEnvfv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
 
@@ -2627,7 +2627,7 @@ texEnviv(Target, Pname, Params) ->
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_INT)];
 	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glTexEnviv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
 
@@ -2644,7 +2644,7 @@ texGendv(Coord, Pname, Params) ->
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 4, ?GL_DOUBLE);
 	binary(Params) -> Params;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glTexGendv, [<<Coord:32/?UN, Pname:32/?UN>>,NewParams]).
 
@@ -2661,7 +2661,7 @@ texGenfv(Coord, Pname, Params) ->
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 4, ?GL_FLOAT);
 	binary(Params) -> Params;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glTexGenfv, [<<Coord:32/?UN, Pname:32/?UN>>,NewParams]).
 
@@ -2678,7 +2678,7 @@ texGeniv(Coord, Pname, Params) ->
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 4, ?GL_INT);
 	binary(Params) -> Params;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glTexGeniv, [<<Coord:32/?UN, Pname:32/?UN>>,NewParams]).
 
@@ -2724,7 +2724,7 @@ texParameterfv(Target, Pname, Params) ->
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_FLOAT)];
 	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glTexParameterfv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
 
@@ -2744,7 +2744,7 @@ texParameteriv(Target, Pname, Params) ->
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_INT)];
 	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glTexParameteriv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
 
@@ -2988,7 +2988,7 @@ drawRangeElements(Mode, Start, End, Count, Type, Indices) ->
  NewIndices = if is_integer(Indices) -> Indices; 
 	is_list(Indices) ; is_tuple(Indices) -> sdl:send_bin(list_to_binary(term2bin(Indices, Count, Type)),?MODULE,?LINE),0;
 	is_binary(Indices) -> sdl:send_bin(Indices, ?MODULE, ?LINE),0;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Indices})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Indices})
  end, 
  cast(?glDrawRangeElements, [<<Mode:32/?UN, Start:32/?UN, End:32/?UN, Count:32/?SN, Type:32/?UN, NewIndices:32/?SN>>]).
 
@@ -3012,7 +3012,7 @@ colorTableParameterfv(Target, Pname, Params) ->
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 4, ?GL_FLOAT);
 	binary(Params) -> Params;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glColorTableParameterfv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
 
@@ -3023,7 +3023,7 @@ colorTableParameteriv(Target, Pname, Params) ->
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 4, ?GL_INT);
 	binary(Params) -> Params;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glColorTableParameteriv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
 
@@ -3048,7 +3048,7 @@ getColorTableParameterfv(Target, Pname) ->
  case Bin of 
 	<<Params:4/binary-unit:?GL_FLOAT_SIZE>> -> 
 	 bin2list(4, ?GL_FLOAT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getColorTableParameteriv(Target::integer(), Pname::integer()) -> Params::[term()]
@@ -3059,7 +3059,7 @@ getColorTableParameteriv(Target, Pname) ->
  case Bin of 
 	<<Params:4/binary-unit:?GL_INT_SIZE>> -> 
 	 bin2list(4, ?GL_INT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec colorSubTable(Target::integer(), Start::integer(), Count::integer(), Format::integer(), Type::integer(), Data::binary() | [number()]) -> ok
@@ -3123,7 +3123,7 @@ convolutionParameterfv(Target, Pname, Params) ->
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_FLOAT)];
 	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glConvolutionParameterfv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
 
@@ -3143,7 +3143,7 @@ convolutionParameteriv(Target, Pname, Params) ->
 	is_tuple(Params) ->  ParamsLen = size(Params), 
 	  [<<ParamsLen:32/native>>, term2bin(Params, ParamsLen, ?GL_INT)];
 	is_binary(Params) -> [<<(size(Params) div 4):32/native>>,Params];
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glConvolutionParameteriv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
 
@@ -3176,7 +3176,7 @@ getConvolutionParameterfv(Target, Pname) ->
  case Bin of 
 	<<Params:ParamsLen/binary-unit:?GL_FLOAT_SIZE,_:ParamsBump/binary-unit:?GL_FLOAT_SIZE>> -> 
 	 bin2list(ParamsLen, ?GL_FLOAT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getConvolutionParameteriv(Target::integer(), Pname::integer()) -> Params::[term()]
@@ -3189,7 +3189,7 @@ getConvolutionParameteriv(Target, Pname) ->
  case Bin of 
 	<<Params:ParamsLen/binary-unit:?GL_INT_SIZE,_:ParamsBump/binary-unit:?GL_INT_SIZE>> -> 
 	 bin2list(ParamsLen, ?GL_INT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getSeparableFilter(Target::integer(), Format::integer(), Type::integer(), Row::sdlmem(), Column::sdlmem(), Span::sdlmem()) -> ok
@@ -3236,7 +3236,7 @@ getHistogramParameterfv(Target, Pname) ->
  case Bin of 
 	<<Params:32/?FN>> -> 
 	 Params;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getHistogramParameteriv(Target::integer(), Pname::integer()) -> Params::[term()]
@@ -3247,7 +3247,7 @@ getHistogramParameteriv(Target, Pname) ->
  case Bin of 
 	<<Params:32/?SN>> -> 
 	 Params;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getMinmax(Target::integer(), Reset::bool(), Format::integer(), Type::integer(), Values::sdlmem()) -> ok
@@ -3265,7 +3265,7 @@ getMinmaxParameterfv(Target, Pname) ->
  case Bin of 
 	<<Params:32/?FN>> -> 
 	 Params;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getMinmaxParameteriv(Target::integer(), Pname::integer()) -> Params::[term()]
@@ -3276,7 +3276,7 @@ getMinmaxParameteriv(Target, Pname) ->
  case Bin of 
 	<<Params:32/?SN>> -> 
 	 Params;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec histogram(Target::integer(), Width::integer(), Internalformat::integer(), Sink::bool()) -> ok
@@ -3546,7 +3546,7 @@ loadTransposeMatrixf(M) ->
  NewM = if
 	is_list(M) ; is_tuple(M) -> matrix2bin(M, ?GL_FLOAT);
 	binary(M) -> M;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, M})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, M})
  end, 
  cast(?glLoadTransposeMatrixf, [ NewM]).
 
@@ -3557,7 +3557,7 @@ loadTransposeMatrixd(M) ->
  NewM = if
 	is_list(M) ; is_tuple(M) -> matrix2bin(M, ?GL_DOUBLE);
 	binary(M) -> M;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, M})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, M})
  end, 
  cast(?glLoadTransposeMatrixd, [ NewM]).
 
@@ -3568,7 +3568,7 @@ multTransposeMatrixf(M) ->
  NewM = if
 	is_list(M) ; is_tuple(M) -> matrix2bin(M, ?GL_FLOAT);
 	binary(M) -> M;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, M})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, M})
  end, 
  cast(?glMultTransposeMatrixf, [ NewM]).
 
@@ -3579,7 +3579,7 @@ multTransposeMatrixd(M) ->
  NewM = if
 	is_list(M) ; is_tuple(M) -> matrix2bin(M, ?GL_DOUBLE);
 	binary(M) -> M;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, M})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, M})
  end, 
  cast(?glMultTransposeMatrixd, [ NewM]).
 
@@ -3693,7 +3693,7 @@ fogCoordfv(Coord) ->
  NewCoord = if
 	is_list(Coord) ; is_tuple(Coord) -> term2bin(Coord, 1, ?GL_FLOAT);
 	binary(Coord) -> Coord;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Coord})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Coord})
  end, 
  cast(?glFogCoordfv, [ NewCoord]).
 
@@ -3710,7 +3710,7 @@ fogCoorddv(Coord) ->
  NewCoord = if
 	is_list(Coord) ; is_tuple(Coord) -> term2bin(Coord, 1, ?GL_DOUBLE);
 	binary(Coord) -> Coord;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Coord})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Coord})
  end, 
  cast(?glFogCoorddv, [ NewCoord]).
 
@@ -3734,12 +3734,12 @@ multiDrawArrays(Mode, First, Count, Primcount) ->
  NewFirst = if
 	is_list(First) ; is_tuple(First) -> term2bin(First, Primcount, ?GL_INT);
 	is_binary(First) -> First;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, First})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, First})
  end, 
  NewCount = if
 	is_list(Count) ; is_tuple(Count) -> term2bin(Count, Primcount, ?GL_UNSIGNED_INT);
 	is_binary(Count) -> Count;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Count})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Count})
  end, 
  cast(?glMultiDrawArrays, [<<Primcount:32/?SN, Mode:32/?UN>>,NewFirst, NewCount]).
 
@@ -3756,7 +3756,7 @@ pointParameterfv(Pname, Params) ->
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 3, ?GL_FLOAT);
 	binary(Params) -> Params;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glPointParameterfv, [<<Pname:32/?UN>>,NewParams]).
 
@@ -3773,7 +3773,7 @@ pointParameteriv(Pname, Params) ->
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 3, ?GL_INT);
 	binary(Params) -> Params;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glPointParameteriv, [<<Pname:32/?UN>>,NewParams]).
 
@@ -3990,7 +3990,7 @@ genQueries(N) ->
  case Bin of 
 	<<Ids:N/binary-unit:?GL_UNSIGNED_INT_SIZE>> -> 
 	 bin2list(N, ?GL_UNSIGNED_INT, Ids);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec deleteQueries(N::integer(), Ids::binary() | [integer()]) -> ok
@@ -4000,7 +4000,7 @@ deleteQueries(N, Ids) ->
  NewIds = if
 	is_list(Ids) ; is_tuple(Ids) -> term2bin(Ids, N, ?GL_UNSIGNED_INT);
 	is_binary(Ids) -> Ids;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Ids})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Ids})
  end, 
  cast(?glDeleteQueries, [<<N:32/?SN>>,NewIds]).
 
@@ -4012,7 +4012,7 @@ isQuery(Id) ->
  case Bin of 
 	<<Ret:8/unsigned>> -> 
    Ret /= ?GL_FALSE;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec beginQuery(Target::integer(), Id::integer()) -> ok
@@ -4035,7 +4035,7 @@ getQueryiv(Target, Pname) ->
  case Bin of 
 	<<Params:32/?SN>> -> 
 	 Params;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getQueryObjectiv(Id::integer(), Pname::integer()) -> Params::[term()]
@@ -4046,7 +4046,7 @@ getQueryObjectiv(Id, Pname) ->
  case Bin of 
 	<<Params:32/?SN>> -> 
 	 Params;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getQueryObjectuiv(Id::integer(), Pname::integer()) -> Params::[term()]
@@ -4057,7 +4057,7 @@ getQueryObjectuiv(Id, Pname) ->
  case Bin of 
 	<<Params:32/?UN>> -> 
 	 Params;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec bindBuffer(Target::integer(), Buffer::integer()) -> ok
@@ -4073,7 +4073,7 @@ deleteBuffers(N, Buffers) ->
  NewBuffers = if
 	is_list(Buffers) ; is_tuple(Buffers) -> term2bin(Buffers, N, ?GL_UNSIGNED_INT);
 	is_binary(Buffers) -> Buffers;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Buffers})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Buffers})
  end, 
  cast(?glDeleteBuffers, [<<N:32/?SN>>,NewBuffers]).
 
@@ -4085,7 +4085,7 @@ genBuffers(N) ->
  case Bin of 
 	<<Buffers:N/binary-unit:?GL_UNSIGNED_INT_SIZE>> -> 
 	 bin2list(N, ?GL_UNSIGNED_INT, Buffers);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec isBuffer(Buffer::integer()) -> bool()
@@ -4096,7 +4096,7 @@ isBuffer(Buffer) ->
  case Bin of 
 	<<Ret:8/unsigned>> -> 
    Ret /= ?GL_FALSE;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec bufferData(Target::integer(), Size::integer(), Data::binary() | [number()], Usage::integer()) -> ok
@@ -4140,7 +4140,7 @@ unmapBuffer(Target) ->
  case Bin of 
 	<<Ret:8/unsigned>> -> 
    Ret /= ?GL_FALSE;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getBufferParameteriv(Target::integer(), Pname::integer()) -> Params::[term()]
@@ -4151,7 +4151,7 @@ getBufferParameteriv(Target, Pname) ->
  case Bin of 
 	<<Params:32/?SN>> -> 
 	 Params;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getBufferPointerv(Target::integer(), Pname::integer()) -> Params::sdlmem()
@@ -4161,8 +4161,8 @@ getBufferPointerv(Target, Pname) ->
  Bin = call(?glGetBufferPointerv, <<Target:32/?UN, Pname:32/?UN>>), 
  case Bin of 
 	<<Params:32/big-unsigned>> -> 
-	 erlang:fault({nyi, ?MODULE,?LINE});
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	 erlang:error({nyi, ?MODULE,?LINE});
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec blendEquationSeparate(ModeRGB::integer(), ModeAlpha::integer()) -> ok
@@ -4178,7 +4178,7 @@ drawBuffers(N, Bufs) ->
  NewBufs = if
 	is_list(Bufs) ; is_tuple(Bufs) -> term2bin(Bufs, N, ?GL_INT);
 	is_binary(Bufs) -> Bufs;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Bufs})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Bufs})
  end, 
  cast(?glDrawBuffers, [<<N:32/?SN>>,NewBufs]).
 
@@ -4227,7 +4227,7 @@ createProgram() ->
  case Bin of 
 	<<Ret:32/?UN>> -> 
    Ret;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec createShader(Type::integer()) -> integer()
@@ -4238,7 +4238,7 @@ createShader(Type) ->
  case Bin of 
 	<<Ret:32/?UN>> -> 
    Ret;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec deleteProgram(Program::integer()) -> ok
@@ -4279,7 +4279,7 @@ getActiveAttrib(Program, Index, BufSize) ->
  case Bin of 
 	<<Length:32/?SN, Size:32/?SN, Type:32/?UN, Name:Length/binary-unit:?GL_UNSIGNED_BYTE_SIZE>> -> 
 	 {Length, Size, Type, bin2list(Length, ?GL_UNSIGNED_BYTE, Name)};
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getActiveUniform(Program::integer(), Index::integer(), BufSize::integer()) -> {[Length::integer()], [Size::integer()], [Type::integer()], [Name::integer()]}
@@ -4290,7 +4290,7 @@ getActiveUniform(Program, Index, BufSize) ->
  case Bin of 
 	<<Length:32/?SN, Size:32/?SN, Type:32/?UN, Name:Length/binary-unit:?GL_UNSIGNED_BYTE_SIZE>> -> 
 	 {Length, Size, Type, bin2list(Length, ?GL_UNSIGNED_BYTE, Name)};
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getAttachedShaders(Program::integer(), MaxCount::integer()) -> {[Count::integer()], [Obj::integer()]}
@@ -4301,7 +4301,7 @@ getAttachedShaders(Program, MaxCount) ->
  case Bin of 
 	<<Count:32/?SN, Obj:Count/binary-unit:?GL_UNSIGNED_INT_SIZE>> -> 
 	 {Count, bin2list(Count, ?GL_UNSIGNED_INT, Obj)};
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getAttribLocation(Program::integer(), Name::binary() | [integer()]) -> integer()
@@ -4313,7 +4313,7 @@ getAttribLocation(Program, Name) ->
  case Bin of 
 	<<Ret:32/?SN>> -> 
    Ret;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getProgramiv(Program::integer(), Pname::integer()) -> Params::[term()]
@@ -4324,7 +4324,7 @@ getProgramiv(Program, Pname) ->
  case Bin of 
 	<<Params:32/?SN>> -> 
 	 Params;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getProgramInfoLog(Program::integer(), BufSize::integer()) -> {[Length::integer()], [InfoLog::integer()]}
@@ -4335,7 +4335,7 @@ getProgramInfoLog(Program, BufSize) ->
  case Bin of 
 	<<Length:32/?SN, InfoLog:Length/binary-unit:?GL_UNSIGNED_BYTE_SIZE>> -> 
 	 {Length, bin2list(Length, ?GL_UNSIGNED_BYTE, InfoLog)};
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getShaderiv(Shader::integer(), Pname::integer()) -> Params::[term()]
@@ -4346,7 +4346,7 @@ getShaderiv(Shader, Pname) ->
  case Bin of 
 	<<Params:32/?SN>> -> 
 	 Params;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getShaderInfoLog(Shader::integer(), BufSize::integer()) -> {[Length::integer()], [InfoLog::integer()]}
@@ -4357,7 +4357,7 @@ getShaderInfoLog(Shader, BufSize) ->
  case Bin of 
 	<<Length:32/?SN, InfoLog:Length/binary-unit:?GL_UNSIGNED_BYTE_SIZE>> -> 
 	 {Length, bin2list(Length, ?GL_UNSIGNED_BYTE, InfoLog)};
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getShaderSource(Shader::integer(), BufSize::integer()) -> {[Length::integer()], [Source::integer()]}
@@ -4368,7 +4368,7 @@ getShaderSource(Shader, BufSize) ->
  case Bin of 
 	<<Length:32/?SN, Source:Length/binary-unit:?GL_UNSIGNED_BYTE_SIZE>> -> 
 	 {Length, bin2list(Length, ?GL_UNSIGNED_BYTE, Source)};
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getUniformLocation(Program::integer(), Name::binary() | [integer()]) -> integer()
@@ -4380,7 +4380,7 @@ getUniformLocation(Program, Name) ->
  case Bin of 
 	<<Ret:32/?SN>> -> 
    Ret;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getUniformfv(Program::integer(), Location::integer(), Params::sdlmem()) -> ok
@@ -4405,7 +4405,7 @@ getVertexAttribdv(Index, Pname) ->
  case Bin of 
 	<<Params:4/binary-unit:?GL_DOUBLE_SIZE>> -> 
 	 bin2list(4, ?GL_DOUBLE, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getVertexAttribfv(Index::integer(), Pname::integer()) -> Params::[term()]
@@ -4416,7 +4416,7 @@ getVertexAttribfv(Index, Pname) ->
  case Bin of 
 	<<Params:4/binary-unit:?GL_FLOAT_SIZE>> -> 
 	 bin2list(4, ?GL_FLOAT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getVertexAttribiv(Index::integer(), Pname::integer()) -> Params::[term()]
@@ -4427,7 +4427,7 @@ getVertexAttribiv(Index, Pname) ->
  case Bin of 
 	<<Params:4/binary-unit:?GL_INT_SIZE>> -> 
 	 bin2list(4, ?GL_INT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getVertexAttribPointerv(Index::integer(), Pname::integer()) -> Pointer::sdlmem()
@@ -4437,8 +4437,8 @@ getVertexAttribPointerv(Index, Pname) ->
  Bin = call(?glGetVertexAttribPointerv, <<Index:32/?UN, Pname:32/?UN>>), 
  case Bin of 
 	<<Pointer:32/big-unsigned>> -> 
-	 erlang:fault({nyi, ?MODULE,?LINE});
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	 erlang:error({nyi, ?MODULE,?LINE});
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec isProgram(Program::integer()) -> bool()
@@ -4449,7 +4449,7 @@ isProgram(Program) ->
  case Bin of 
 	<<Ret:8/unsigned>> -> 
    Ret /= ?GL_FALSE;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec isShader(Shader::integer()) -> bool()
@@ -4460,7 +4460,7 @@ isShader(Shader) ->
  case Bin of 
 	<<Ret:8/unsigned>> -> 
    Ret /= ?GL_FALSE;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec linkProgram(Program::integer()) -> ok
@@ -4477,7 +4477,7 @@ shaderSource(Shader, Count, String, Length) ->
  NewLength = if
 	is_list(Length) ; is_tuple(Length) -> term2bin(Length, Count, ?GL_INT);
 	is_binary(Length) -> Length;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Length})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Length})
  end, 
  cast(?glShaderSource, [<<Shader:32/?UN, Count:32/?SN>>,NewLength]).
 
@@ -4733,7 +4733,7 @@ vertexAttrib4Nbv(Index, V) ->
  NewV = if
 	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_BYTE);
 	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V})
  end, 
  cast(?glVertexAttrib4Nbv, [<<Index:32/?UN>>,NewV]).
 
@@ -4744,7 +4744,7 @@ vertexAttrib4Niv(Index, V) ->
  NewV = if
 	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_INT);
 	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V})
  end, 
  cast(?glVertexAttrib4Niv, [<<Index:32/?UN>>,NewV]).
 
@@ -4755,7 +4755,7 @@ vertexAttrib4Nsv(Index, V) ->
  NewV = if
 	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_SHORT);
 	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V})
  end, 
  cast(?glVertexAttrib4Nsv, [<<Index:32/?UN>>,NewV]).
 
@@ -4772,7 +4772,7 @@ vertexAttrib4Nubv(Index, V) ->
  NewV = if
 	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_UNSIGNED_BYTE);
 	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V})
  end, 
  cast(?glVertexAttrib4Nubv, [<<Index:32/?UN>>,NewV]).
 
@@ -4783,7 +4783,7 @@ vertexAttrib4Nuiv(Index, V) ->
  NewV = if
 	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_UNSIGNED_INT);
 	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V})
  end, 
  cast(?glVertexAttrib4Nuiv, [<<Index:32/?UN>>,NewV]).
 
@@ -4794,7 +4794,7 @@ vertexAttrib4Nusv(Index, V) ->
  NewV = if
 	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_UNSIGNED_SHORT);
 	binary(V) -> V;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, V})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V})
  end, 
  cast(?glVertexAttrib4Nusv, [<<Index:32/?UN>>,NewV]).
 
@@ -4886,7 +4886,7 @@ weightbv(Size, Weights) ->
  NewWeights = if
 	is_list(Weights) ; is_tuple(Weights) -> term2bin(Weights, Size, ?GL_BYTE);
 	is_binary(Weights) -> Weights;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Weights})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Weights})
  end, 
  cast(?glWeightbv, [<<Size:32/?SN>>,NewWeights]).
 
@@ -4899,7 +4899,7 @@ weightsv(Size, Weights) ->
  NewWeights = if
 	is_list(Weights) ; is_tuple(Weights) -> term2bin(Weights, Size, ?GL_SHORT);
 	is_binary(Weights) -> Weights;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Weights})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Weights})
  end, 
  cast(?glWeightsv, [<<Size:32/?SN>>,NewWeights]).
 
@@ -4912,7 +4912,7 @@ weightiv(Size, Weights) ->
  NewWeights = if
 	is_list(Weights) ; is_tuple(Weights) -> term2bin(Weights, Size, ?GL_INT);
 	is_binary(Weights) -> Weights;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Weights})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Weights})
  end, 
  cast(?glWeightiv, [<<Size:32/?SN>>,NewWeights]).
 
@@ -4925,7 +4925,7 @@ weightfv(Size, Weights) ->
  NewWeights = if
 	is_list(Weights) ; is_tuple(Weights) -> term2bin(Weights, Size, ?GL_FLOAT);
 	is_binary(Weights) -> Weights;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Weights})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Weights})
  end, 
  cast(?glWeightfv, [<<Size:32/?SN>>,NewWeights]).
 
@@ -4938,7 +4938,7 @@ weightdv(Size, Weights) ->
  NewWeights = if
 	is_list(Weights) ; is_tuple(Weights) -> term2bin(Weights, Size, ?GL_DOUBLE);
 	is_binary(Weights) -> Weights;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Weights})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Weights})
  end, 
  cast(?glWeightdv, [<<Size:32/?SN>>,NewWeights]).
 
@@ -4951,7 +4951,7 @@ weightubv(Size, Weights) ->
  NewWeights = if
 	is_list(Weights) ; is_tuple(Weights) -> term2bin(Weights, Size, ?GL_UNSIGNED_BYTE);
 	is_binary(Weights) -> Weights;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Weights})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Weights})
  end, 
  cast(?glWeightubv, [<<Size:32/?SN>>,NewWeights]).
 
@@ -4964,7 +4964,7 @@ weightusv(Size, Weights) ->
  NewWeights = if
 	is_list(Weights) ; is_tuple(Weights) -> term2bin(Weights, Size, ?GL_UNSIGNED_SHORT);
 	is_binary(Weights) -> Weights;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Weights})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Weights})
  end, 
  cast(?glWeightusv, [<<Size:32/?SN>>,NewWeights]).
 
@@ -4977,7 +4977,7 @@ weightuiv(Size, Weights) ->
  NewWeights = if
 	is_list(Weights) ; is_tuple(Weights) -> term2bin(Weights, Size, ?GL_UNSIGNED_INT);
 	is_binary(Weights) -> Weights;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Weights})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Weights})
  end, 
  cast(?glWeightuiv, [<<Size:32/?SN>>,NewWeights]).
 
@@ -5021,7 +5021,7 @@ matrixIndexubv(Size, Indices) ->
  NewIndices = if
 	is_list(Indices) ; is_tuple(Indices) -> term2bin(Indices, Size, ?GL_UNSIGNED_BYTE);
 	is_binary(Indices) -> Indices;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Indices})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Indices})
  end, 
  cast(?glMatrixIndexubv, [<<Size:32/?SN>>,NewIndices]).
 
@@ -5034,7 +5034,7 @@ matrixIndexusv(Size, Indices) ->
  NewIndices = if
 	is_list(Indices) ; is_tuple(Indices) -> term2bin(Indices, Size, ?GL_UNSIGNED_SHORT);
 	is_binary(Indices) -> Indices;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Indices})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Indices})
  end, 
  cast(?glMatrixIndexusv, [<<Size:32/?SN>>,NewIndices]).
 
@@ -5047,7 +5047,7 @@ matrixIndexuiv(Size, Indices) ->
  NewIndices = if
 	is_list(Indices) ; is_tuple(Indices) -> term2bin(Indices, Size, ?GL_UNSIGNED_INT);
 	is_binary(Indices) -> Indices;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Indices})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Indices})
  end, 
  cast(?glMatrixIndexuiv, [<<Size:32/?SN>>,NewIndices]).
 
@@ -5098,7 +5098,7 @@ deletePrograms(N, Programs) ->
  NewPrograms = if
 	is_list(Programs) ; is_tuple(Programs) -> term2bin(Programs, N, ?GL_UNSIGNED_INT);
 	is_binary(Programs) -> Programs;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Programs})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Programs})
  end, 
  cast(?glDeletePrograms, [<<N:32/?SN>>,NewPrograms]).
 
@@ -5112,7 +5112,7 @@ genPrograms(N) ->
  case Bin of 
 	<<Programs:N/binary-unit:?GL_UNSIGNED_INT_SIZE>> -> 
 	 bin2list(N, ?GL_UNSIGNED_INT, Programs);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec programEnvParameter4dARB(Target::integer(), Index::integer(), X::float(), Y::float(), Z::float(), W::float()) -> ok
@@ -5132,7 +5132,7 @@ programEnvParameter4dv(Target, Index, Params) ->
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 4, ?GL_DOUBLE);
 	binary(Params) -> Params;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glProgramEnvParameter4dv, [<<Target:32/?UN, Index:32/?UN>>,NewParams]).
 
@@ -5153,7 +5153,7 @@ programEnvParameter4fv(Target, Index, Params) ->
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 4, ?GL_FLOAT);
 	binary(Params) -> Params;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glProgramEnvParameter4fv, [<<Target:32/?UN, Index:32/?UN>>,NewParams]).
 
@@ -5174,7 +5174,7 @@ programLocalParameter4dv(Target, Index, Params) ->
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 4, ?GL_DOUBLE);
 	binary(Params) -> Params;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glProgramLocalParameter4dv, [<<Target:32/?UN, Index:32/?UN>>,NewParams]).
 
@@ -5195,7 +5195,7 @@ programLocalParameter4fv(Target, Index, Params) ->
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 4, ?GL_FLOAT);
 	binary(Params) -> Params;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Params})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glProgramLocalParameter4fv, [<<Target:32/?UN, Index:32/?UN>>,NewParams]).
 
@@ -5209,7 +5209,7 @@ getProgramEnvParameterdv(Target, Index) ->
  case Bin of 
 	<<Params:4/binary-unit:?GL_DOUBLE_SIZE>> -> 
 	 bin2list(4, ?GL_DOUBLE, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getProgramEnvParameterfvARB(Target::integer(), Index::integer()) -> Params::[term()]
@@ -5222,7 +5222,7 @@ getProgramEnvParameterfv(Target, Index) ->
  case Bin of 
 	<<Params:4/binary-unit:?GL_FLOAT_SIZE>> -> 
 	 bin2list(4, ?GL_FLOAT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getProgramLocalParameterdvARB(Target::integer(), Index::integer()) -> Params::[term()]
@@ -5235,7 +5235,7 @@ getProgramLocalParameterdv(Target, Index) ->
  case Bin of 
 	<<Params:4/binary-unit:?GL_DOUBLE_SIZE>> -> 
 	 bin2list(4, ?GL_DOUBLE, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getProgramLocalParameterfvARB(Target::integer(), Index::integer()) -> Params::[term()]
@@ -5248,7 +5248,7 @@ getProgramLocalParameterfv(Target, Index) ->
  case Bin of 
 	<<Params:4/binary-unit:?GL_FLOAT_SIZE>> -> 
 	 bin2list(4, ?GL_FLOAT, Params);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getProgramStringARB(Target::integer(), Pname::integer(), String::sdlmem()) -> ok
@@ -5280,7 +5280,7 @@ getHandle(Pname) ->
  case Bin of 
 	<<Ret:32/?UN>> -> 
    Ret;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec detachObjectARB(ContainerObj::integer(), AttachedObj::integer()) -> ok
@@ -5305,7 +5305,7 @@ glCreateShaderObjectARB_fallback(ShaderType) ->
  case Bin of 
 	<<Ret:32/?UN>> -> 
    Ret;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec createProgramObjectARB() -> integer()
@@ -5320,7 +5320,7 @@ glCreateProgramObjectARB_fallback() ->
  case Bin of 
 	<<Ret:32/?UN>> -> 
    Ret;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec attachObjectARB(ContainerObj::integer(), Obj::integer()) -> ok
@@ -5353,7 +5353,7 @@ getObjectParameterfv(Obj, Pname) ->
  case Bin of 
 	<<Params:32/?FN>> -> 
 	 Params;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getObjectParameterivARB(Obj::integer(), Pname::integer()) -> Params::[term()]
@@ -5366,7 +5366,7 @@ getObjectParameteriv(Obj, Pname) ->
  case Bin of 
 	<<Params:32/?SN>> -> 
 	 Params;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getInfoLogARB(Obj::integer(), MaxLength::integer()) -> {[Length::integer()], [InfoLog::integer()]}
@@ -5379,7 +5379,7 @@ getInfoLog(Obj, MaxLength) ->
  case Bin of 
 	<<Length:32/?SN, InfoLog:Length/binary-unit:?GL_UNSIGNED_BYTE_SIZE>> -> 
 	 {Length, bin2list(Length, ?GL_UNSIGNED_BYTE, InfoLog)};
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec getAttachedObjectsARB(ContainerObj::integer(), MaxCount::integer()) -> {[Count::integer()], [Obj::integer()]}
@@ -5394,7 +5394,7 @@ glGetAttachedObjectsARB_fallback(ContainerObj, MaxCount) ->
  case Bin of 
 	<<Count:32/?SN, Obj:Count/binary-unit:?GL_UNSIGNED_INT_SIZE>> -> 
 	 {Count, bin2list(Count, ?GL_UNSIGNED_INT, Obj)};
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec stencilOpSeparateATI(Face::integer(), Sfail::integer(), Dpfail::integer(), Dppass::integer()) -> ok
@@ -5417,7 +5417,7 @@ isRenderbufferEXT(Renderbuffer) ->
  case Bin of 
 	<<Ret:8/unsigned>> -> 
    Ret /= ?GL_FALSE;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec bindRenderbufferEXT(Target::integer(), Renderbuffer::integer()) -> ok
@@ -5433,7 +5433,7 @@ deleteRenderbuffersEXT(N, Renderbuffers) ->
  NewRenderbuffers = if
 	is_list(Renderbuffers) ; is_tuple(Renderbuffers) -> term2bin(Renderbuffers, N, ?GL_UNSIGNED_INT);
 	is_binary(Renderbuffers) -> Renderbuffers;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Renderbuffers})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Renderbuffers})
  end, 
  cast(?glDeleteRenderbuffersEXT, [<<N:32/?SN>>,NewRenderbuffers]).
 
@@ -5445,7 +5445,7 @@ genRenderbuffersEXT(N) ->
  case Bin of 
 	<<Renderbuffers:N/binary-unit:?GL_UNSIGNED_INT_SIZE>> -> 
 	 bin2list(N, ?GL_UNSIGNED_INT, Renderbuffers);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec renderbufferStorageEXT(Target::integer(), Internalformat::integer(), Width::integer(), Height::integer()) -> ok
@@ -5462,7 +5462,7 @@ getRenderbufferParameterivEXT(Target, Pname) ->
  case Bin of 
 	<<Params:32/?SN>> -> 
 	 Params;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec isFramebufferEXT(Framebuffer::integer()) -> bool()
@@ -5473,7 +5473,7 @@ isFramebufferEXT(Framebuffer) ->
  case Bin of 
 	<<Ret:8/unsigned>> -> 
    Ret /= ?GL_FALSE;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec bindFramebufferEXT(Target::integer(), Framebuffer::integer()) -> ok
@@ -5489,7 +5489,7 @@ deleteFramebuffersEXT(N, Framebuffers) ->
  NewFramebuffers = if
 	is_list(Framebuffers) ; is_tuple(Framebuffers) -> term2bin(Framebuffers, N, ?GL_UNSIGNED_INT);
 	is_binary(Framebuffers) -> Framebuffers;
-	true -> erlang:fault({?MODULE, ?LINE, unsupported_type, Framebuffers})
+	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Framebuffers})
  end, 
  cast(?glDeleteFramebuffersEXT, [<<N:32/?SN>>,NewFramebuffers]).
 
@@ -5501,7 +5501,7 @@ genFramebuffersEXT(N) ->
  case Bin of 
 	<<Framebuffers:N/binary-unit:?GL_UNSIGNED_INT_SIZE>> -> 
 	 bin2list(N, ?GL_UNSIGNED_INT, Framebuffers);
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec checkFramebufferStatusEXT(Target::integer()) -> integer()
@@ -5512,7 +5512,7 @@ checkFramebufferStatusEXT(Target) ->
  case Bin of 
 	<<Ret:32/?UN>> -> 
    Ret;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec framebufferTexture1DEXT(Target::integer(), Attachment::integer(), Textarget::integer(), Texture::integer(), Level::integer()) -> ok
@@ -5547,7 +5547,7 @@ getFramebufferAttachmentParameterivEXT(Target, Attachment, Pname) ->
  case Bin of 
 	<<Params:32/?SN>> -> 
 	 Params;
-	Else -> erlang:fault({?MODULE, ?LINE, badtype, Else})
+	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% @spec generateMipmapEXT(Target::integer()) -> ok

@@ -42,7 +42,7 @@ send_bin(Bin) when is_binary(Bin) ->
     erlang:port_command(?WOGGLE_PORT, Bin).
 
 send_bin(Bin, _, _) when is_binary(Bin) -> send_bin(Bin);
-send_bin(Term, Mod, Line) -> erlang:fault({Mod,Line,unsupported_type,Term}).
+send_bin(Term, Mod, Line) -> erlang:error({Mod,Line,unsupported_type,Term}).
 
 % XXX Fixme
 priv_dir() ->

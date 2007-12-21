@@ -446,7 +446,7 @@ genf_erl(Type, FuncName, Args0, _Last, Fd) ->
 	    write_undef_rets(FuncName, Rets, Fd),
 	    ?W(" case Bin of ~n", []),
 	    write_returns(FuncName, erl, Type, Rets, Fd),
-	    ?W("\tElse -> erlang:fault({?MODULE, " 
+	    ?W("\tElse -> erlang:error({?MODULE, " 
 		      "?LINE, badtype, Else})~n"
 		      " end.~n~n", [])
     end.
@@ -697,7 +697,7 @@ build_erlbinaries(Func, {T, const, pointer,V}, _IsTuple, IsLast, Fd) ->
 	    ?W("sdl:send_bin(list_to_binary(term2bin(~s, ~s, ~s)),?MODULE,?LINE),0;~n", 
 	       [Var, uppercase(Val), Type]),
 	    ?W("\tis_binary(~s) -> sdl:send_bin(~s, ?MODULE, ?LINE),0;~n",[Var,Var]),
-	    ?W("\ttrue -> erlang:fault({?MODULE, ?LINE, unsupported_type, ~s})~n", 
+	    ?W("\ttrue -> erlang:error({?MODULE, ?LINE, unsupported_type, ~s})~n", 
 	       [Var]),
 	    ?W(" end, ~n", []),
 	    {"GLint", "new" ++ Var};
@@ -708,7 +708,7 @@ build_erlbinaries(Func, {T, const, pointer,V}, _IsTuple, IsLast, Fd) ->
 		    ?W("\tis_list(~s) ; is_tuple(~s) -> ", [Var, Var]),
 		    ?W("matrix2bin(~s, ~s);~n", [Var, Type]),
 		    ?W("\tbinary(~s) -> ~s;~n",[Var, Var]),
-		    ?W("\ttrue -> erlang:fault({?MODULE, ?LINE, unsupported_type, ~s})~n", 
+		    ?W("\ttrue -> erlang:error({?MODULE, ?LINE, unsupported_type, ~s})~n", 
 		       [Var]),
 		    ?W(" end, ~n", []),
 		    {binary, "new" ++ Var};
@@ -719,7 +719,7 @@ build_erlbinaries(Func, {T, const, pointer,V}, _IsTuple, IsLast, Fd) ->
 		    %% 	    ?W("\tbinary(~s), size(~s) >= ~p * ~s -> ~s;~n",
 		    %% 		      [Var, Var, Val, gl_type_size(Type), Var]);
 		    ?W("\tbinary(~s) -> ~s;~n",[Var, Var]),
-		    ?W("\ttrue -> erlang:fault({?MODULE, ?LINE, unsupported_type, ~s})~n", 
+		    ?W("\ttrue -> erlang:error({?MODULE, ?LINE, unsupported_type, ~s})~n", 
 		       [Var]),
 		    ?W(" end, ~n", []),
 		    {binary, "new" ++ Var}
@@ -737,7 +737,7 @@ build_erlbinaries(Func, {T, const, pointer,V}, _IsTuple, IsLast, Fd) ->
 	    ?W("\tis_binary(~s) -> "
 	       "[<<(size(~s) div ~s):32/native>>,~s];~n", 
 	       [Var, Var, gl_type_size(Type), Var]),
-	    ?W("\ttrue -> erlang:fault({?MODULE, ?LINE, unsupported_type, ~s})~n", 
+	    ?W("\ttrue -> erlang:error({?MODULE, ?LINE, unsupported_type, ~s})~n", 
 	       [Var]),
 	    ?W(" end, ~n", []),
 	    {binary, "new" ++ Var};
@@ -750,7 +750,7 @@ build_erlbinaries(Func, {T, const, pointer,V}, _IsTuple, IsLast, Fd) ->
 	    %% 		      [Var, Var, uppercase(Val), gl_type_size(Type), Var])    
  	    ?W("\tis_binary(~s) -> ~s;~n",
 	       [Var, Var]),
-	    ?W("\ttrue -> erlang:fault({?MODULE, ?LINE, unsupported_type, ~s})~n", 
+	    ?W("\ttrue -> erlang:error({?MODULE, ?LINE, unsupported_type, ~s})~n", 
 	       [Var]),
 	    ?W(" end, ~n", []),
 	    {binary, "new" ++ Var}
@@ -904,7 +904,7 @@ write_arg(FuncName, Type, {T,pointer, V}, Fd, Prev0, _IsLast, Align0) ->
 		    {Variable,_Max} when list(Variable) ->
 			?W(" ~s * ~s = NULL;~n", [T,V]);
 		    Error ->
-			erlang:fault({?MODULE, ?LINE, Error})
+			erlang:error({?MODULE, ?LINE, Error})
 		end;
 	    binc ->
 		case getdef(FuncName, V) of 
@@ -934,7 +934,7 @@ write_arg(FuncName, Type, {T,pointer, V}, Fd, Prev0, _IsLast, Align0) ->
 		    {undefined, _Var, _} ->
 			skip;
 		    Error ->
-			erlang:fault({?MODULE, ?LINE, Error})
+			erlang:error({?MODULE, ?LINE, Error})
 		end;
 	    ccalls ->
 		case getdef(FuncName, V) of 
@@ -1023,7 +1023,7 @@ write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
 		    {index_or_list,_} ->
 			?W(" ~s * ~s = NULL;~n", [T,V]);
 		    Error ->
-			erlang:fault({?MODULE, ?LINE, Error})
+			erlang:error({?MODULE, ?LINE, Error})
 		end;
 	    binc ->
 		case getdef(FuncName, V) of
@@ -1092,7 +1092,7 @@ write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
 			?W(" ~s = (~s *) bp;~n", [V,T]),
 			bump_buff(IsLast, TT,Str,Fd);
 		    Error -> 
-			erlang:fault({?MODULE,?LINE, Error})
+			erlang:error({?MODULE,?LINE, Error})
 		end;
 	    
 	    ccalls ->
@@ -1136,7 +1136,7 @@ write_arg(FuncName, Type, {T, const, pointer, V}, Fd, Prev0, IsLast, Align0) ->
 
 write_arg(_FuncName, _Type, {T,pointer,pointer,_V}, _Fd, _First, _IsLast, _Align) 
   when T == ((T=="GLdouble") or (T=="GLclampd")) ->
-    erlang:fault({not_implemented, ?LINE});
+    erlang:error({not_implemented, ?LINE});
 write_arg(_FuncName, Type, {T, pointer, pointer, V}, Fd, First, _IsLast, Align) ->
     Cont = case First of first -> ""; {first,_} -> ""; _Else -> ", "  end,
     case Type of
@@ -1264,7 +1264,7 @@ write_returns(_FuncName, erlcom, Type, Rets, Fd) ->
 write_returns(FuncName, erl, Type, Rets, Fd) ->
     case {Type, Rets} of
 	{"void", []} -> 
-	    erlang:fault({?MODULE, ?LINE, {erl, Type, Rets}});
+	    erlang:error({?MODULE, ?LINE, {erl, Type, Rets}});
 	{{RType, pointer}, []} when ?GLUTYPE(RType) ->
 	    ?W("\t<<", []),
 	    binary_arg({"Ret", 0}, RType, Fd),
@@ -1354,7 +1354,7 @@ write_ret2(FuncName, {D,T}, Cont, Fd) ->
     end;
 write_ret2(_FuncName, {_D,pointer,_T}, Cont, Fd) ->
     %%    ?W("~s#sdlmem{ptr=~s}", [Cont,UD]).
-    ?W("~serlang:fault({nyi, ?MODULE,?LINE})", [Cont]).
+    ?W("~serlang:error({nyi, ?MODULE,?LINE})", [Cont]).
 
 find_returns(Args,Funcs) ->
     find_returns(Args,Funcs,[],[]).

@@ -98,7 +98,7 @@ send_bin(Bin) when is_binary(Bin) ->
 
 send_bin(#sdlmem{bin=Bin}, _, _) -> send_bin(Bin);
 send_bin(Bin, _, _) when is_binary(Bin) -> send_bin(Bin);
-send_bin(Term, Mod, Line) -> erlang:fault({Mod,Line,unsupported_type,Term}).
+send_bin(Term, Mod, Line) -> erlang:error({Mod,Line,unsupported_type,Term}).
 
 %%%%%%%%%%%%%%%%% NON SDL FUNCTIONS %%%%%%%%%%%%%%%%
 
