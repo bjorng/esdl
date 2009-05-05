@@ -1,21 +1,34 @@
 # -*- makefile -*-
-#  Copyright (c) 2001 Dan Gudmundsson
+#
+#  Copyright (c) 2001-2009 Dan Gudmundsson, Bjorn Gustavsson
+#
 #  See the file "license.terms" for information on usage and redistribution
 #  of this file, and for a DISCLAIMER OF ALL WARRANTIES.
-# 
-#     $Id$
 #
-#  MacOSX needs some attention
-#  this first version provided by Håkan Stenholm
-#
-#  ... gracefully ruined by David Wallin [david@wallin.cx]
 
+#   Uncomment the two lines beginning with UNIVERSAL below if you want
+#   to build universal binaries that will work on both Tiger and Leopard.
+#
+#   You will also need to do
+#
+#      export MACOSX_DEPLOYMENT_TARGET=10.4
+#
+#   in a bash shell before running this Makefile.
+#
+
+#UNIVERSAL_SDK = -isysroot /Developer/SDKs/MacOSX10.4u.sdk
+#UNIVERSAL_FLAGS = $(UNIVERSAL_SDK) -arch i386 -arch ppc
 
 CC = cc
 
-CFLAGS	= -g -O2 -Wall -D_THREAD_SAFE -D_OSX_COCOA -F$(HOME)/Library/Frameworks $(ERLINC)
+#
+# The settings of CFLAGS and LDFLAGS that follows assume 
+# the SDL framework has been installed in /Library/Frameworks.
+#
 
-LDFLAGS = -F$(HOME)/Library/Frameworks -framework OpenGL -framework SDL -framework OpenGL -framework AGL -framework IOKit -framework Cocoa -L. -lsdlmain
+CFLAGS	= -g -O2 -Wall -D_THREAD_SAFE -D_OSX_COCOA -I/Library/Frameworks/SDL.framework/Headers -F/Library/Frameworks $(ERLINC) $(UNIVERSAL_FLAGS)
+
+LDFLAGS = -F/Library/Frameworks -framework OpenGL -framework SDL -framework OpenGL -framework AGL -framework IOKit -framework Cocoa -L. $(UNIVERSAL_FLAGS)
 
 TARGETDIR = ../priv
 
@@ -50,7 +63,7 @@ clean:
 	$(CC) -c $(CFLAGS) $<
 
 %.o:	%.m
-	$(CC) -c -I$(HOME)/Library/Frameworks/SDL.framework/Headers $(CFLAGS) $<
+	$(CC) -c -I/Library/Frameworks/SDL.framework/Headers $(CFLAGS) $<
 
 
 #esdl_main.o :	esdl_main.c
@@ -76,22 +89,3 @@ libsdlmain.a	: SDLMain.o
 
 $(TARGETDIR)/sdl_driver.so: esdl_driver.o $(COMMON_OBJ)
 	$(CC) $< $(COMMON_OBJ) $(LDFLAGS) -bundle -flat_namespace -undefined suppress -o $@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
