@@ -97,6 +97,10 @@ elif [ -f $SDLLIB/libSDL.a ]; then
     SDL_LIBTYPE="mingw"
     SDL_LIBFLAGS="-L$WSDLROOT/lib -lSDL"
     WSDLLIB=$WSDLROOT/lib
+elif [ -f $SDLLIB/libSDL.dll.a ]; then
+    SDL_LIBTYPE="mingw"
+    SDL_LIBFLAGS="-L$WSDLROOT/lib -lSDL"
+    WSDLLIB=$WSDLROOT/lib
 else
     echo "failed."
     echo "Could not find any import library for SDL." >&2
