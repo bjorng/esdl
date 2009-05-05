@@ -382,7 +382,7 @@ matrix2bin_1([A,B,C,D, E,F,G,H, I,J,K,L, M,N,O,P], S) ->
 %% Returns: ok or exits
 %% Desc:    Converts sdl_surface data to a byte RGB(A) buffer.
 %%          sdl_surfaces are BGR and upside/down.
-copySdlImage2GLArray(Image, Mem, Bpp) when record(Image, sdl_surface) ->
+copySdlImage2GLArray(Image, Mem, Bpp) when is_record(Image, sdl_surface) ->
     copySdlImage2GLArray(Image#sdl_surface.self, Mem, Bpp);
 copySdlImage2GLArray({surfacep, Image}, #sdlmem{bin=Mem}, Bpp) 
   when Bpp == 3; Bpp == 4 ->

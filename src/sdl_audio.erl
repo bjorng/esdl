@@ -54,7 +54,7 @@ audioDrivername() ->
 %% Args:  DesiredFormat (audiospec-record), ForceFormat (true | false)
 %% Returns:  ObtainedFormat or exit(audio_failure) 
 %% C-API func: int SDL_OpenAudio(SDL_AudioSpec *desired, SDL_AudioSpec *obtained);
-openAudio(Desired, ForceFormat) when record(Desired, audiospec) ->
+openAudio(Desired, ForceFormat) when is_record(Desired, audiospec) ->
     FF = if 
 	     ForceFormat == true -> 1;
 	     ForceFormat == false -> 0

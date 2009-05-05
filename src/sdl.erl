@@ -37,7 +37,7 @@
 %% Desc:  Initializes the SDL (including the erlang specific parts)
 init(Flags) when is_integer(Flags) ->
     Path = case code:priv_dir(esdl) of
-	       P when list(P) -> 
+	       P when is_list(P) -> 
 		   P;
 	       {error, _} ->  %% in case you use erl -pa ../ebin priv_dir don't work :-(		   
 		   case code:is_loaded(?MODULE) of

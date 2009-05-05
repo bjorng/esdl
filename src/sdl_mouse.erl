@@ -72,7 +72,7 @@ warpMouse(X, Y) ->
 %% C-API func:  SDL_Cursor *SDL_CreateCursor
 %%		(Uint8 *data, Uint8 *mask, int w, int h, int hot_x, int hot_y);
 %% Desc:  Data & Mask must be less than 32*32 bytes.
-createCursor(Data, Mask, W, H, HotX, HotY) when binary(Data), binary(Mask) ->
+createCursor(Data, Mask, W, H, HotX, HotY) when is_binary(Data), is_binary(Mask) ->
     case call(?SDL_CreateCursor,
 	      <<W:16/native,H:16/native,HotX:16/native,HotY:16/native,
 	       (size(Data)):16/native,Data/binary,Mask/binary>>) of
