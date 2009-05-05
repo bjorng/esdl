@@ -47,8 +47,15 @@
 %%	    Erlang term; thus there is no need to worry about freeing
 %%	    the memory.
 alloc(Size0, Type) ->
-    Size = mem_size(Type, Size0),
-    Bin = call(?MYGL_malloc, <<Size:32/native>>),
+    %% Make sure that the size is at least 65 bytes
+    %% to guarantee that the binary will be allocated
+    %% outside of the heap.
+    Size = case mem_size(Type, Size0) of
+	       Size1 when Size1 < 65 -> 65;
+	       Size1 -> Size1
+	   end,
+
+    Bin = <<0:Size/unit:8>>,
     #sdlmem{type=Type,bin=Bin,size=Size0}.
 
 %% Func:    getBin
