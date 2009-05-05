@@ -132,5 +132,10 @@
 -define(SDL_GL_ACCUM_GREEN_SIZE,    9).
 -define(SDL_GL_ACCUM_BLUE_SIZE,    10).
 -define(SDL_GL_ACCUM_ALPHA_SIZE,   11).
+-define(SDL_GL_STEREO,             12).
+-define(SDL_GL_MULTISAMPLEBUFFERS, 13).
+-define(SDL_GL_MULTISAMPLESAMPLES, 14).
+-define(SDL_GL_ACCELERATED_VISUAL, 15).
+-define(SDL_GL_SWAP_CONTROL,       16).
 
 

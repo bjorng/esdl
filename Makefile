@@ -8,7 +8,7 @@
 SUBDIRS = c_src src test doc
 
 DATE    = $(shell date +%m%d)
-REL     = esdl-0.96.$(DATE)
+REL     = esdl-0.97.$(DATE)
 RELDIR  = /tmp/$(REL)
 
 # Include SDL_ttf and SDL_image support (yes/no)?
@@ -18,7 +18,7 @@ ENABLE_SDL_IMAGE = no
 
 ifeq ($(OS_FLAG),mingw)
 TAR = tar
-SDL_DLL_DIR = $(SDLROOT)/lib
+SDL_DLL_DIR = $(SDLROOT)/bin
 else
 TAR = gtar
 SDL_DLL_DIR = priv
