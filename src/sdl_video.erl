@@ -610,8 +610,8 @@ wm_setIcon(Icon, Mask) when is_record(Icon, sdl_surface) ->
     wm_setIcon(Icon#sdl_surface.self, Mask);
 wm_setIcon({surfacep, Ref}, null) ->
     cast(?SDL_WM_SetIcon, <<Ref:?_PTR,0:16>>);
-wm_setIcon({surfacep, Ref}, Mask) when is_list(Mask) ->
-    cast(?SDL_WM_SetIcon, <<Ref:?_PTR, (length(Mask)):16, Mask>>).
+wm_setIcon({surfacep, Ref}, Mask) when is_binary(Mask) ->
+    cast(?SDL_WM_SetIcon, <<Ref:?_PTR, (size(Mask)):16, Mask/binary>>).
 
 %% Func:    WM_IconifyWindow
 %% Args:    

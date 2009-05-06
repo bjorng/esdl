@@ -711,19 +711,15 @@ void es_wm_setIcon(sdl_data *sd, int len, char *buff)
 {
    char *bp;
    SDL_Surface *sptr;
-   Uint8 mask[64*64];
    Uint16 size;
-   int i;
 
    bp = buff;   
    POPGLPTR(sptr, bp);
-   size  =  get16be(bp);
-   if(size > 0 && size < 64*64) {      
-      for(i=0; i < size; i++) 
-	 mask[i] = get8(bp);
-      SDL_WM_SetIcon(sptr, mask);
+   size = get16be(bp);
+   if (size > 0) {
+     SDL_WM_SetIcon(sptr, (Uint8 *) bp);
    } else {
-      SDL_WM_SetIcon(sptr, NULL);
+     SDL_WM_SetIcon(sptr, NULL);
    }
 }
 
