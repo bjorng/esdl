@@ -1,4 +1,6 @@
-#  Copyright (c) 2001 Dan Gudmundsson
+#
+#  Copyright (c) 2001-2009 Dan Gudmundsson
+#
 #  See the file "license.terms" for information on usage and redistribution
 #  of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
@@ -7,8 +9,7 @@
 
 SUBDIRS = c_src src test doc
 
-DATE    = $(shell date +%m%d)
-REL     = esdl-0.97.$(DATE)
+REL     = esdl-1.0
 RELDIR  = /tmp/$(REL)
 
 # Include SDL_ttf and SDL_image support (yes/no)?
@@ -16,11 +17,11 @@ RELDIR  = /tmp/$(REL)
 ENABLE_SDL_TTF = no
 ENABLE_SDL_IMAGE = no
 
-ifeq ($(OS_FLAG),mingw)
 TAR = tar
+
+ifeq ($(OS_FLAG),mingw)
 SDL_DLL_DIR = $(SDLROOT)/bin
 else
-TAR = gtar
 SDL_DLL_DIR = priv
 endif
 

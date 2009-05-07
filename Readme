@@ -3,43 +3,55 @@ Currently located at http://esdl.sourceforge.net
 
 What is it?
 ===========
-Esdl is library for accessing SDL and Opengl through erlang.
+Esdl is library for accessing SDL (Simple DirectMedia Layer)
+and OpenGL through Erlang.
 
-SDL (Simple DirectMedia Layer) is as said on the web page (www.libsdl.org):
 Simple DirectMedia Layer is a cross-platform multimedia library
 designed to provide fast access to the graphics framebuffer and audio
 device. It also do event handling from mouse, keyboards and joysticks.
 It is also possible to use TrueType fonts through SDL_ttf
 (www.libsdl.org/projects/SDL_ttf/) and images through SDL_image
-(www.libsdl.org/projects/SDL_image/).
+(www.libsdl.org/projects/SDL_image/). More information can be
+found at libsdl.org
 
 OpenGL is a cross-platform standard for 3D rendering and
-3D hardware acceleration. 
-More information can be found at www.opengl.org
+3D hardware acceleration. More information can be found at
+www.opengl.org
 
 Compilation and Installation
 =============================
 
-You need erlang (www.erlang.org) version R9B.
+You need erlang (www.erlang.org). This release has only been
+tested on R13B, but R12B and possibly even older releases
+will probably also work.
+
 You need libsdl (www.libsdl.org) (the development package) version > 1.2.5
+
 You need opengl (with glu-1.2 (full version) libraries from your 
-	        hardware manufacturer or a software version from www.mesa3d.org.
+hardware manufacturer or a software version from www.mesa3d.org.
+
 And optionally you'll need:
 * SDL_ttf (www.libsdl.org/projects/SDL_ttf/) version > 2.0.7
 * SDL_image (www.libsdl.org/projects/SDL_image/) version > 1.2.4
 
-Precompiled versions are available for windows. 
+Precompiled versions are available for Windows. 
 
-For unix like systems 
-Untar the esdl-VERSION.src.tar.gz and type 'make; make install'
-or put it anywhere and add the path in your ~/.erlang (C:/windows/.erlang) file
+For Unix-like systems (including MacOS X):
 
-You might need to modify the c_src/Makefile to point out the correct paths 
-to header files and libraries. 
+Untar the esdl-VERSION.src.tar.gz file and type 'make; make install'
+or put it anywhere and add the path in your ~/.erlang (C:/windows/.erlang)
+file.
+
+You might need to modify the c_src/Makefile (or c_src/Makefile.macosx)
+to point out the correct paths to header files and libraries.
+
+On MacOS X, the top-level Makefile will automatically use
+c_src/Makefile.macosx, but if you run make in the c_src direcotory,
+you need to run make as 'make -f Makefile.macosx'.
 
 To sucessfully build esdl you need complete GLU version 1.2 or later,
-many linux system has a mesa-glu which don't have the correct tesselation
-routines, download the prebuilt sgi-version from www.mesa3d.org and click 
+many Linux system has a mesa-glu which don't have the correct tesselation
+routines. Download the prebuilt sgi-version from www.mesa3d.org and click 
 on SGI-GLU link to find a rpm.  Optionally you'll also need SDL_ttf
 for the font support and SDL_image for the image support.
 
@@ -74,8 +86,9 @@ Eshell V5.1.1  (abort with ^G)
 
 Note: Using esdl on nvidia cards and their drivers requires that erlang
 was built with threads. 
-i.e. when building erlang do ./configure -enable-threads
-otherwise erlang will crash with segfault
+
+That is when building erlang do ./configure -enable-threads
+otherwise Erlang will crash with segfault
 
 Performance & Quality?
 ====================== 
