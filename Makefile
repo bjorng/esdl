@@ -40,7 +40,11 @@ target clean:
                   xflag=$$tflag ; \
                fi ;                    \
 	       eflags="ENABLE_SDL_TTF=$(ENABLE_SDL_TTF) ENABLE_SDL_IMAGE=$(ENABLE_SDL_IMAGE)" ; \
-              (cd $$d && $(MAKE) $$xflag $$eflags $@) ; \
+	       mflag="" ; \
+	       if test -f $$d/Makefile.macosx -a "`uname`" = "Darwin"; then \
+		   mflag="-f Makefile.macosx" ; \
+               fi ; \
+               (cd $$d && $(MAKE) $$mflag $$xflag $$eflags $@) ; \
             fi ;                           \
         done
 
