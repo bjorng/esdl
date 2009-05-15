@@ -110,7 +110,7 @@ check_joy([], Pos, B) ->
    {Pos, B};
 check_joy([Ev|R], Pos = {X, Y, Z}, B) ->
     case Ev of
-	JA when record(JA, joyaxis) ->
+	JA when is_record(JA, joyaxis) ->
 %%	    io:format("Got ~p ~n", [JA]),
 	    NewA = 10 / 32767 * JA#joyaxis.value,
   	    case JA#joyaxis.axis of
@@ -119,7 +119,7 @@ check_joy([Ev|R], Pos = {X, Y, Z}, B) ->
 		3 -> check_joy(R, {X, Y, -NewA},B);
 	        _ -> check_joy(R, Pos, B) %% Ignore
 	    end;
-	JB when record(JB, joybutton) ->
+	JB when is_record(JB, joybutton) ->
             Butt = JB#joybutton.button,
 %%	    io:format("Button ~w changed ~n", [Butt]),
 	    case JB#joybutton.state of
@@ -132,7 +132,7 @@ check_joy([Ev|R], Pos = {X, Y, Z}, B) ->
 	    throw(quit);
 	no_event -> 
 	    check_joy(R, Pos, B);
-	Quit when record(Quit, keyboard) -> 
+	Quit when is_record(Quit, keyboard) -> 
 	    if
 		Quit#keyboard.sym == ?SDLK_ESCAPE ->
 		    throw(quit);

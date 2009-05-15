@@ -493,7 +493,7 @@ clearStencil(S) ->
 clipPlane(Plane, Equation) -> 
  NewEquation = if
 	is_list(Equation) ; is_tuple(Equation) -> term2bin(Equation, 4, ?GL_DOUBLE);
-	binary(Equation) -> Equation;
+	is_binary(Equation) -> Equation;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Equation})
  end, 
  cast(?glClipPlane, [<<Plane:32/?UN>>,NewEquation]).
@@ -860,7 +860,7 @@ edgeFlagPointer(Stride, Pointer) ->
 edgeFlagv(Flag) -> 
  NewFlag = if
 	is_list(Flag) ; is_tuple(Flag) -> term2bin(Flag, 1, ?GL_BYTE);
-	binary(Flag) -> Flag;
+	is_binary(Flag) -> Flag;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Flag})
  end, 
  cast(?glEdgeFlagv, [ NewFlag]).
@@ -1228,7 +1228,7 @@ getPixelMapusv(Map, #sdlmem{bin=Values}) ->
 getPointerv(Pname) -> 
  Bin = call(?glGetPointerv, <<Pname:32/?UN>>), 
  case Bin of 
-	<<Params:32/big-unsigned>> -> 
+	<<_Params:32/big-unsigned>> -> 
 	 erlang:error({nyi, ?MODULE,?LINE});
 	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
@@ -1411,7 +1411,7 @@ indexd(C) ->
 indexdv(C) -> 
  NewC = if
 	is_list(C) ; is_tuple(C) -> term2bin(C, 1, ?GL_DOUBLE);
-	binary(C) -> C;
+	is_binary(C) -> C;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, C})
  end, 
  cast(?glIndexdv, [ NewC]).
@@ -1428,7 +1428,7 @@ indexf(C) ->
 indexfv(C) -> 
  NewC = if
 	is_list(C) ; is_tuple(C) -> term2bin(C, 1, ?GL_FLOAT);
-	binary(C) -> C;
+	is_binary(C) -> C;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, C})
  end, 
  cast(?glIndexfv, [ NewC]).
@@ -1445,7 +1445,7 @@ indexi(C) ->
 indexiv(C) -> 
  NewC = if
 	is_list(C) ; is_tuple(C) -> term2bin(C, 1, ?GL_INT);
-	binary(C) -> C;
+	is_binary(C) -> C;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, C})
  end, 
  cast(?glIndexiv, [ NewC]).
@@ -1462,7 +1462,7 @@ indexs(C) ->
 indexsv(C) -> 
  NewC = if
 	is_list(C) ; is_tuple(C) -> term2bin(C, 1, ?GL_SHORT);
-	binary(C) -> C;
+	is_binary(C) -> C;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, C})
  end, 
  cast(?glIndexsv, [ NewC]).
@@ -1479,7 +1479,7 @@ indexub(C) ->
 indexubv(C) -> 
  NewC = if
 	is_list(C) ; is_tuple(C) -> term2bin(C, 1, ?GL_UNSIGNED_BYTE);
-	binary(C) -> C;
+	is_binary(C) -> C;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, C})
  end, 
  cast(?glIndexubv, [ NewC]).
@@ -1646,7 +1646,7 @@ loadIdentity() ->
 loadMatrixd(M) -> 
  NewM = if
 	is_list(M) ; is_tuple(M) -> matrix2bin(M, ?GL_DOUBLE);
-	binary(M) -> M;
+	is_binary(M) -> M;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, M})
  end, 
  cast(?glLoadMatrixd, [ NewM]).
@@ -1657,7 +1657,7 @@ loadMatrixd(M) ->
 loadMatrixf(M) -> 
  NewM = if
 	is_list(M) ; is_tuple(M) -> matrix2bin(M, ?GL_FLOAT);
-	binary(M) -> M;
+	is_binary(M) -> M;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, M})
  end, 
  cast(?glLoadMatrixf, [ NewM]).
@@ -1806,7 +1806,7 @@ matrixMode(Mode) ->
 multMatrixd(M) -> 
  NewM = if
 	is_list(M) ; is_tuple(M) -> matrix2bin(M, ?GL_DOUBLE);
-	binary(M) -> M;
+	is_binary(M) -> M;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, M})
  end, 
  cast(?glMultMatrixd, [ NewM]).
@@ -1817,7 +1817,7 @@ multMatrixd(M) ->
 multMatrixf(M) -> 
  NewM = if
 	is_list(M) ; is_tuple(M) -> matrix2bin(M, ?GL_FLOAT);
-	binary(M) -> M;
+	is_binary(M) -> M;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, M})
  end, 
  cast(?glMultMatrixf, [ NewM]).
@@ -2000,7 +2000,7 @@ polygonOffset(Factor, Units) ->
 polygonStipple(Mask) -> 
  NewMask = if
 	is_list(Mask) ; is_tuple(Mask) -> term2bin(Mask, 128, ?GL_UNSIGNED_BYTE);
-	binary(Mask) -> Mask;
+	is_binary(Mask) -> Mask;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Mask})
  end, 
  cast(?glPolygonStipple, [ NewMask]).
@@ -2238,12 +2238,12 @@ rectd(X1, Y1, X2, Y2) ->
 rectdv(V1, V2) -> 
  NewV1 = if
 	is_list(V1) ; is_tuple(V1) -> term2bin(V1, 2, ?GL_DOUBLE);
-	binary(V1) -> V1;
+	is_binary(V1) -> V1;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V1})
  end, 
  NewV2 = if
 	is_list(V2) ; is_tuple(V2) -> term2bin(V2, 2, ?GL_DOUBLE);
-	binary(V2) -> V2;
+	is_binary(V2) -> V2;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V2})
  end, 
  cast(?glRectdv, [ NewV1, NewV2]).
@@ -2260,12 +2260,12 @@ rectf(X1, Y1, X2, Y2) ->
 rectfv(V1, V2) -> 
  NewV1 = if
 	is_list(V1) ; is_tuple(V1) -> term2bin(V1, 2, ?GL_FLOAT);
-	binary(V1) -> V1;
+	is_binary(V1) -> V1;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V1})
  end, 
  NewV2 = if
 	is_list(V2) ; is_tuple(V2) -> term2bin(V2, 2, ?GL_FLOAT);
-	binary(V2) -> V2;
+	is_binary(V2) -> V2;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V2})
  end, 
  cast(?glRectfv, [ NewV1, NewV2]).
@@ -2282,12 +2282,12 @@ recti(X1, Y1, X2, Y2) ->
 rectiv(V1, V2) -> 
  NewV1 = if
 	is_list(V1) ; is_tuple(V1) -> term2bin(V1, 2, ?GL_INT);
-	binary(V1) -> V1;
+	is_binary(V1) -> V1;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V1})
  end, 
  NewV2 = if
 	is_list(V2) ; is_tuple(V2) -> term2bin(V2, 2, ?GL_INT);
-	binary(V2) -> V2;
+	is_binary(V2) -> V2;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V2})
  end, 
  cast(?glRectiv, [ NewV1, NewV2]).
@@ -2304,12 +2304,12 @@ rects(X1, Y1, X2, Y2) ->
 rectsv(V1, V2) -> 
  NewV1 = if
 	is_list(V1) ; is_tuple(V1) -> term2bin(V1, 2, ?GL_SHORT);
-	binary(V1) -> V1;
+	is_binary(V1) -> V1;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V1})
  end, 
  NewV2 = if
 	is_list(V2) ; is_tuple(V2) -> term2bin(V2, 2, ?GL_SHORT);
-	binary(V2) -> V2;
+	is_binary(V2) -> V2;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V2})
  end, 
  cast(?glRectsv, [ NewV1, NewV2]).
@@ -2643,7 +2643,7 @@ texGend(Coord, Pname, Param) ->
 texGendv(Coord, Pname, Params) -> 
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 4, ?GL_DOUBLE);
-	binary(Params) -> Params;
+	is_binary(Params) -> Params;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glTexGendv, [<<Coord:32/?UN, Pname:32/?UN>>,NewParams]).
@@ -2660,7 +2660,7 @@ texGenf(Coord, Pname, Param) ->
 texGenfv(Coord, Pname, Params) -> 
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 4, ?GL_FLOAT);
-	binary(Params) -> Params;
+	is_binary(Params) -> Params;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glTexGenfv, [<<Coord:32/?UN, Pname:32/?UN>>,NewParams]).
@@ -2677,7 +2677,7 @@ texGeni(Coord, Pname, Param) ->
 texGeniv(Coord, Pname, Params) -> 
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 4, ?GL_INT);
-	binary(Params) -> Params;
+	is_binary(Params) -> Params;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glTexGeniv, [<<Coord:32/?UN, Pname:32/?UN>>,NewParams]).
@@ -3011,7 +3011,7 @@ colorTable(Target, Internalformat, Width, Format, Type, Table) ->
 colorTableParameterfv(Target, Pname, Params) -> 
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 4, ?GL_FLOAT);
-	binary(Params) -> Params;
+	is_binary(Params) -> Params;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glColorTableParameterfv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
@@ -3022,7 +3022,7 @@ colorTableParameterfv(Target, Pname, Params) ->
 colorTableParameteriv(Target, Pname, Params) -> 
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 4, ?GL_INT);
-	binary(Params) -> Params;
+	is_binary(Params) -> Params;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glColorTableParameteriv, [<<Target:32/?UN, Pname:32/?UN>>,NewParams]).
@@ -3545,7 +3545,7 @@ multiTexCoord4sv(Target, {V1,V2,V3,V4}) ->
 loadTransposeMatrixf(M) -> 
  NewM = if
 	is_list(M) ; is_tuple(M) -> matrix2bin(M, ?GL_FLOAT);
-	binary(M) -> M;
+	is_binary(M) -> M;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, M})
  end, 
  cast(?glLoadTransposeMatrixf, [ NewM]).
@@ -3556,7 +3556,7 @@ loadTransposeMatrixf(M) ->
 loadTransposeMatrixd(M) -> 
  NewM = if
 	is_list(M) ; is_tuple(M) -> matrix2bin(M, ?GL_DOUBLE);
-	binary(M) -> M;
+	is_binary(M) -> M;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, M})
  end, 
  cast(?glLoadTransposeMatrixd, [ NewM]).
@@ -3567,7 +3567,7 @@ loadTransposeMatrixd(M) ->
 multTransposeMatrixf(M) -> 
  NewM = if
 	is_list(M) ; is_tuple(M) -> matrix2bin(M, ?GL_FLOAT);
-	binary(M) -> M;
+	is_binary(M) -> M;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, M})
  end, 
  cast(?glMultTransposeMatrixf, [ NewM]).
@@ -3578,7 +3578,7 @@ multTransposeMatrixf(M) ->
 multTransposeMatrixd(M) -> 
  NewM = if
 	is_list(M) ; is_tuple(M) -> matrix2bin(M, ?GL_DOUBLE);
-	binary(M) -> M;
+	is_binary(M) -> M;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, M})
  end, 
  cast(?glMultTransposeMatrixd, [ NewM]).
@@ -3692,7 +3692,7 @@ fogCoordf(Coord) ->
 fogCoordfv(Coord) -> 
  NewCoord = if
 	is_list(Coord) ; is_tuple(Coord) -> term2bin(Coord, 1, ?GL_FLOAT);
-	binary(Coord) -> Coord;
+	is_binary(Coord) -> Coord;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Coord})
  end, 
  cast(?glFogCoordfv, [ NewCoord]).
@@ -3709,7 +3709,7 @@ fogCoordd(Coord) ->
 fogCoorddv(Coord) -> 
  NewCoord = if
 	is_list(Coord) ; is_tuple(Coord) -> term2bin(Coord, 1, ?GL_DOUBLE);
-	binary(Coord) -> Coord;
+	is_binary(Coord) -> Coord;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Coord})
  end, 
  cast(?glFogCoorddv, [ NewCoord]).
@@ -3755,7 +3755,7 @@ pointParameterf(Pname, Param) ->
 pointParameterfv(Pname, Params) -> 
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 3, ?GL_FLOAT);
-	binary(Params) -> Params;
+	is_binary(Params) -> Params;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glPointParameterfv, [<<Pname:32/?UN>>,NewParams]).
@@ -3772,7 +3772,7 @@ pointParameteri(Pname, Param) ->
 pointParameteriv(Pname, Params) -> 
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 3, ?GL_INT);
-	binary(Params) -> Params;
+	is_binary(Params) -> Params;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glPointParameteriv, [<<Pname:32/?UN>>,NewParams]).
@@ -4160,7 +4160,7 @@ getBufferParameteriv(Target, Pname) ->
 getBufferPointerv(Target, Pname) -> 
  Bin = call(?glGetBufferPointerv, <<Target:32/?UN, Pname:32/?UN>>), 
  case Bin of 
-	<<Params:32/big-unsigned>> -> 
+	<<_Params:32/big-unsigned>> -> 
 	 erlang:error({nyi, ?MODULE,?LINE});
 	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
@@ -4436,7 +4436,7 @@ getVertexAttribiv(Index, Pname) ->
 getVertexAttribPointerv(Index, Pname) -> 
  Bin = call(?glGetVertexAttribPointerv, <<Index:32/?UN, Pname:32/?UN>>), 
  case Bin of 
-	<<Pointer:32/big-unsigned>> -> 
+	<<_Pointer:32/big-unsigned>> -> 
 	 erlang:error({nyi, ?MODULE,?LINE});
 	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
@@ -4732,7 +4732,7 @@ vertexAttrib3sv(Index, {V1,V2,V3}) ->
 vertexAttrib4Nbv(Index, V) -> 
  NewV = if
 	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_BYTE);
-	binary(V) -> V;
+	is_binary(V) -> V;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V})
  end, 
  cast(?glVertexAttrib4Nbv, [<<Index:32/?UN>>,NewV]).
@@ -4743,7 +4743,7 @@ vertexAttrib4Nbv(Index, V) ->
 vertexAttrib4Niv(Index, V) -> 
  NewV = if
 	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_INT);
-	binary(V) -> V;
+	is_binary(V) -> V;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V})
  end, 
  cast(?glVertexAttrib4Niv, [<<Index:32/?UN>>,NewV]).
@@ -4754,7 +4754,7 @@ vertexAttrib4Niv(Index, V) ->
 vertexAttrib4Nsv(Index, V) -> 
  NewV = if
 	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_SHORT);
-	binary(V) -> V;
+	is_binary(V) -> V;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V})
  end, 
  cast(?glVertexAttrib4Nsv, [<<Index:32/?UN>>,NewV]).
@@ -4771,7 +4771,7 @@ vertexAttrib4Nub(Index, X, Y, Z, W) ->
 vertexAttrib4Nubv(Index, V) -> 
  NewV = if
 	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_UNSIGNED_BYTE);
-	binary(V) -> V;
+	is_binary(V) -> V;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V})
  end, 
  cast(?glVertexAttrib4Nubv, [<<Index:32/?UN>>,NewV]).
@@ -4782,7 +4782,7 @@ vertexAttrib4Nubv(Index, V) ->
 vertexAttrib4Nuiv(Index, V) -> 
  NewV = if
 	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_UNSIGNED_INT);
-	binary(V) -> V;
+	is_binary(V) -> V;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V})
  end, 
  cast(?glVertexAttrib4Nuiv, [<<Index:32/?UN>>,NewV]).
@@ -4793,7 +4793,7 @@ vertexAttrib4Nuiv(Index, V) ->
 vertexAttrib4Nusv(Index, V) -> 
  NewV = if
 	is_list(V) ; is_tuple(V) -> term2bin(V, 4, ?GL_UNSIGNED_SHORT);
-	binary(V) -> V;
+	is_binary(V) -> V;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, V})
  end, 
  cast(?glVertexAttrib4Nusv, [<<Index:32/?UN>>,NewV]).
@@ -5131,7 +5131,7 @@ programEnvParameter4dvARB(Target, Index, Params) ->
 programEnvParameter4dv(Target, Index, Params) -> 
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 4, ?GL_DOUBLE);
-	binary(Params) -> Params;
+	is_binary(Params) -> Params;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glProgramEnvParameter4dv, [<<Target:32/?UN, Index:32/?UN>>,NewParams]).
@@ -5152,7 +5152,7 @@ programEnvParameter4fvARB(Target, Index, Params) ->
 programEnvParameter4fv(Target, Index, Params) -> 
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 4, ?GL_FLOAT);
-	binary(Params) -> Params;
+	is_binary(Params) -> Params;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glProgramEnvParameter4fv, [<<Target:32/?UN, Index:32/?UN>>,NewParams]).
@@ -5173,7 +5173,7 @@ programLocalParameter4dvARB(Target, Index, Params) ->
 programLocalParameter4dv(Target, Index, Params) -> 
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 4, ?GL_DOUBLE);
-	binary(Params) -> Params;
+	is_binary(Params) -> Params;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glProgramLocalParameter4dv, [<<Target:32/?UN, Index:32/?UN>>,NewParams]).
@@ -5194,7 +5194,7 @@ programLocalParameter4fvARB(Target, Index, Params) ->
 programLocalParameter4fv(Target, Index, Params) -> 
  NewParams = if
 	is_list(Params) ; is_tuple(Params) -> term2bin(Params, 4, ?GL_FLOAT);
-	binary(Params) -> Params;
+	is_binary(Params) -> Params;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Params})
  end, 
  cast(?glProgramLocalParameter4fv, [<<Target:32/?UN, Index:32/?UN>>,NewParams]).

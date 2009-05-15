@@ -302,17 +302,17 @@ getTessProperty(Tess=#tessPtr{}, Which) ->
 loadSamplingMatrices(Nurb=#nurbsPtr{}, Model, Perspective, View) -> 
  NewModel = if
 	is_list(Model) ; is_tuple(Model) -> matrix2bin(Model, ?GL_FLOAT);
-	binary(Model) -> Model;
+	is_binary(Model) -> Model;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Model})
  end, 
  NewPerspective = if
 	is_list(Perspective) ; is_tuple(Perspective) -> term2bin(Perspective, 16, ?GL_FLOAT);
-	binary(Perspective) -> Perspective;
+	is_binary(Perspective) -> Perspective;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Perspective})
  end, 
  NewView = if
 	is_list(View) ; is_tuple(View) -> term2bin(View, 16, ?GL_INT);
-	binary(View) -> View;
+	is_binary(View) -> View;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, View})
  end, 
  cast(?gluLoadSamplingMatrices, [<<(Nurb#nurbsPtr.ptr):?_PTR>>,NewModel, NewPerspective, NewView]).
@@ -433,7 +433,7 @@ perspective(Fovy, Aspect, ZNear, ZFar) ->
 pickMatrix(X, Y, DelX, DelY, Viewport) -> 
  NewViewport = if
 	is_list(Viewport) ; is_tuple(Viewport) -> term2bin(Viewport, 4, ?GL_INT);
-	binary(Viewport) -> Viewport;
+	is_binary(Viewport) -> Viewport;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Viewport})
  end, 
  cast(?gluPickMatrix, [<<X:64/float-native, Y:64/float-native, DelX:64/float-native, DelY:64/float-native>>,NewViewport]).
@@ -445,17 +445,17 @@ pickMatrix(X, Y, DelX, DelY, Viewport) ->
 project(ObjX, ObjY, ObjZ, Model, Proj, View) -> 
  NewModel = if
 	is_list(Model) ; is_tuple(Model) -> term2bin(Model, 16, ?GL_DOUBLE);
-	binary(Model) -> Model;
+	is_binary(Model) -> Model;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Model})
  end, 
  NewProj = if
 	is_list(Proj) ; is_tuple(Proj) -> term2bin(Proj, 16, ?GL_DOUBLE);
-	binary(Proj) -> Proj;
+	is_binary(Proj) -> Proj;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Proj})
  end, 
  NewView = if
 	is_list(View) ; is_tuple(View) -> term2bin(View, 4, ?GL_INT);
-	binary(View) -> View;
+	is_binary(View) -> View;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, View})
  end, 
  Res = call(?gluProject, [<<ObjX:64/float-native, ObjY:64/float-native, ObjZ:64/float-native>>,NewModel, NewProj, NewView]), 
@@ -567,17 +567,17 @@ tessProperty(Tess=#tessPtr{}, Which, Data) ->
 unProject(WinX, WinY, WinZ, Model, Proj, View) -> 
  NewModel = if
 	is_list(Model) ; is_tuple(Model) -> term2bin(Model, 16, ?GL_DOUBLE);
-	binary(Model) -> Model;
+	is_binary(Model) -> Model;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Model})
  end, 
  NewProj = if
 	is_list(Proj) ; is_tuple(Proj) -> term2bin(Proj, 16, ?GL_DOUBLE);
-	binary(Proj) -> Proj;
+	is_binary(Proj) -> Proj;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, Proj})
  end, 
  NewView = if
 	is_list(View) ; is_tuple(View) -> term2bin(View, 4, ?GL_INT);
-	binary(View) -> View;
+	is_binary(View) -> View;
 	true -> erlang:error({?MODULE, ?LINE, unsupported_type, View})
  end, 
  Res = call(?gluUnProject, [<<WinX:64/float-native, WinY:64/float-native, WinZ:64/float-native>>,NewModel, NewProj, NewView]), 

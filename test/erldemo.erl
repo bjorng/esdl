@@ -346,7 +346,7 @@ check_event(ColMap, BumpMap) ->
 	    quit;
 	no_event -> 
 	    {ColMap,BumpMap};
-	Quit when record(Quit, keyboard) -> 
+	Quit when is_record(Quit, keyboard) -> 
 	    if 
 		Quit#keyboard.sym == ?SDLK_ESCAPE ->
 		    quit;

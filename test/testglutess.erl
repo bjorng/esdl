@@ -120,7 +120,7 @@ check_event() ->
 	    quit;
 	no_event -> 
 	    ok;
-	Quit when record(Quit, keyboard) -> 
+	Quit when is_record(Quit, keyboard) -> 
 	    if 
 		Quit#keyboard.sym == ?SDLK_ESCAPE ->
 		    quit;

@@ -52,7 +52,7 @@ target clean:
 release: target relsrc relwin
 
 ## Install needs to find the erlang directory
-ERL_DIR := $(shell echo 'io:format("~s~n",[code:root_dir()]),halt().' | erl | sed 's,^[0-9]*> *,,g' | tail +2)
+ERL_DIR := $(shell echo 'io:format("~s~n",[code:root_dir()]),halt().' | erl | sed 's,^[0-9]*> *,,g' | tail --lines=+2)
 
 INSTALLDIR = $(ERL_DIR)/lib/$(ESDL_VSN)
 

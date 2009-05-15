@@ -157,7 +157,7 @@ write_doc(FD, N, W, O, M, L) ->
 	    NextLine = strip(N()),
 %	    io:format("~s:~p: Incomplete func header ~p ~n", [M, L, FD#f.ef])
 	    1 + write_doc(add_line(NextLine, ef, FD), N, W, O, M, L);
-	FC when list(FC) ->
+	FC when is_list(FC) ->
 	    case strip(N()) of
 		"exit(nyi)" ++ _IgnoreRest ->
 		    io:format("~s:~p: Not implemented Ignoring ~p~n", 

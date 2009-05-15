@@ -170,7 +170,7 @@ openFontIndexRW() ->
 %% Desc: Retrieve the font style.
 %%       This font style is implemented by modifying the font glyphs, and
 %%       doesn't reflect any inherent properties of the truetype font file.
-getFontStyle(Font) when record(Font, ttf_font) ->
+getFontStyle(Font) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     <<FontStyle:16>> = call(?SDL_TTF_GetFontStyle, [<<FontP:?_PTR>>]),
     FontStyle.
@@ -182,7 +182,7 @@ getFontStyle(Font) when record(Font, ttf_font) ->
 %% Desc: Set the font style.
 %%       This font style is implemented by modifying the font glyphs, and
 %%       doesn't reflect any inherent properties of the truetype font file.
-setFontStyle(Font, FontStyle) when record(Font, ttf_font) ->
+setFontStyle(Font, FontStyle) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     cast(?SDL_TTF_SetFontStyle, [<<FontP:?_PTR>>, <<FontStyle:?INT>>]).
 
@@ -191,7 +191,7 @@ setFontStyle(Font, FontStyle) when record(Font, ttf_font) ->
 %% Returns: FontHeight
 %% C-API func: int TTF_FontHeight(TTF_Font *font);
 %% Desc: Get the total height of the font - usually equal to point size
-fontHeight(Font) when record(Font, ttf_font) ->
+fontHeight(Font) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     <<FontHeight:?INT>> = call(?SDL_TTF_FontHeight, [<<FontP:?_PTR>>]),
     FontHeight.
@@ -202,7 +202,7 @@ fontHeight(Font) when record(Font, ttf_font) ->
 %% C-API func: int TTF_FontAscent(TTF_Font *font);
 %% Desc: Get the offset from the baseline to the top of the font
 %%       This is a positive value, relative to the baseline.
-fontAscent(Font) when record(Font, ttf_font) ->
+fontAscent(Font) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     <<FontAscent:?INT>> = call(?SDL_TTF_FontAscent, [<<FontP:?_PTR>>]),
     FontAscent.
@@ -213,7 +213,7 @@ fontAscent(Font) when record(Font, ttf_font) ->
 %% C-API func: int TTF_FontDescent(TTF_Font *font);
 %% Desc: Get the offset from the baseline to the bottom of the font
 %%       This is a negative value, relative to the baseline.
-fontDescent(Font) when record(Font, ttf_font) ->
+fontDescent(Font) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     <<FontDescent:?INT>> = call(?SDL_TTF_FontDescent, [<<FontP:?_PTR>>]),
     FontDescent.
@@ -223,7 +223,7 @@ fontDescent(Font) when record(Font, ttf_font) ->
 %% Returns: FontLineSkip
 %% C-API func: int TTF_FontLineSkip(TTF_Font *font);
 %% Desc: Get the recommended spacing between lines of text for this font
-fontLineSkip(Font) when record(Font, ttf_font) ->
+fontLineSkip(Font) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     <<FontLineSkip:?INT>> = call(?SDL_TTF_FontLineSkip, [<<FontP:?_PTR>>]),
     FontLineSkip.
@@ -233,7 +233,7 @@ fontLineSkip(Font) when record(Font, ttf_font) ->
 %% Returns: FontFaces
 %% C-API func: long TTF_FontFaces(TTF_Font *font);
 %% Desc: Get the number of faces of the font
-fontFaces(Font) when record(Font, ttf_font) ->
+fontFaces(Font) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     <<FontFaces:?LONG>> = call(?SDL_TTF_FontFaces, [<<FontP:?_PTR>>]),
     FontFaces.
@@ -248,7 +248,7 @@ fontFaces(Font) when record(Font, ttf_font) ->
 %%       can assume that a rendered string's width is going to be
 %%       the result of a simple calculation:
 %%       glyph_width * string_length 
-fontFaceIsFixedWidth(Font) when record(Font, ttf_font) ->
+fontFaceIsFixedWidth(Font) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     <<IsFixedW:?INT>> = call(?SDL_TTF_FontFaceIsFixedWidth, [<<FontP:?_PTR>>]),
     IsFixedW.
@@ -260,7 +260,7 @@ fontFaceIsFixedWidth(Font) when record(Font, ttf_font) ->
 %% Desc: Get the current font face family name from the loaded
 %%       font. This function may return a NULL pointer, in which case
 %%       the information is not available.
-fontFaceFamilyName(Font) when record(Font, ttf_font) ->
+fontFaceFamilyName(Font) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     binary_to_list(call(?SDL_TTF_FontFaceFamilyName, [<<FontP:?_PTR>>])).
 
@@ -271,7 +271,7 @@ fontFaceFamilyName(Font) when record(Font, ttf_font) ->
 %% Desc: Get the current font face style name from the loaded
 %%       font. This function may return a NULL pointer, in which case
 %%       the information is not available.
-fontFaceStyleName(Font) when record(Font, ttf_font) ->
+fontFaceStyleName(Font) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     binary_to_list(call(?SDL_TTF_FontFaceStyleName, [<<FontP:?_PTR>>])).
 
@@ -283,7 +283,7 @@ fontFaceStyleName(Font) when record(Font, ttf_font) ->
 %%                                  int *miny, int *maxy, 
 %%                                  int *advance);
 %% Desc: Get the metrics (dimensions) of a glyph.
-glyphMetrics(Font, Ch) when record(Font, ttf_font) ->
+glyphMetrics(Font, Ch) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     <<Res:?INT, MinX:?INT, MaxX:?INT, MinY:?INT, MaxY:?INT, Adv:?INT>> =
 	call(?SDL_TTF_GlyphMetrics, [<<FontP:?_PTR>>, <<Ch:?INT>>]),
@@ -298,7 +298,7 @@ glyphMetrics(Font, Ch) when record(Font, ttf_font) ->
 %% C-API func: int TTF_SizeText(TTF_Font *font, const char *text, 
 %%                              int *w, int *h);
 %% Desc: Get the dimensions of a rendered string of text.
-sizeText(Font, Text) when record(Font, ttf_font) ->
+sizeText(Font, Text) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     <<Res:?INT, W:?INT, H:?INT>> = 
 	call(?SDL_TTF_SizeText, [<<FontP:?_PTR>>, [Text,0]]),
@@ -313,7 +313,7 @@ sizeText(Font, Text) when record(Font, ttf_font) ->
 %% C-API func: int TTF_SizeUTF8(TTF_Font *font, const char *text, 
 %%                              int *w, int *h);
 %% Desc: Get the dimensions of a rendered string of text.
-sizeUTF8(Font, Text) when record(Font, ttf_font) ->
+sizeUTF8(Font, Text) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     <<Res:?INT, W:?INT, H:?INT>> = 
 	call(?SDL_TTF_SizeUTF8, [<<FontP:?_PTR>>, [Text,0]]),
@@ -328,7 +328,7 @@ sizeUTF8(Font, Text) when record(Font, ttf_font) ->
 %% C-API func: int TTF_SizeUNICODE(TTF_Font *font, const Uint16 *text, 
 %%                                 int *w, int *h);
 %% Desc: Get the dimensions of a rendered string of text.
-sizeUNICODE(Font, Text) when record(Font, ttf_font) ->
+sizeUNICODE(Font, Text) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     Args = [<<FontP:?_PTR>>, mk_unicode_text(Text)],
     <<Res:?INT, W:?INT, H:?INT>> = call(?SDL_TTF_SizeUNICODE, Args),
@@ -348,7 +348,7 @@ sizeUNICODE(Font, Text) when record(Font, ttf_font) ->
 %%     
 %%       The palette has 0 as the colorkey, giving it a transparent
 %%       background, with 1 as the text color.
-renderTextSolid(Font, Text, FgColor) when record(Font, ttf_font) ->
+renderTextSolid(Font, Text, FgColor) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     mk_render_call(?SDL_TTF_RenderTextSolid, 
 		   mk_render_args(FontP, mk_latin1_text(Text), FgColor)).
@@ -364,7 +364,7 @@ renderTextSolid(Font, Text, FgColor) when record(Font, ttf_font) ->
 %%     
 %%       The palette has 0 as the colorkey, giving it a transparent
 %%       background, with 1 as the text color.
-renderUTF8Solid(Font, Text, FgColor) when record(Font, ttf_font) ->
+renderUTF8Solid(Font, Text, FgColor) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     mk_render_call(?SDL_TTF_RenderUTF8Solid, 
                    mk_render_args(FontP, mk_utf8_text(Text), FgColor)).
@@ -380,7 +380,7 @@ renderUTF8Solid(Font, Text, FgColor) when record(Font, ttf_font) ->
 %%     
 %%       The palette has 0 as the colorkey, giving it a transparent
 %%       background, with 1 as the text color.
-renderUNICODESolid(Font, Text, FgColor) when record(Font, ttf_font) ->
+renderUNICODESolid(Font, Text, FgColor) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     mk_render_call(?SDL_TTF_RenderUNICODESolid, 
 		   mk_render_args(FontP, mk_unicode_text(Text), FgColor)).
@@ -397,7 +397,7 @@ renderUNICODESolid(Font, Text, FgColor) when record(Font, ttf_font) ->
 %%       pixel is set to the text color.  The glyph is rendered
 %%       without any padding or centering in the X direction, and
 %%       aligned normally in the Y direction.
-renderGlyphSolid(Font, Glyph, FgColor) when record(Font, ttf_font) ->
+renderGlyphSolid(Font, Glyph, FgColor) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     mk_render_call(?SDL_TTF_RenderGlyphSolid, 
 		   mk_render_args(FontP, mk_uint16_glyph(Glyph), FgColor)).
@@ -414,7 +414,7 @@ renderGlyphSolid(Font, Glyph, FgColor) when record(Font, ttf_font) ->
 %%
 %%       The 0 pixel is background, while other pixels have varying
 %%       degrees of the foreground color.
-renderTextShaded(Font, Text, FgColor, BgColor) when record(Font, ttf_font) ->
+renderTextShaded(Font, Text, FgColor, BgColor) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     mk_render_call(?SDL_TTF_RenderTextShaded, 
 		   mk_render_args(FontP,mk_latin1_text(Text),FgColor,BgColor)).
@@ -431,7 +431,7 @@ renderTextShaded(Font, Text, FgColor, BgColor) when record(Font, ttf_font) ->
 %%
 %%       The 0 pixel is background, while other pixels have varying
 %%       degrees of the foreground color.
-renderUTF8Shaded(Font, Text, FgColor, BgColor) when record(Font, ttf_font) ->
+renderUTF8Shaded(Font, Text, FgColor, BgColor) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     mk_render_call(?SDL_TTF_RenderUTF8Shaded, 
 		   mk_render_args(FontP,mk_utf8_text(Text),FgColor,BgColor)).
@@ -448,7 +448,7 @@ renderUTF8Shaded(Font, Text, FgColor, BgColor) when record(Font, ttf_font) ->
 %%
 %%       The 0 pixel is background, while other pixels have varying
 %%       degrees of the foreground color.
-renderUNICODEShaded(Font, Text, FgColor, BgColor) when record(Font, ttf_font) ->
+renderUNICODEShaded(Font, Text, FgColor, BgColor) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     mk_render_call(?SDL_TTF_RenderUNICODEShaded, 
 		   mk_render_args(FontP,mk_unicode_text(Text),FgColor,BgColor)).
@@ -466,7 +466,7 @@ renderUNICODEShaded(Font, Text, FgColor, BgColor) when record(Font, ttf_font) ->
 %%       foreground color. The glyph is rendered without any padding
 %%       or centering in the X direction, and aligned normally in the
 %%       Y direction.
-renderGlyphShaded(Font, Glyph, FgColor, BgColor) when record(Font, ttf_font) ->
+renderGlyphShaded(Font, Glyph, FgColor, BgColor) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     mk_render_call(?SDL_TTF_RenderGlyphShaded, 
 		   mk_render_args(FontP, mk_uint16_glyph(Glyph),
@@ -481,7 +481,7 @@ renderGlyphShaded(Font, Glyph, FgColor, BgColor) when record(Font, ttf_font) ->
 %% Desc: Create a 32-bit ARGB surface and render the given text at
 %%       high quality, using alpha blending to dither the font with
 %%       the given color.
-renderTextBlended(Font, Text, FgColor) when record(Font, ttf_font) ->
+renderTextBlended(Font, Text, FgColor) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     mk_render_call(?SDL_TTF_RenderTextBlended, 
 		   mk_render_args(FontP, mk_latin1_text(Text), FgColor)).
@@ -495,7 +495,7 @@ renderTextBlended(Font, Text, FgColor) when record(Font, ttf_font) ->
 %% Desc: Create a 32-bit ARGB surface and render the given text at
 %%       high quality, using alpha blending to dither the font with
 %%       the given color.
-renderUTF8Blended(Font, Text, FgColor) when record(Font, ttf_font) ->
+renderUTF8Blended(Font, Text, FgColor) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     mk_render_call(?SDL_TTF_RenderUTF8Blended, 
 		   mk_render_args(FontP, mk_utf8_text(Text), FgColor)).
@@ -509,7 +509,7 @@ renderUTF8Blended(Font, Text, FgColor) when record(Font, ttf_font) ->
 %% Desc: Create a 32-bit ARGB surface and render the given text at
 %%       high quality, using alpha blending to dither the font with
 %%       the given color.
-renderUNICODEBlended(Font, Text, FgColor) when record(Font, ttf_font) ->
+renderUNICODEBlended(Font, Text, FgColor) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     mk_render_call(?SDL_TTF_RenderUNICODEBlended, 
 		   mk_render_args(FontP, mk_unicode_text(Text), FgColor)).
@@ -525,7 +525,7 @@ renderUNICODEBlended(Font, Text, FgColor) when record(Font, ttf_font) ->
 %%       the given color. The glyph is rendered without any padding or
 %%       centering in the X direction, and aligned normally in the
 %%       Y direction.
-renderGlyphBlended(Font, Glyph, FgColor) when record(Font, ttf_font) ->
+renderGlyphBlended(Font, Glyph, FgColor) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     mk_render_call(?SDL_TTF_RenderGlyphBlended, 
 		   mk_render_args(FontP, mk_uint16_glyph(Glyph), FgColor)).
@@ -535,7 +535,7 @@ renderGlyphBlended(Font, Glyph, FgColor) when record(Font, ttf_font) ->
 %% Returns: void
 %% C-API func: void TTF_CloseFont(TTF_Font *font);
 %% Desc: Close an opened font file.
-closeFont(Font) when record(Font, ttf_font) ->
+closeFont(Font) when is_record(Font, ttf_font) ->
     FontP = Font#ttf_font.ptr,
     call(?SDL_TTF_CloseFont, [<<FontP:?_PTR>>]).
 
