@@ -1,25 +1,16 @@
 
-Please treat this port with some caution - it has _not_ been extensively tested.
-
 This is a port of ESDL to Mac OS X using the Cocoa API. It assumes that you 
 use the SDL SDK framework (available precompiled at libsdl.org) as opposed 
 to compiling libraries and putting them in /usr/local/ or something. 
 It's also assumed that SDL.framework is placed in either /Library/Framework/ 
 or in ~/Library/Framework.
-This has only been tested with the SDL version from CVS (Jan. 18 & Jan 22). 
-(SDL 1.2.3 might work but my impression is that the Jan 22 CVS build fixes 
-some problems from the earlier Jan 18 CVS build so its quite possible that 
-1.2.3 is not so good).
 
-A big 'THANK YOU' goes to Bob Ippolito (bob@redivi.com) for the code that 
-made the icon and the menu to appear (in esdl_driver.c).
+You might need to modify the c_src/Makefile.macosx
+to point out the correct paths to header files and libraries.
 
-
-INSTALL :
-
-1) In '<ESDLDIR>/c_src' do : mv Makefile.macOSX Makefile
-2) In <ESDLDIR> do : make
-3) Enjoy
+On MacOS X, the top-level Makefile will automatically use
+c_src/Makefile.macosx, but if you run make in the c_src directory,
+you need to run make as 'make -f Makefile.macosx'.
 
 
 KNOWN ISSUES :
@@ -31,5 +22,7 @@ KNOWN ISSUES :
 meaning (for example, Command-Click results in a context menu while Ctrl-Q 
 quits the app).
 
+A big 'THANK YOU' goes to Bob Ippolito (bob@redivi.com) for the code that 
+made the icon and the menu to appear (in esdl_driver.c).
 
---david wallin [david_at_wallin.cx]
+The main port author david wallin [david_at_wallin.cx]

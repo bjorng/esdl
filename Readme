@@ -38,7 +38,7 @@ Precompiled versions are available for Windows.
 
 For Unix-like systems (including MacOS X):
 
-Untar the esdl-VERSION.src.tar.gz file and type 'make; make install'
+Untar the esdl-VERSION.src.tar.gz file and type 'make; make install INSTALL_DIR=/ESDL_PATH/'
 or put it anywhere and add the path in your ~/.erlang (C:/windows/.erlang)
 file.
 
@@ -72,7 +72,7 @@ On unix:    put the .so libs somewhere in your LD_LIBRARY_PATH
 Testing esdl can be done by building the tests in the test directory and 
 running the test programs, example:
 cd test
-erl -pa ../ebin   (werl on windows)
+erl +S1 -pa ../ebin   (werl on windows) 
 Erlang (BEAM) emulator version 5.1.1 [threads:0]
 Eshell V5.1.1  (abort with ^G)
 1> testsprite:go().    %% Escape quits
@@ -156,4 +156,4 @@ If you make something funny or good looking applications, it would be fun
 if you let me know and gave me some credit.
 
 Regards 
-/Dan (d g u d @ e r i x. e r i c s s o n. s e)
+/Dan (d g u d @ users.sf.net)

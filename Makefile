@@ -9,9 +9,6 @@
 
 SUBDIRS = c_src src test doc
 
-REL     = esdl-1.0
-RELDIR  = /tmp/$(REL)
-
 # Include SDL_ttf and SDL_image support (yes/no)?
 # See c_src/Makefile for include paths etc.
 ENABLE_SDL_TTF = no
@@ -25,11 +22,10 @@ else
 SDL_DLL_DIR = priv
 endif
 
--include vsn
+-include vsn.mk
 
-ifeq ($(ESDL_VSN), )
-ESDL_VSN = $(REL)
-endif
+REL = $(ESDL_VSN)
+RELDIR  = /tmp/$(REL)
 
 target clean:
 	@for d in $(SUBDIRS); do         \
@@ -52,16 +48,20 @@ target clean:
 release: target relsrc relwin
 
 ## Install needs to find the erlang directory
-ERL_DIR := $(shell echo 'io:format("~s~n",[code:root_dir()]),halt().' | erl | sed 's,^[0-9]*> *,,g' | tail --lines=+2)
+ERL_DIR := $(shell erl -noshell -eval "io:format([126,115,126,110],[code:root_dir()])" -s erlang halt)
 
-INSTALLDIR = $(ERL_DIR)/lib/$(ESDL_VSN)
+ifeq ($(INSTALL_DIR), )
+INSTALLDIR = $(ERL_DIR)/addons/$(ESDL_VSN)
+else 
+INSTALLDIR = $(INSTALL_DIR)/$(ESDL_VSN)
+endif
 
 ## I assume that make install are only made on unixes... :-)
 install: 
 	@echo Found erlang at $(ERL_DIR)
 	@echo Installing $(ESDL_VSN) in $(INSTALLDIR)
 	@if test ! -d $(INSTALLDIR) ; then \
-		mkdir $(INSTALLDIR) ; \
+		mkdir -p $(INSTALLDIR) ; \
 	else \
 		rm -rf $(INSTALLDIR)/* ; \
 	fi ;
@@ -71,10 +71,10 @@ install:
 	mkdir $(INSTALLDIR)/doc
 	mkdir $(INSTALLDIR)/ebin
 	mkdir $(INSTALLDIR)/priv
-	@if test ! -f vsn ; then  \
-		echo ESDL_VSN=$(ESDL_VER) > $(INSTALLDIR)/vsn ; \
+	@if test ! -f vsn.mk ; then  \
+		echo ESDL_VSN=$(ESDL_VER) > $(INSTALLDIR)/vsn.mk ; \
 	else \
-		cp vsn $(INSTALLDIR) ; \
+		cp vsn.mk $(INSTALLDIR) ; \
 	fi;
 	cp license.terms Readme* $(INSTALLDIR)
 	cp src/*.?rl $(INSTALLDIR)/src
@@ -82,7 +82,9 @@ install:
 	cp include/*.hrl $(INSTALLDIR)/include
 	cp doc/*.html $(INSTALLDIR)/doc
 	cp ebin/*beam $(INSTALLDIR)/ebin
+	chmod 644 $(INSTALLDIR)/ebin/*.beam
 	cp priv/*.* $(INSTALLDIR)/priv
+	chmod 755 $(INSTALLDIR)/priv/*
 
 
 ## This is used by me only for making a new release...
@@ -95,7 +97,7 @@ relsrc: target
 	fi ;
 	cp Makefile* license.terms README-SDL.txt Readme Readme.MacOSX-Cocoa Readme.win32 esdl.pub $(RELDIR)
 	cp Configure-cygwin-mingw.sh $(RELDIR)
-	echo ESDL_VSN=$(REL) > $(RELDIR)/vsn
+	echo ESDL_VSN=$(REL) > $(RELDIR)/vsn.mk
 	mkdir $(RELDIR)/api_gen
 	cp api_gen/conv.erl api_gen/gldefs api_gen/glfuncs \
 	   api_gen/gludefs api_gen/glufuncs $(RELDIR)/api_gen

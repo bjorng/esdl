@@ -30,7 +30,7 @@ typedef struct _tessdata3 * eglu_tessdata_ptr;
 
 typedef struct _tessdata3 {
 		 eglu_tessdata_ptr next;
-		 GLdouble data[3];
+		 GLdouble data[4];
 		} eglu_tessdata; 
 
 typedef struct _tessobj {   
@@ -489,9 +489,9 @@ void eglu_errorString(sdl_data *egl_sd, int egl_len, char *egl_buff)
    bp = egl_buff;
    error = (GLenum *) bp; bp += sizeof(GLenum); 
    egl_res = gluErrorString(*error);
-   bp = egl_start = sdl_get_temp_buff(egl_sd, strlen(egl_res));
-   strcpy((GLubyte *)bp, egl_res);
-   bp += strlen(egl_res);
+   bp = egl_start = sdl_get_temp_buff(egl_sd, strlen((const char *) egl_res));
+   strcpy(bp, (const char *) egl_res);
+   bp += strlen((const char *) egl_res);
    egl_sendlen = bp - egl_start;
    sdl_send(egl_sd, egl_sendlen);
 }
@@ -524,9 +524,9 @@ void eglu_getString(sdl_data *egl_sd, int egl_len, char *egl_buff)
    bp = egl_buff;
    name = (GLenum *) bp; bp += sizeof(GLenum); 
    egl_res = gluGetString(*name);
-   bp = egl_start = sdl_get_temp_buff(egl_sd, strlen(egl_res));
-   strcpy((GLubyte *)bp, egl_res);
-   bp += strlen(egl_res);
+   bp = egl_start = sdl_get_temp_buff(egl_sd, strlen((const char *)egl_res));
+   strcpy(bp, (const char *)egl_res);
+   bp += strlen((const char *)egl_res);
    egl_sendlen = bp - egl_start;
    sdl_send(egl_sd, egl_sendlen);
 }
@@ -912,3 +912,145 @@ void eglu_unProject(sdl_data *egl_sd, int egl_len, char *bp)
     sdl_send(egl_sd, sizeof(res));
   }
 }
+
+/* Taylor made triangulation code */ 
+
+static GLUtesselator* esdl_tess;
+static GLdouble* etess_coords;
+static GLdouble* etess_alloc_vertex;
+static GLdouble* etess_alloc_vertex_end;
+static int* etess_vertices;
+static int* etess_vertices_end;
+
+void CALLBACK
+esdl_etess_vertex(GLdouble* coords)
+{
+   /*
+    * We will simply ignore any vertex indices not fitting in the
+    * preallocated buffer. The buffer size should be a multiple of
+    * of 3, so that we return only complete triangles.
+    */
+   if (etess_vertices < etess_vertices_end) {
+      *etess_vertices++ = (int) (coords - etess_coords) / 3;
+   }
+}
+
+void CALLBACK
+esdl_etess_edge_flag(GLboolean flag)
+{
+}
+
+void CALLBACK
+esdl_etess_error(GLenum errorCode)
+{
+   const GLubyte *err;
+   err = gluErrorString(errorCode);
+   fprintf(stderr, "Tesselation error: %d: %s\r\n", (int)errorCode, err);
+}
+
+void CALLBACK
+esdl_etess_combine(GLdouble coords[3],
+		   void* vertex_data[4],
+		   GLfloat w[4], 
+		   void **dataOut)
+{
+   GLdouble* vertex = etess_alloc_vertex;
+
+   if (etess_alloc_vertex < etess_alloc_vertex_end) {
+      etess_alloc_vertex += 3;
+   }
+
+   vertex[0] = coords[0];
+   vertex[1] = coords[1];
+   vertex[2] = coords[2];
+   *dataOut = vertex;
+}
+
+void esdl_etess_init() {
+   esdl_tess = gluNewTess();
+   gluTessCallback(esdl_tess, GLU_TESS_VERTEX, esdl_etess_vertex);
+   /* gluTessCallback(esdl_tess, GLU_TESS_EDGE_FLAG, esdl_etess_edge_flag); */
+   gluTessCallback(esdl_tess, GLU_TESS_COMBINE, esdl_etess_combine);
+   gluTessCallback(esdl_tess, GLU_TESS_ERROR, esdl_etess_error);
+}
+
+void esdl_triangulate(sdl_data *sd, int count, char* buff)
+{
+   int i;
+   int bin_sz;
+   int new_sz;
+   int allocated_vertex_indices;
+   GLdouble n[3];
+   GLdouble* new_vertices;
+   int allocated_vertices;
+   int num_vertices = count/sizeof(GLdouble)/3 - 1;
+
+   /*
+    * Allocate a vertex buffer to fit both all the original
+    * vertices, and hopefully any new vertices created.
+    * We need to have all vertices in contigous memory so that
+    * we easily can calculate a vertex index from a pointer to
+    * vertex data.
+    */
+   allocated_vertices = count + 10*count;
+   etess_coords = malloc(allocated_vertices);
+   etess_alloc_vertex_end = (GLdouble *) (((char *)etess_coords) +
+					 allocated_vertices);
+   etess_alloc_vertex = new_vertices = etess_coords + count/sizeof(GLdouble);
+   memcpy(n, buff, 3*sizeof(GLdouble));
+   memcpy(etess_coords, buff, count);
+  
+   /*
+    * Allocate the binary to receive the result. The number of vertex
+    * indices must be a multiple of 3, to ensure that we get an integral
+    * number of triangles.
+    */
+   allocated_vertex_indices = 3*6*num_vertices;
+   etess_vertices = (int *) sdl_getbuff(sd, allocated_vertex_indices*sizeof(int)+sizeof(int));
+   etess_vertices_end = etess_vertices + allocated_vertex_indices;
+
+   /*
+    * Do the triangulation.
+    */
+   gluTessNormal(esdl_tess, n[0], n[1], n[2]);
+   gluTessBeginPolygon(esdl_tess, 0);
+   gluTessBeginContour(esdl_tess);
+   for (i = 1; i <= num_vertices; i++) {
+      gluTessVertex(esdl_tess, etess_coords+3*i, etess_coords+3*i);
+   }
+   gluTessEndContour(esdl_tess);
+   gluTessEndPolygon(esdl_tess);
+
+   /*
+    * Test for vertex buffer overflow. Return a fake triangulation
+    * if there was an overflow.
+    */
+   if (!(etess_alloc_vertex < etess_alloc_vertex_end)) {
+      etess_vertices = (int *) ((ErlDrvBinary *)sd->buff)->orig_bytes;
+      *etess_vertices++ = 1;
+      *etess_vertices++ = 2;
+      *etess_vertices++ = 3;
+      etess_alloc_vertex = new_vertices;
+   }
+
+   /*
+    * Finish the list of vertex indices with an invalid index (0).
+    */
+   *etess_vertices++ = 0;
+
+   /*
+    * Reallocate the binary to the exact size of the data to return. If
+    * any new vertices have been created, they will be returned after
+    * the the list of vertex indices.
+    */
+   new_sz = (etess_alloc_vertex - new_vertices)*sizeof(GLdouble);
+   bin_sz = ((char *)etess_vertices) - ((ErlDrvBinary *)sd->buff)->orig_bytes;
+   sd->buff = driver_realloc_binary(sd->buff, bin_sz + new_sz);
+   etess_vertices = (int *) (((ErlDrvBinary *)sd->buff)->orig_bytes + bin_sz);
+   if (new_sz != 0) {
+      memcpy(etess_vertices, new_vertices, new_sz);
+   }
+
+   free(etess_coords);
+}
+

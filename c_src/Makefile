@@ -53,7 +53,7 @@ endif
   SOEXT = so
 
 ## The driver part needs erlang includes
-  ERL_DIR := $(shell echo 'io:format("~s~n",[code:root_dir()]),halt().' | erl | grep '1>' | sed 's,^[0-9]*> *,,g')
+  ERL_DIR := $(shell erl -noshell -eval "io:format([126,115,126,110],[code:root_dir()])" -s erlang halt)
   ERL_INCS = -I$(ERL_DIR)/usr/include
 
   CC = gcc

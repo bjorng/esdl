@@ -93,6 +93,7 @@ void init_fps(sdl_data* sd)
 	      i, str_tab[op], op, code_fns[i].str);
     }
   }
+  esdl_etess_init();
 }
 
 /* Must be done after creating a rendering context */

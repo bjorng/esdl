@@ -40,6 +40,9 @@
 %% Info functions.
 -export([getString/1,errorString/1]).
 
+%% Extra speciale 
+-export([triangulate/2]).
+
 -include("esdl.hrl").
 -include("glu_funcs.hrl").
 -include("sdl_util.hrl").
@@ -256,8 +259,8 @@ endTrim(Nurb=#nurbsPtr{}) ->
 errorString(Error) -> 
  Bin = call(?gluErrorString, <<Error:32/unsigned-native>>), 
  case Bin of 
-	Ret -> bin2list(undefined,?GL_UNSIGNED_BYTE,Ret);
-	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
+	Ret -> bin2list(undefined,?GL_UNSIGNED_BYTE,Ret)
+	%%; Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% Func:    getNurbsProperty 
@@ -279,8 +282,8 @@ getNurbsProperty(Nurb=#nurbsPtr{}, Property) ->
 getString(Name) -> 
  Bin = call(?gluGetString, <<Name:32/unsigned-native>>), 
  case Bin of 
-	Ret -> bin2list(undefined,?GL_UNSIGNED_BYTE,Ret);
-	Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
+	Ret -> bin2list(undefined,?GL_UNSIGNED_BYTE,Ret)
+	%% ;Else -> erlang:error({?MODULE, ?LINE, badtype, Else})
  end.
 
 %% Func:    getTessProperty 
@@ -586,3 +589,38 @@ unProject(WinX, WinY, WinZ, Model, Proj, View) ->
      <<X:64/float-native,Y:64/float-native,Z:64/float-native>> ->
 	 {X,Y,Z}
  end.
+
+%% Func:    triangulate 
+%% Args:    Normal [Vertices]
+%% Returns: {[{TriIndex}], [VertexPos]}
+%% C-API func: 
+triangulate(N, Ps) ->
+    %% Vs = lists:seq(0, length(Ps)-1),
+    %% Fs0 = e3d_mesh:triangulate_face(#e3d_face{vs=Vs}, N, Ps),
+    %% [{A+1,B+1,C+1} || #e3d_face{vs=[A,B,C]} <- Fs0].
+    case N of
+	{0.0,0.0,0.0} ->
+	    %% Undefined normal - something is seriously wrong
+	    %% with this polygon. Return a fake triangulation.
+	    {[{1,2,3}],Ps};
+	_ ->
+	    Bin = vs_to_bin([N|Ps], []),
+	    BinRes = call(?esdlTriangulate, Bin),
+	    {Tris,MorePs} = triangulate_1(BinRes, []),
+	    {Tris,Ps++MorePs}
+    end.
+
+triangulate_1(<<0:32/native,T/binary>>, Acc) ->
+    {lists:reverse(Acc),triangulate_2(T, [])};
+triangulate_1(<<Va:32/native,Vb:32/native,Vc:32/native,T/binary>>, Acc) ->
+    triangulate_1(T, [{Va,Vb,Vc}|Acc]).
+
+triangulate_2(<<X:64/native-float,Y:64/native-float,Z:64/native-float,
+	       T/binary>>, Acc) ->
+    triangulate_2(T, [{X,Y,Z}|Acc]);
+triangulate_2(<<>>, Acc) ->
+    lists:reverse(Acc).
+
+vs_to_bin([{X,Y,Z}|Vs], Acc) ->
+    vs_to_bin(Vs, [<<X:64/native-float,Y:64/native-float,Z:64/native-float>>|Acc]);
+vs_to_bin([], Acc) -> lists:reverse(Acc).

@@ -112,6 +112,12 @@ void eglu_tessVertex (sdl_data *, int, char *);
 enum { gluUnProjectFunc = OPENGLU_H + 49 };
 void eglu_unProject (sdl_data *, int, char *); 
 
+enum { esdl_triangulateFunc = OPENGLU_H + 50 };
+void esdl_triangulate (sdl_data *, int, char *); 
+
+   // Init 
+void esdl_etess_init();
+
 #ifdef __cplusplus
    }
 #endif 

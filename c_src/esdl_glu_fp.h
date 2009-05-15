@@ -47,3 +47,4 @@
    { gluTessPropertyFunc,  "gluTessProperty", eglu_tessProperty },
    { gluTessVertexFunc,  "gluTessVertex", eglu_tessVertex },
    { gluUnProjectFunc,  "gluUnProject", eglu_unProject },
+   { esdl_triangulateFunc,"esdl_triangulate", esdl_triangulate }, 

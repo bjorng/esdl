@@ -56,3 +56,4 @@
 -define(gluTessProperty, ?SDL_OPENGLU_HRL + 47).
 -define(gluTessVertex, ?SDL_OPENGLU_HRL + 48).
 -define(gluUnProject, ?SDL_OPENGLU_HRL + 49).
+-define(esdlTriangulate, ?SDL_OPENGLU_HRL + 50).
