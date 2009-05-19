@@ -968,10 +968,14 @@ esdl_etess_combine(GLdouble coords[3],
 
 void esdl_etess_init() {
    esdl_tess = gluNewTess();
-   gluTessCallback(esdl_tess, GLU_TESS_VERTEX, esdl_etess_vertex);
-   /* gluTessCallback(esdl_tess, GLU_TESS_EDGE_FLAG, esdl_etess_edge_flag); */
-   gluTessCallback(esdl_tess, GLU_TESS_COMBINE, esdl_etess_combine);
-   gluTessCallback(esdl_tess, GLU_TESS_ERROR, esdl_etess_error);
+   gluTessCallback(esdl_tess, GLU_TESS_VERTEX, 
+		   (GLvoid (CALLBACK *)()) esdl_etess_vertex);
+   gluTessCallback(esdl_tess, GLU_TESS_EDGE_FLAG, 
+		   (GLvoid (CALLBACK *)()) esdl_etess_edge_flag); 
+   gluTessCallback(esdl_tess, GLU_TESS_COMBINE, 
+		   (GLvoid (CALLBACK *)()) esdl_etess_combine);
+   gluTessCallback(esdl_tess, GLU_TESS_ERROR, 
+		   (GLvoid (CALLBACK *)()) esdl_etess_error);
 }
 
 void esdl_triangulate(sdl_data *sd, int count, char* buff)
@@ -1044,11 +1048,12 @@ void esdl_triangulate(sdl_data *sd, int count, char* buff)
     * the the list of vertex indices.
     */
    new_sz = (etess_alloc_vertex - new_vertices)*sizeof(GLdouble);
-   bin_sz = ((char *)etess_vertices) - ((ErlDrvBinary *)sd->buff)->orig_bytes;
+   bin_sz = ((char *)etess_vertices) - ((char *)((ErlDrvBinary *)sd->buff)->orig_bytes);
    sd->buff = driver_realloc_binary(sd->buff, bin_sz + new_sz);
+   sd->len = bin_sz + new_sz;
    etess_vertices = (int *) (((ErlDrvBinary *)sd->buff)->orig_bytes + bin_sz);
    if (new_sz != 0) {
-      memcpy(etess_vertices, new_vertices, new_sz);
+       memcpy(etess_vertices, new_vertices, new_sz);
    }
 
    free(etess_coords);
