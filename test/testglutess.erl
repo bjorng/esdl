@@ -21,6 +21,9 @@
 -include("glu.hrl").
 
 -export([go/0, go/1, drawBox/2]).
+-compile(export_all).
+init() ->
+    sdl:init(?SDL_INIT_VIDEO bor ?SDL_INIT_ERLDRIVER bor ?SDL_INIT_NOPARACHUTE).
 
 go() ->
     go([]).
@@ -34,6 +37,7 @@ go(Config) ->
     sdl_events:eventState(?SDL_KEYDOWN ,?SDL_ENABLE),
     sdl_events:eventState(?SDL_QUIT ,?SDL_ENABLE),
     initWin(),
+    test_triangulate(),
     
     Cube = [{ 1,   1,      -0.5}, 
 	    { 0.5, 0,      -0.5},
@@ -48,7 +52,6 @@ go(Config) ->
     {Time, N} = timer:tc(?MODULE, drawBox, [Cube, 0]),
     erlang:display(N),
     Secs = Time / 1000000,
-    test_triangulate(),
     sdl:quit(),       
     erlang:display(round(N/Secs)),
     N.
@@ -76,28 +79,14 @@ drawBox(Cube, N) ->
     glu:tessCallback(Tess, ?GLU_TESS_VERTEX_DATA,  ?ESDL_TESSCB_VERTEX_DATA),
     glu:tessCallback(Tess, ?GLU_TESS_ERROR,   ?ESDL_TESSCB_ERROR_PRINT),
     glu:tessCallback(Tess, ?GLU_TESS_COMBINE, ?ESDL_TESSCB_COMBINE),
-
     glu:tessBeginPolygon(Tess),
     glu:tessBeginContour(Tess),
     glu:tessNormal(Tess, 0, 0, -1),
     lists:foreach(fun(V) -> glu:tessVertex(Tess, V, [{color, myabs(V)}]) end, Cube),
     glu:tessEndContour(Tess),
     glu:tessEndPolygon(Tess),
-    
     gl:disable(?GL_DEPTH_TEST),
-
     gl:color3f(1,0,0),
-    glu:tessProperty(Tess, ?GLU_TESS_BOUNDARY_ONLY, ?GL_TRUE),
-    glu:tessBeginPolygon(Tess),
-    glu:tessBeginContour(Tess),
-    glu:tessNormal(Tess, 0, 0, -1),
-    lists:foreach(fun(V) -> glu:tessVertex(Tess, V) end, Cube),
-    glu:tessEndContour(Tess),
-    glu:tessEndPolygon(Tess),
-
-    ?GL_TRUE = round(glu:getTessProperty(Tess, ?GLU_TESS_BOUNDARY_ONLY)),
-    glu:deleteTess(Tess),
-    
     %% timer:sleep(200),
     case {gl:getError(), sdl:getError()} of
 	{0, ""} ->

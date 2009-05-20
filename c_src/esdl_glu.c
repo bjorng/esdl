@@ -64,13 +64,16 @@ typedef struct _tessobj {
 
 void CALLBACK esdl_nop_callback(GLboolean flag)
 {
+/*     fprintf(stderr, "NOOP: \r\n"); */
+/*     fflush(stderr); */
 }
 
 void CALLBACK errorCallback(GLenum errorCode)
 {
    const GLubyte *err;
    err = gluErrorString(errorCode);
-   fprintf(stderr, "Tesselation error: %d: %s\r\n", (int)errorCode, err);
+/*    fprintf(stderr, "Tesselation error: %d: %s\r\n", (int)errorCode, err); */
+/*    fflush(stderr); */
 }
 
 void CALLBACK esdl_combine(GLdouble coords[3], 
@@ -87,6 +90,9 @@ void CALLBACK esdl_combine(GLdouble coords[3],
    unsigned char* combined  = NULL; 
    unsigned char* datap[4] = {NULL, NULL, NULL, NULL};
    unsigned flags;
+
+/*    fprintf(stderr, "Combine: %d\r\n", (int) eobj);  */
+/*    fflush(stderr); */
 
    flags = ((unsigned char *)vertex_data[0])[-1];
    for (max = 0; max < 4 && vertex_data[max] != NULL; max++) {
@@ -106,7 +112,7 @@ void CALLBACK esdl_combine(GLdouble coords[3],
       size += 3*4;
    }
    if (flags & ESDL_TESS_VTXDATA_COLOR) {
-      size += 2*4;
+      size += 4*4;
    }
 
    mycoords = (eglu_tessdata*) malloc(sizeof(GLdouble) + 
@@ -131,7 +137,8 @@ esdl_udata_vertex(GLdouble* coords)
    GLfloat* datap = (GLfloat *) (coords+3);
    unsigned flags = ((unsigned char *) coords)[-1];
 
-   /*   fprintf(stderr, "Flags: %d\r\n", flags); */
+/*    fprintf(stderr, "Flags: %d ", flags); */
+/*    fflush(stderr); */
    if (flags & ESDL_TESS_VTXDATA_MATERIAL) {
       GLenum face = ((unsigned short *) datap)[0];
       GLenum pname = ((unsigned short *) datap)[1];
@@ -152,9 +159,9 @@ esdl_udata_vertex(GLdouble* coords)
       datap += 4;
    }
    glVertex3dv(coords);
+/*    fprintf(stderr, "EFlags: %d\r\n", flags); */
+/*    fflush(stderr); */
 }
-
-
 
 void eglu_newTess (sdl_data *sd, int len, char * buff) 
 {
@@ -164,12 +171,18 @@ void eglu_newTess (sdl_data *sd, int len, char * buff)
    eglu_tessobj * eobj;
     
    tobj = gluNewTess();
+   gluTessCallback(tobj, GLU_TESS_EDGE_FLAG, 
+		   (GLvoid (CALLBACK *)()) esdl_nop_callback); 
+   gluTessCallback(tobj, GLU_TESS_ERROR,
+		   (GLvoid (CALLBACK *)()) errorCallback);
+
    eobj = (eglu_tessobj *) malloc(sizeof(eglu_tessobj));
    eobj->tess = tobj;
    eobj->data = NULL;
    eobj->freep = eobj->def_heap;
 
-/*    fprintf(stderr, "New tess: %d -> %d \r\n", (int) eobj, (int) tobj);  */
+/*    fprintf(stderr, "New tess: %d -> %d \r\n", (int) eobj, (int) tobj); */
+/*    fflush(stderr); */
 
    /*
     * Send back result.
@@ -190,7 +203,8 @@ void eglu_deleteTess (sdl_data *sd, int len, char * buff)
    POPGLPTR(eobj, bp);
    gluDeleteTess(eobj->tess);
    free(eobj);
-/*    fprintf(stderr, "Deleting tess: %d\r\n", (int) eobj); */
+/*    fprintf(stderr, "Deleting tess: %d\r\n", (int) eobj);  */
+/*    fflush(stderr); */
 }
 
 void eglu_tessBeginPolygon (sdl_data *sd, int len, char* bp) 
@@ -211,6 +225,9 @@ void eglu_tessVertex(sdl_data *sd, int len, char* bp)
    char* extrap;
 
    POPGLPTR(eobj, bp);
+/*    fprintf(stderr, "tessVertex: %d", (int) eobj);  */
+/*    fflush(stderr); */
+
    size = len - 8;
    nbytes = sizeof(GLdouble) + sizeof(eglu_tessdata) + size;
    ndoubles = (nbytes-1)/sizeof(GLdouble) + 1;
@@ -229,9 +246,10 @@ void eglu_tessVertex(sdl_data *sd, int len, char* bp)
    } else {
       extrap[-1] = 0;
    }
-/*     fprintf(stderr, "tessVertex: %d %g %g %g\r\n", */
-/* 	    (int) eobj, coords->data[0], coords->data[1], coords->data[2]); */
-    gluTessVertex(eobj->tess, coords->data+1, coords->data+1);
+/*    fprintf(stderr, "tessVertex: %d %g %g %g\r\n",  */
+/* 	   (int) eobj, coords->data[0], coords->data[1], coords->data[2]);  */
+/*    fflush(stderr); */
+   gluTessVertex(eobj->tess, coords->data+1, coords->data+1);
 }
 
 void eglu_tessEndPolygon (sdl_data *sd, int len, char * buff) 
@@ -242,7 +260,13 @@ void eglu_tessEndPolygon (sdl_data *sd, int len, char * buff)
 
    bp = buff;
    POPGLPTR(eobj, bp);
+/*    fprintf(stderr, "End Polygon: %d\r\n", (int) eobj);  */
+/*    fflush(stderr); */
+
    gluTessEndPolygon(eobj->tess);
+/*    fprintf(stderr, "End Polygon: %d\r\n", (int) eobj);  */
+/*    fflush(stderr); */
+   
    remove = eobj->data;
    while (remove != NULL) {
       temp = remove->next;
@@ -252,8 +276,8 @@ void eglu_tessEndPolygon (sdl_data *sd, int len, char * buff)
    eobj->data = NULL;
    eobj->freep = eobj->def_heap;
 
-/*    fprintf(stderr, "End Polygon: %d\r\n", (int) eobj); */
-
+/*    fprintf(stderr, "End Polygon: %d\r\n", (int) eobj);  */
+/*    fflush(stderr); */
 }
 
 void eglu_tessCallback(sdl_data *sd, int len, char * buff) 
@@ -309,7 +333,8 @@ void eglu_tessCallback(sdl_data *sd, int len, char * buff)
        break;
    };
    gluTessCallback(eobj->tess, *which, cbfn);
-/*    fprintf(stderr, "Tess Callback: %d %d\r\n", (int) eobj, *cbId); */
+/*    fprintf(stderr, "Tess Callback: %d %d\r\n", (int) eobj, cbId);  */
+/*    fflush(stderr); */
 }
 void eglu_beginCurve(sdl_data *egl_sd, int egl_len, char *egl_buff) 
 {
@@ -318,7 +343,6 @@ void eglu_beginCurve(sdl_data *egl_sd, int egl_len, char *egl_buff)
    bp = egl_buff;
    POPGLPTR(nurb,bp);
    gluBeginCurve(nurb);
-
 }
 
 void eglu_beginSurface(sdl_data *egl_sd, int egl_len, char *egl_buff) 
@@ -858,6 +882,8 @@ void eglu_tessBeginContour(sdl_data *egl_sd, int egl_len, char *egl_buff)
    eglu_tessobj * tess;
    bp = egl_buff;
    POPGLPTR(tess, bp);
+/*    fprintf(stderr, "Begin Contour: %d\r\n", (int) tess); */
+/*    fflush(stderr); */
    gluTessBeginContour(tess->tess);
 }
 
@@ -868,7 +894,8 @@ void eglu_tessEndContour(sdl_data *egl_sd, int egl_len, char *egl_buff)
    bp = egl_buff;
    POPGLPTR(tess, bp);
    gluTessEndContour(tess->tess);
-/*    fprintf(stderr, "Begin Contour: %d\r\n", (int) tess); */
+/*    fprintf(stderr, "End Contour: %d\r\n", (int) tess); */
+/*    fflush(stderr); */
 }
 
 
@@ -945,7 +972,8 @@ esdl_etess_error(GLenum errorCode)
 {
    const GLubyte *err;
    err = gluErrorString(errorCode);
-   fprintf(stderr, "Tesselation error: %d: %s\r\n", (int)errorCode, err);
+/*    fprintf(stderr, "Tesselation error: %d: %s\r\n", (int)errorCode, err); */
+/*    fflush(stderr); */
 }
 
 void CALLBACK
@@ -1048,7 +1076,8 @@ void esdl_triangulate(sdl_data *sd, int count, char* buff)
     * the the list of vertex indices.
     */
    new_sz = (etess_alloc_vertex - new_vertices)*sizeof(GLdouble);
-   bin_sz = ((char *)etess_vertices) - ((char *)((ErlDrvBinary *)sd->buff)->orig_bytes);
+   bin_sz = ((char *)etess_vertices) - 
+       ((char *)((ErlDrvBinary *)sd->buff)->orig_bytes);
    sd->buff = driver_realloc_binary(sd->buff, bin_sz + new_sz);
    sd->len = bin_sz + new_sz;
    etess_vertices = (int *) (((ErlDrvBinary *)sd->buff)->orig_bytes + bin_sz);
