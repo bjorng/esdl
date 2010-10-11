@@ -201,6 +201,7 @@ sdl_driver_debug_control(ErlDrvData handle, unsigned op,
      gl_dispatch(sd, op, buf);
      sdl_free_binaries(sd);
      fprintf(stderr, "\r\n");
+     return 0;
   }
 }
 

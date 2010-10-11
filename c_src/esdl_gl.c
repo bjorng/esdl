@@ -8,7 +8,9 @@
 
 #include <stdio.h>
 #include <string.h>
+#ifndef _WIN32
 #include <dlfcn.h>
+#endif
 #include "esdl.h"
 
 int esdl_gl_initiated = 0;
@@ -20,14 +22,25 @@ ESDL_GL_DISPATCH esdl_gl_dispatch;
 typedef int (*ESDL_GL_INIT) ();
 
 #ifdef _WIN32
+#define RTLD_LAZY 0
+typedef HMODULE DL_LIB_P;
+
 void * dlsym(HMODULE Lib, const char *func) {
-   funcp = (void *) GetProcAddress(Lib, func);
-   return funcp;
+    void * funcp;
+    funcp = (void *) GetProcAddress(Lib, func);
+    return funcp;
 }
+
+HMODULE dlopen(const char *DLL, int unused) {
+    return LoadLibrary(DLL);
+}
+
+#else 
+typedef void * DL_LIB_P;
 #endif 
 
 void es_init_opengl(sdl_data *sd, int len, char *bp) {
-   void * LIBhandle;
+   DL_LIB_P LIBhandle;
    ESDL_GL_INIT init_opengl;
 
    char *start;
