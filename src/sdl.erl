@@ -26,10 +26,6 @@
 %% SDL functions
 %%% Functions  
 
--define(SDL_Init, ?SDL_HRL + 1).
--define(SDL_Quit, ?SDL_Init + 1).
--define(SDL_GetError, ?SDL_Quit +1).
-
 %% Func:  init
 %% Args:  BitMask
 %% Returns:  WrapperRef
@@ -57,7 +53,7 @@ init(Flags) when is_integer(Flags) ->
     case catch erl_ddll:load_driver(Path, "sdl_driver") of
 	ok -> 
 	    ok;
-	{error, R} -> 
+	{error, R} ->
 	    io:format("Driver failed: ~s ~n", [erl_ddll:format_error(R)]);
 	Other ->
 	    io:format("Driver crashed: ~p ~n", [Other])

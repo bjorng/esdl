@@ -39,6 +39,9 @@ static void sdl_driver_stop(ErlDrvData handle);
 static void sdl_driver_finish(void);
 static int sdl_driver_control(ErlDrvData handle, unsigned int command, 
 			      char* buf, int count, char** res, int res_size);
+static int sdl_driver_debug_control(ErlDrvData handle, unsigned int command, 
+				    char* buf, int count, char** res, int res_size);
+
 static void standard_outputv(ErlDrvData drv_data, ErlIOVec *ev);
 
 /*
@@ -158,8 +161,13 @@ sdl_driver_control(ErlDrvData handle, unsigned op,
   sd->buff = NULL;
   sd->len = 0;
   sd->op = op;
-  func = sd->fun_tab[op];
-  func(sd, count, buf);
+  if(op < OPENGL_START) {
+     func = sd->fun_tab[op];
+     func(sd, count, buf);
+  } else {
+     gl_dispatch(sd, op, buf);
+     sdl_free_binaries(sd);
+  }
   (*res) = sd->buff;
   return sd->len;
 }
@@ -175,18 +183,24 @@ sdl_driver_debug_control(ErlDrvData handle, unsigned op,
   sd->buff = NULL;
   sd->len = 0;
   sd->op = op;
-  fprintf(stderr, "Command:%d:%s: ", op, sd->str_tab[op]);
-  func = sd->fun_tab[op];
-
-  func(sd, count, buf);
-  if ((len = sd->len) >= 0) {
-    fprintf(stderr, "ok\r\n");
-    (*res) = sd->buff;
-    return len;
+  if(op < OPENGL_START) {
+     fprintf(stderr, "Command:%d:%s: ", op, sd->str_tab[op]);
+     func = sd->fun_tab[op];
+     func(sd, count, buf);
+     if ((len = sd->len) >= 0) {
+	fprintf(stderr, "ok %d %p\r\n", len, sd->buff);
+	(*res) = sd->buff;
+	return len;
+     } else {
+	fprintf(stderr, "error\r\n");
+	*res = 0;
+	return -1;
+     }     
   } else {
-    fprintf(stderr, "error\r\n");
-    *res = 0;
-    return -1;
+     fprintf(stderr, "Command:%d ", op);
+     gl_dispatch(sd, op, buf);
+     sdl_free_binaries(sd);
+     fprintf(stderr, "\r\n");
   }
 }
 

@@ -10,6 +10,7 @@
 { SDL_InitFunc, "SDL_InitFunc", es_init },
 { SDL_QuitFunc, "SDL_QuitFunc", es_quit },
 { SDL_GetErrorFunc, "SDL_GetErrorFunc", es_getError },
+{ ESDL_OpenglInitFunc,  "ESDL_opengl_init", es_init_opengl},
 { SDL_SetVideoModeFunc, "SDL_SetVideoModeFunc",  es_setVideoMode },      
 { SDL_VideoDriverNameFunc, "SDL_VideoDriverNameFunc",  es_videoDriverName },      
 { SDL_GetVideoSurfaceFunc, "SDL_GetVideoSurfaceFunc",  es_getVideoSurface },

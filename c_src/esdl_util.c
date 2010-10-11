@@ -45,7 +45,7 @@ void copySdlImage2GLArray(sdl_data *sd, int len, char * buff)
 {
   Uint8 *rowhi, *rowlo, type;
   SDL_Surface *image;
-  GLubyte * mem;
+  unsigned char * mem;
   char *bp, *start;
   int i, j = 0, k, sendlen;
   Uint8  rs,bs,gs,as;
@@ -54,7 +54,7 @@ void copySdlImage2GLArray(sdl_data *sd, int len, char * buff)
   POPGLPTR(image, bp);
   type = *bp;
   if (sd->next_bin == 1) {
-    mem = (GLubyte *) sd->bin[0].base;
+    mem = (unsigned char *) sd->bin[0].base;
  
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
     rs = (2 - image->format->Rshift/8);
@@ -101,11 +101,10 @@ void copySdlImage2GLArray(sdl_data *sd, int len, char * buff)
       }
       rowlo -= image->pitch;
     }
-    /*  fprintf(stderr, "i %d, j %d k%d\n\r", i, j, k); */
-    bp = start = sdl_getbuff(sd, 1);
-    put8(bp, 1);
-    sendlen = bp - start;
-    sdl_send(sd, sendlen);
+    /* fprintf(stderr, "i %d, j %d k%d\n\r", i, j, k); */
+    start = sdl_get_temp_buff(sd, 2);
+    start[0] = 1;
+    sdl_send(sd, 1);
     sdl_free_binaries(sd);
   }
 }

@@ -13,12 +13,11 @@
 
 -module(testgl).
 -author('dgud@erix.ericsson.se').
+-include_lib("wx/include/gl.hrl").
 -include("sdl.hrl").
 -include("sdl_events.hrl").
 -include("sdl_video.hrl").
 -include("sdl_keyboard.hrl").
--include("gl.hrl").
-
 
 -export([go/0, go/1]).
 
@@ -28,7 +27,7 @@ go(Config) ->
     %% Init 
     sdl:init(?SDL_INIT_VIDEO bor ?SDL_INIT_ERLDRIVER bor
 	     ?SDL_INIT_NOPARACHUTE),
-    sdl_util:debug(1),
+    sdl_util:debug(2),
     Flags = 
 	case lists:member(fullscreen, Config) of 
 	    true ->
@@ -65,13 +64,13 @@ go(Config) ->
     io:format("Vendor:     ~s~n",  [gl:getString(?GL_VENDOR)]),
     io:format("Renderer:   ~s~n",  [gl:getString(?GL_RENDERER)]),
     io:format("Version:    ~s~n",  [gl:getString(?GL_VERSION)]),
-    io:format("GL AUX BUFFERS ~p~n",  [gl:getIntegerv(?GL_AUX_BUFFERS)]),
+    io:format("GL AUX BUFFERS ~p~n",  [hd(gl:getIntegerv(?GL_AUX_BUFFERS))]),
     io:format("SDL Version ~p~n",  [sdl_video:wm_getInfo()]),
 
     io:format("Extensions: ~s~n",  [gl:getString(?GL_EXTENSIONS)]),    
     io:format("Maximized: ~p~n",   [sdl_video:wm_isMaximized()]), 
 
-    io:format("~p", [catch gl:getConvolutionParameterfv(16#8011, 16#801A)]),
+    io:format("~p~n~n", [catch gl:getConvolutionParameterfv(16#8011, 16#801A)]),
 
     sdl_events:eventState(?SDL_ALLEVENTS ,?SDL_IGNORE),
     sdl_events:eventState(?SDL_KEYDOWN ,?SDL_ENABLE),
@@ -116,7 +115,7 @@ initWin() ->
 drawBox(Cube, Colors) ->
     %%timer:sleep(30),
     gl:clear(?GL_COLOR_BUFFER_BIT bor ?GL_DEPTH_BUFFER_BIT),
-    gl:glBegin(?GL_QUADS),
+    gl:'begin'(?GL_QUADS),
 
     gl:color3fv(element(1, Colors)),
     gl:vertex3fv(element(1, Cube)),
@@ -172,7 +171,7 @@ drawBox(Cube, Colors) ->
     gl:color3fv(element(8, Colors)),
     gl:vertex3fv(element(8, Cube)),
 
-    gl:glEnd(),
+    gl:'end'(),
     
     gl:matrixMode(?GL_MODELVIEW),
     gl:rotatef(5.0, 1.0, 1.0, 1.0),
@@ -185,7 +184,7 @@ drawBox(Cube, Colors) ->
 	{GL, SDL} ->
 	    io:format("Errors Reported ~p ~s~n", [GL, SDL])
     end,
-    gl:swapBuffers(),
+    sdl_video:gl_swapBuffers(),
     case check_event() of
 	ok ->
 	    timer:sleep(10),

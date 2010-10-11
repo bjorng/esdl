@@ -26,7 +26,7 @@
 
 -include("sdl_video.hrl").
 -include("sdl_util.hrl").
--include("gl.hrl").
+-include("sdl.hrl").
 -include("esdl.hrl").
 
 -import(sdl, [call/2,cast/2]).
@@ -189,11 +189,11 @@ int_list2bin([H|T], N, Acc) ->
 int_list2bin([], _, Acc) -> Acc.
 
 bool_list2bin([false|T], Acc) ->
-    bool_list2bin(T, [Acc,?GL_FALSE]);
+    bool_list2bin(T, [Acc,0]);
 bool_list2bin([true|T], Acc) ->
-    bool_list2bin(T, [Acc,?GL_TRUE]);
+    bool_list2bin(T, [Acc,1]);
 bool_list2bin([H|T], Acc) ->
-    bool_list2bin(T, [Acc,H,?GL_TRUE]);
+    bool_list2bin(T, [Acc,H,1]);
 bool_list2bin([], Acc) -> Acc.
 
 tuple2bin(Tuple, Max, ?GL_FLOAT) ->
@@ -228,8 +228,8 @@ int_tuple2bin(Tuple, I, N, Acc) ->
 bool_tuple2bin(_, 0, Acc) -> Acc;
 bool_tuple2bin(Tuple, I, Acc0) ->
     Acc = case element(I, Tuple) of
-	      false -> [?GL_FALSE|Acc0];
-	      true -> [?GL_TRUE|Acc0];
+	      false -> [0|Acc0];
+	      true -> [1|Acc0];
 	      Bool -> [Bool|Acc0]
 	  end,
     bool_tuple2bin(Tuple, I-1, Acc).
@@ -332,7 +332,7 @@ bin2list(N, ?GL_FLOAT, Bin) ->
 bin2list(N, ?GL_DOUBLE, Bin) ->
     bin2float(N, 8, Bin);
 bin2list(_, boolean, Bin) ->
-    [B =/= ?GL_FALSE || B <- binary_to_list(Bin)].
+    [B =/= 0 || B <- binary_to_list(Bin)].
 
 bin2float(N, Sz, Bin) ->
     bin2float_1(Sz*(N-1), Sz, Bin, []).
@@ -394,8 +394,11 @@ copySdlImage2GLArray(Image, Mem, Bpp) when is_record(Image, sdl_surface) ->
 copySdlImage2GLArray({surfacep, Image}, #sdlmem{bin=Mem}, Bpp) 
   when Bpp == 3; Bpp == 4 ->
     sdl:send_bin(Mem),
-    <<1:8>> = call(?SDL_UTIL_copySdlImage2GLArray, <<Image:?_PTR,Bpp:8>>),
-    ok.
+    case call(?SDL_UTIL_copySdlImage2GLArray, <<Image:?_PTR,Bpp:8>>) of
+	<<1:8>> -> ok;
+	_O -> 
+	    error({error, _O})
+    end.
 
 mem_size(?GL_BYTE, Size) -> Size;
 mem_size(?GL_UNSIGNED_BYTE, Size) -> Size;

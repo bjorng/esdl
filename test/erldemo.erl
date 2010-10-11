@@ -14,12 +14,12 @@
 -module(erldemo).
 -author('dgud@erix.ericsson.se').
 
+-include_lib("wx/include/gl.hrl").
 -include("sdl.hrl").
 -include("sdl_events.hrl").
 -include("sdl_audio.hrl").
 -include("sdl_video.hrl").
 -include("sdl_keyboard.hrl").
--include("gl.hrl").
 
 -export([go/0, go/1]).
 -compile(export_all).
@@ -32,9 +32,8 @@ go() ->
 
 go(Mode) ->
     %% Init 
-    Wrapper = 
-	sdl:init(?SDL_INIT_VIDEO bor ?SDL_INIT_AUDIO bor 
-		 ?SDL_INIT_ERLDRIVER),
+    Wrapper = sdl:init(?SDL_INIT_VIDEO bor ?SDL_INIT_AUDIO bor 
+			   ?SDL_INIT_ERLDRIVER bor ?SDL_INIT_NOPARACHUTE),
 
     Audio = audio_server(not lists:member(no_audio,Mode)),
     
@@ -42,8 +41,8 @@ go(Mode) ->
     sdl_events:eventState(?SDL_KEYDOWN ,?SDL_ENABLE),
     sdl_events:eventState(?SDL_QUIT ,?SDL_ENABLE),
 
-    Flags = 
-	case lists:member(fullscreen, Mode) of 
+    Flags =
+	case lists:member(fullscreen, Mode) of
 	    true ->
 		?SDL_OPENGL  bor ?SDL_FULLSCREEN;
 	    _ -> 
@@ -56,7 +55,7 @@ go(Mode) ->
     
     initWin(),
     Texture = loadTexture("Powered.bmp", false),
-    Bump = loadTexture("PoweredBump.bmp", true),    
+    Bump = loadTexture("PoweredBump.bmp", true),
     
     Verts = {{ 0.5,  0.5, -0.5},  %1
 	     { 0.5, -0.5, -0.5},  %2
@@ -261,7 +260,7 @@ drawBox(Audio, Cube, N, R, Pos, Vel, Speed = {S, T0},
     gl:disable(?GL_LIGHTING),
         
     check_error("DrawCube"),
-    T1 = gl:swapBuffers(),
+    T1 = sdl_video:gl_swapBuffers(),
     case check_event(Color,BumpMap) of
 	{NewCol, NewBump} ->
 	    NewS = calc_speed(Speed, T1),

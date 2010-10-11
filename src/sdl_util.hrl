@@ -13,6 +13,6 @@
 %%%----------------------------------------------------------------------
 
 
--record(sdlmem, {type, bin, size}).
+-record(sdlmem, {bin, size, type}).
 -define(_PTR, 64/unsigned-native).
 

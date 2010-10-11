@@ -29,9 +29,10 @@ void es_setVideoMode(sdl_data *sd, int len, char* bp)
 
     screen = SDL_SetVideoMode(w, h, bpp, type);
 
-    if ((type & SDL_OPENGL) == SDL_OPENGL) {
-      init_glexts(sd);
-    }
+    /* Done from erlang know */
+    /* if ((type & SDL_OPENGL) == SDL_OPENGL) { */
+    /*   init_glexts(sd); */
+    /* } */
     
     bp = start = sdl_get_temp_buff(sd, 8);
     PUSHGLPTR(screen, bp);

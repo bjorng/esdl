@@ -18,38 +18,11 @@
 #endif
 #include <SDL.h>
 
-#ifdef _OSX_COCOA
-#include <OpenGL/gl.h>
-#else
-#include <GL/gl.h>
-#endif
-       
-/* Some new GL types (eleminates the need for glext.h) */
-#ifndef GL_VERSION_1_5
-#include <stddef.h>
-/* GL types for handling large vertex buffer objects */
-typedef ptrdiff_t GLintptr;
-typedef ptrdiff_t GLsizeiptr;
-#endif
-#ifndef GL_ARB_shader_objects
-/* GL types for handling shader object handles and characters */
-typedef char GLcharARB;		     /* native character */
-typedef unsigned int GLhandleARB;    /* shader object handle */
-#endif
-#ifndef GL_VERSION_2_0
-/* GL type for program/shader text */
-typedef char GLchar;			/* native character */
-#endif
-
-
-
 #include "esdl_conv.h"
 
 #define MAXBUFF 8000000  /* Covers 1600x1200x4 (32bits) */
 
-#define error() {fprintf(stderr, "Error in %s:%d \n\r", \
-                                 __FILE__, __LINE__); \
-                return;}
+#define error() {fprintf(stderr, "Error in %s:%d \n\r", __FILE__, __LINE__); return;}
 
 typedef struct sdl_data_def *sdl_data_ptr;
 typedef void (*sdl_fun)(sdl_data_ptr, int, char*);
@@ -57,7 +30,7 @@ typedef void (*sdl_fun)(sdl_data_ptr, int, char*);
 typedef sdl_fun (*sdl_load_fun)(void);
 
 typedef struct {
-  char* base;
+   char* base;
   size_t size;
   ErlDrvBinary* bin;
 } EsdlBinRef;
@@ -86,7 +59,8 @@ char* sdl_get_temp_buff(sdl_data*, int);
 void sdl_free_binaries(sdl_data*);
 
 void init_fps(sdl_data*);
-void init_glexts(sdl_data*);
+void gl_dispatch(sdl_data *, int, char *);
+void es_init_opengl(sdl_data *, int, char *);
 
 /*   These must exactly match those in src/esdl.hrl */
 #define SDL_H                20
@@ -100,14 +74,14 @@ void init_glexts(sdl_data*);
 #define SDL_UTIL_H          180
 #define TTF_H               200
 #define IMG_H               300
-#define OPENGL_H            400
-#define OPENGLU_H           800
-#define OPENGL_EXTS_H       900  /* Must be last */
-#define MAX_FUNCTIONS_H    1279  /* Current Max.. Increase if needed */
+#define MAX_FUNCTIONS_H     400  /* Current Max.. Increase if needed */
+
+#define OPENGL_START        5000 /* see wx/c_src/wxe_driver.h */
 
 #define SDL_InitFunc (SDL_H + 1)
 #define SDL_QuitFunc (SDL_InitFunc + 1)
 #define SDL_GetErrorFunc (SDL_QuitFunc + 1)
+#define ESDL_OpenglInitFunc (SDL_GetErrorFunc + 1)
 
 #include "esdl_video.h"
 #include "esdl_events.h"

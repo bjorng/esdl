@@ -15,7 +15,6 @@
 -compile(export_all).
 
 -include("esdl.hrl").
--include("gl.hrl").
 -include("sdl_util.hrl").
 
 %% Functions 

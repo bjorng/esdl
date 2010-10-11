@@ -68,7 +68,7 @@ GCC_O	= $(CC) -c $(CFLAGS) $<
 
 Helpers		= esdl_wrapper esdl_gen esdl_spec esdl_util \
 			esdl_video esdl_events esdl_audio \
-			esdl_gl esdl_glu esdl_glext \
+			esdl_gl \
 			$(SDL_TTF_HELPER) $(SDL_IMAGE_HELPER)
 
 HelpersObjects	= $(Helpers:%=%.o)

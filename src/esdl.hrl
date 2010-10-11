@@ -10,6 +10,7 @@
 %%%----------------------------------------------------------------------
 
 -ifndef(SDL_HRL).  %% These must exactly match those in c_src/esdl.h
+
 -define(SDL_HRL,                    20).
 -define(SDL_VIDEO_HRL,              30).
 -define(SDL_EVENTS_HRL,            100).
@@ -21,8 +22,11 @@
 -define(SDL_UTIL_HRL,              180).
 -define(SDL_TTF_HRL,               200).
 -define(SDL_IMG_HRL,               300).
--define(SDL_OPENGL_HRL,            400).
--define(SDL_OPENGLU_HRL,           800).
--define(SDL_OPENGL_EXTS_HRL,       900).   %/* Must be last */
--define(SDL_MAX_FUNCTIONS_HRL,    1279).   %/* Current Max.. Increase if needed */
+-define(SDL_MAX_FUNCTIONS_HRL,     400).   %/* Current Max.. Increase if needed */
+
+-define(SDL_Init, ?SDL_HRL + 1).
+-define(SDL_Quit, ?SDL_Init + 1).
+-define(SDL_GetError, ?SDL_Quit +1).
+-define(ESDL_Init_Opengl, ?SDL_GetError +1).
+
 -endif.

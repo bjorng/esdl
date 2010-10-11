@@ -14,9 +14,10 @@
 
 -module(sdl_video).
 
+-include("sdl.hrl").
+-include("esdl.hrl").
 -include("sdl_video.hrl").
 -include("sdl_video_funcs.hrl").
--include("gl.hrl").
 -include("sdl_util.hrl").
 
 %%% ERL_SDL functions
@@ -190,7 +191,20 @@ getPixels({surfacep, Ref}, Size) ->
 setVideoMode(W, H, Bpp, Type) ->
     case call(?SDL_SetVideoMode, <<W:16,H:16,Bpp:16,Type:32>>) of
 	<<0:?_PTR>> -> error;
-	<<Res:?_PTR>> -> {surfacep, Res}
+	<<Res:?_PTR>> -> 
+	    case (Type band ?SDL_OPENGL) > 1 of
+		true ->
+		    WXDL = wxe_util:wxgl_dl(),
+		    case call(?ESDL_Init_Opengl,  <<(list_to_binary(WXDL))/binary, 0:8>>) of
+			<<0>> ->
+			    error(opengl_init_failed);
+			<<GL:8>> when GL > 0 ->
+			    put(opengl_port, esdl_port),
+			    ok
+		    end;
+		false -> ok
+	    end,
+	    {surfacep, Res}
     end.
 
 %% Func: videoDriverName

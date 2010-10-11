@@ -20,7 +20,7 @@ endif
 ErlMods		= \
 		sdl sdl_video sdl_events \
 		sdl_mouse sdl_joystick sdl_keyboard sdl_active sdl_audio \
-		gl glu sdl_util $(SDL_TTF_MOD) $(SDL_IMAGE_MOD) 
+		sdl_util $(SDL_TTF_MOD) $(SDL_IMAGE_MOD) 
 
 ErlSrc		= $(ErlMods:%=%.erl)
 ErlTargets	= $(ErlMods:%=$(EBIN)/%.beam)
