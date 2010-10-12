@@ -13,11 +13,11 @@
 
 -compile(export_all).
 %%-export([Function/Arity, ...]).
+-include_lib("wx/include/gl.hrl").
 -include("sdl.hrl").
 -include("sdl_video.hrl").
 -include("sdl_keyboard.hrl").
 -include("sdl_events.hrl").
--include("gl.hrl").
 -include("sdl_joystick.hrl").
 
 -define(CUBE,  {{ 10.0,  10.0, -10.0},   %1

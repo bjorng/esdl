@@ -15,12 +15,12 @@
 
 -module(test_glfont).
 -author('klajo at users.sourceforge.net').
+-include_lib("wx/include/gl.hrl").
 -include("sdl.hrl").
 -include("sdl_events.hrl").
 -include("sdl_video.hrl").
 -include("sdl_keyboard.hrl").
 -include("sdl_ttf.hrl").
--include("gl.hrl").
 
 -export([go/1, go/2]).
 

@@ -42,27 +42,25 @@
 
 -define(gl_type_size(TYPE), 
 	case (TYPE) of 
-	    ?GL_BYTE ->           ?GL_BYTE_SIZE;
-	    ?GL_UNSIGNED_BYTE->   ?GL_UNSIGNED_BYTE_SIZE;
-	    ?GL_SHORT ->          ?GL_SHORT_SIZE;
-	    ?GL_UNSIGNED_SHORT -> ?GL_UNSIGNED_SHORT_SIZE;
-	    ?GL_INT ->            ?GL_INT_SIZE;
-	    ?GL_UNSIGNED_INT ->   ?GL_UNSIGNED_INT_SIZE;
-	    ?GL_FLOAT ->          ?GL_FLOAT_SIZE;
-	    ?GL_DOUBLE ->         ?GL_DOUBLE_SIZE
+	    16#1400 ->           ?GL_BYTE_SIZE;
+	    16#1401 ->  ?GL_UNSIGNED_BYTE_SIZE;
+	    16#1402 ->          ?GL_SHORT_SIZE;
+	    16#1403 -> ?GL_UNSIGNED_SHORT_SIZE;
+	    16#1404 ->            ?GL_INT_SIZE;
+	    16#1405 ->   ?GL_UNSIGNED_INT_SIZE;
+	    16#1406 ->          ?GL_FLOAT_SIZE;
+	    16#140A ->         ?GL_DOUBLE_SIZE
 	end).
 
--ifndef(GL_BYTE).
--define(GL_BYTE, 16#1400).
--define(GL_UNSIGNED_BYTE, 16#1401).
--define(GL_SHORT, 16#1402).
--define(GL_UNSIGNED_SHORT, 16#1403).
--define(GL_INT, 16#1404).
--define(GL_UNSIGNED_INT, 16#1405).
--define(GL_FLOAT, 16#1406).
--define(GL_2_BYTES, 16#1407).
--define(GL_3_BYTES, 16#1408).
--define(GL_4_BYTES, 16#1409).
--define(GL_DOUBLE, 16#140A).
--define(GL_DOUBLE_EXT, 16#140A).
--endif.
+-define(SDL_BYTE, 16#1400).
+-define(SDL_UNSIGNED_BYTE, 16#1401).
+-define(SDL_SHORT, 16#1402).
+-define(SDL_UNSIGNED_SHORT, 16#1403).
+-define(SDL_INT, 16#1404).
+-define(SDL_UNSIGNED_INT, 16#1405).
+-define(SDL_FLOAT, 16#1406).
+-define(SDL_2_BYTES, 16#1407).
+-define(SDL_3_BYTES, 16#1408).
+-define(SDL_4_BYTES, 16#1409).
+-define(SDL_DOUBLE, 16#140A).
+-define(SDL_DOUBLE_EXT, 16#140A).

@@ -582,7 +582,7 @@ setGamma(Red,Green,Blue) ->
 %% C-API func: int SDL_SetGammaRamp(Uint16 red[256], Uint16 green[256], Uint16 blue[256])
 %% Desc: 
 setGammaRamp(Red,Green,Blue) ->
-    Args = sdl_util:term2bin(Red ++ Green ++ Blue, 256*3, ?GL_UNSIGNED_SHORT),
+    Args = sdl_util:term2bin(Red ++ Green ++ Blue, 256*3, ?SDL_UNSIGNED_SHORT),
     <<Res:32>> = call(?SDL_SetGammaRamp, Args),
     Res == 0.
 
@@ -594,9 +594,9 @@ setGammaRamp(Red,Green,Blue) ->
 getGammaRamp() ->
     <<Res:32, R:512/binary,G:512/binary,B:512/binary>> = call(?SDL_GetGammaRamp, []),
     {Res == 0, 
-     sdl_util:bin2list(256, ?GL_UNSIGNED_SHORT, R),  
-     sdl_util:bin2list(256, ?GL_UNSIGNED_SHORT, G),  
-     sdl_util:bin2list(256, ?GL_UNSIGNED_SHORT, B)}.
+     sdl_util:bin2list(256, ?SDL_UNSIGNED_SHORT, R),  
+     sdl_util:bin2list(256, ?SDL_UNSIGNED_SHORT, G),  
+     sdl_util:bin2list(256, ?SDL_UNSIGNED_SHORT, B)}.
 
 %%%%%%%%%%% WindowManager Functions %%%%%%%%%%%
 

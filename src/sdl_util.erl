@@ -39,7 +39,7 @@
 -define(MYGL_write,  (?SDL_UTIL_HRL+4)).
 
 %% Func:    alloc 
-%% Args:    Size and type (?GL_UNSIGNED_INT, ...)
+%% Args:    Size and type (?SDL_UNSIGNED_INT, ...)
 %% Returns: A reference to the memory area
 %% Desc:    Allocates Size unit memory of Type,
 %%          where Type is one of the opengl types described in gl.hrl.
@@ -68,7 +68,7 @@ alloc(Size0, Type) ->
 getBin(#sdlmem{bin=Bin}) -> Bin.
 
 %% Func:    malloc 
-%% Args:    Size and type (?GL_UNSIGNED_INT, ...)
+%% Args:    Size and type (?SDL_UNSIGNED_INT, ...)
 %% Returns: A reference to the memory area
 %% Desc:    Obsolete name. Use alloc/2 instead.
 malloc(Size, Type) ->
@@ -90,7 +90,7 @@ read(#sdlmem{type=Type,bin=Bin}, Size) ->
 
 readBin(#sdlmem{type=Type,bin=Bin}, Size) ->
     if
-	Type =:= ?GL_BYTE; Type =:= ?GL_UNSIGNED_BYTE ->
+	Type =:= ?SDL_BYTE; Type =:= ?SDL_UNSIGNED_BYTE ->
 	    <<Data:Size/binary,_/binary>> = Bin,
 	    %% Force a copy to prevent the read binary to
 	    %% change later.
@@ -135,7 +135,7 @@ do_write(_Type, _Size, Dest, Src) when is_binary(Src), size(Src) =< size(Dest) -
 %% Returns: Deep list
 %% Desc:    Converts the first MaxNo numbers of ListOfNumbers to a 
 %%          binary of the type Type.
-%%          Where Type is GL_TYPE existing in gl.hrl (e.g. ?GL_DOUBLE)
+%%          Where Type is SDL_TYPE existing in sdl.hrl (e.g. ?SDL_DOUBLE)
 
 term2bin(Bin, _, _) when is_binary(Bin) -> Bin;
 term2bin(List, N, Type) when is_list(List) ->
@@ -147,7 +147,7 @@ term2bin(List, N, Type) when is_list(List) ->
     end;
 term2bin(Tuple, N, Type) when is_tuple(Tuple) ->
     case size(Tuple) of
-	N when Type == ?GL_BYTE; Type == ?GL_UNSIGNED_BYTE ->
+	N when Type == ?SDL_BYTE; Type == ?SDL_UNSIGNED_BYTE ->
 	    tuple_to_list(Tuple);
 	N -> 
 	    tuple2bin(Tuple, N, Type);
@@ -155,27 +155,27 @@ term2bin(Tuple, N, Type) when is_tuple(Tuple) ->
 	    term2bin(tuple_to_list(Tuple), N, Type)
     end.
 
-list2bin(List, ?GL_BYTE) ->
+list2bin(List, ?SDL_BYTE) ->
     List;
-list2bin(List,?GL_UNSIGNED_BYTE) ->
+list2bin(List,?SDL_UNSIGNED_BYTE) ->
     List;
-list2bin(List, ?GL_FLOAT) ->
+list2bin(List, ?SDL_FLOAT) ->
     float_list2bin(List, 32, []);
-list2bin(List, ?GL_DOUBLE) ->
+list2bin(List, ?SDL_DOUBLE) ->
     float_list2bin(List, 64, []);
-list2bin(List, ?GL_2_BYTES) ->
+list2bin(List, ?SDL_2_BYTES) ->
     int_list2bin(List, 16, []);
-list2bin(List, ?GL_SHORT) ->
+list2bin(List, ?SDL_SHORT) ->
     int_list2bin(List, 16, []);
-list2bin(List, ?GL_UNSIGNED_SHORT) ->
+list2bin(List, ?SDL_UNSIGNED_SHORT) ->
     int_list2bin(List, 16, []);
-list2bin(List, ?GL_3_BYTES) ->
+list2bin(List, ?SDL_3_BYTES) ->
     int_list2bin(List, 24, []);
-list2bin(List, ?GL_4_BYTES) ->
+list2bin(List, ?SDL_4_BYTES) ->
     int_list2bin(List, 32, []);
-list2bin(List, ?GL_INT) ->
+list2bin(List, ?SDL_INT) ->
     int_list2bin(List, 32, []);
-list2bin(List, ?GL_UNSIGNED_INT) ->
+list2bin(List, ?SDL_UNSIGNED_INT) ->
     int_list2bin(List, 32, []);
 list2bin(List, boolean) ->
     bool_list2bin(List, []).
@@ -196,23 +196,23 @@ bool_list2bin([H|T], Acc) ->
     bool_list2bin(T, [Acc,H,1]);
 bool_list2bin([], Acc) -> Acc.
 
-tuple2bin(Tuple, Max, ?GL_FLOAT) ->
+tuple2bin(Tuple, Max, ?SDL_FLOAT) ->
     float_tuple2bin(Tuple, Max, 32, []);
-tuple2bin(Tuple, Max, ?GL_DOUBLE) ->
+tuple2bin(Tuple, Max, ?SDL_DOUBLE) ->
     float_tuple2bin(Tuple, Max, 64, []);
-tuple2bin(Tuple, Max, ?GL_2_BYTES) ->
+tuple2bin(Tuple, Max, ?SDL_2_BYTES) ->
     int_tuple2bin(Tuple, Max, 16, []);
-tuple2bin(Tuple, Max, ?GL_SHORT) ->
+tuple2bin(Tuple, Max, ?SDL_SHORT) ->
     int_tuple2bin(Tuple, Max, 16, []);
-tuple2bin(Tuple, Max, ?GL_UNSIGNED_SHORT) ->
+tuple2bin(Tuple, Max, ?SDL_UNSIGNED_SHORT) ->
     int_tuple2bin(Tuple, Max, 16, []);
-tuple2bin(Tuple, Max, ?GL_3_BYTES) ->
+tuple2bin(Tuple, Max, ?SDL_3_BYTES) ->
     int_tuple2bin(Tuple, Max, 24, []);
-tuple2bin(Tuple, Max, ?GL_4_BYTES) ->
+tuple2bin(Tuple, Max, ?SDL_4_BYTES) ->
     int_tuple2bin(Tuple, Max, 32, []);
-tuple2bin(Tuple, Max, ?GL_INT) ->
+tuple2bin(Tuple, Max, ?SDL_INT) ->
     int_tuple2bin(Tuple, Max, 32, []);
-tuple2bin(Tuple, Max, ?GL_UNSIGNED_INT) ->
+tuple2bin(Tuple, Max, ?SDL_UNSIGNED_INT) ->
     int_tuple2bin(Tuple, Max, 32, []);
 tuple2bin(Tuple, Max, boolean) ->
     bool_tuple2bin(Tuple, Max, []).
@@ -250,31 +250,31 @@ tuplelist2bin(16,Type,List) ->  %% A special case.
 tuplelist2bin(Other,Type,List) ->
     list_to_binary([term2bin(Tuple,Other,Type)|| Tuple <- List]).
 
-tuplelist2bin2(?GL_FLOAT,List) ->
+tuplelist2bin2(?SDL_FLOAT,List) ->
     tuplelist2bin2_float(List,32,[]);
-tuplelist2bin2(?GL_DOUBLE,List) ->
+tuplelist2bin2(?SDL_DOUBLE,List) ->
     tuplelist2bin2_float(List,64,[]);
-tuplelist2bin2(?GL_INT,List) ->
+tuplelist2bin2(?SDL_INT,List) ->
     tuplelist2bin2_int(List,32,[]);
-tuplelist2bin2(?GL_UNSIGNED_INT,List) ->
+tuplelist2bin2(?SDL_UNSIGNED_INT,List) ->
     tuplelist2bin2_int(List,32,[]).
 
-tuplelist2bin3(?GL_FLOAT,List) ->
+tuplelist2bin3(?SDL_FLOAT,List) ->
     tuplelist2bin3_float(List,32,[]);
-tuplelist2bin3(?GL_DOUBLE,List) ->
+tuplelist2bin3(?SDL_DOUBLE,List) ->
     tuplelist2bin3_float(List,64,[]);
-tuplelist2bin3(?GL_INT,List) ->
+tuplelist2bin3(?SDL_INT,List) ->
     tuplelist2bin3_int(List,32,[]);
-tuplelist2bin3(?GL_UNSIGNED_INT,List) ->
+tuplelist2bin3(?SDL_UNSIGNED_INT,List) ->
     tuplelist2bin3_int(List,32,[]).
 
-tuplelist2bin4(?GL_FLOAT,List) ->
+tuplelist2bin4(?SDL_FLOAT,List) ->
     tuplelist2bin4_float(List,32,[]);
-tuplelist2bin4(?GL_DOUBLE,List) ->
+tuplelist2bin4(?SDL_DOUBLE,List) ->
     tuplelist2bin4_float(List,64,[]);
-tuplelist2bin4(?GL_INT,List) ->
+tuplelist2bin4(?SDL_INT,List) ->
     tuplelist2bin4_int(List,32,[]);
-tuplelist2bin4(?GL_UNSIGNED_INT,List) ->
+tuplelist2bin4(?SDL_UNSIGNED_INT,List) ->
     tuplelist2bin4_int(List,32,[]).
 
 tuplelist2bin2_float([{X,Y}|List],N,Acc) ->
@@ -309,7 +309,7 @@ tuplelist2bin4_int([],_,Acc) -> list_to_binary(reverse(Acc)).
 
 bin2list(undefined, Type, Bin) ->
     bin2list(size(Bin), Type, Bin);
-bin2list(N, ?GL_UNSIGNED_BYTE, Bin0) ->
+bin2list(N, ?SDL_UNSIGNED_BYTE, Bin0) ->
     Bin = if
 	      N < size(Bin0) ->
 		  <<B:N/binary,_/binary>> = Bin0,
@@ -317,19 +317,19 @@ bin2list(N, ?GL_UNSIGNED_BYTE, Bin0) ->
 	      true -> Bin0
 	  end,
     binary_to_list(Bin);
-bin2list(N, ?GL_UNSIGNED_SHORT, Bin) ->
+bin2list(N, ?SDL_UNSIGNED_SHORT, Bin) ->
     bin2unsigned(N, 2, Bin);
-bin2list(N, ?GL_UNSIGNED_INT, Bin) ->
+bin2list(N, ?SDL_UNSIGNED_INT, Bin) ->
     bin2unsigned(N, 4, Bin);
-bin2list(N, ?GL_BYTE, Bin) ->
+bin2list(N, ?SDL_BYTE, Bin) ->
     bin2int(N, 1, Bin);
-bin2list(N, ?GL_SHORT, Bin) ->
+bin2list(N, ?SDL_SHORT, Bin) ->
     bin2int(N, 2, Bin);
-bin2list(N, ?GL_INT, Bin) ->
+bin2list(N, ?SDL_INT, Bin) ->
     bin2int(N, 4, Bin);
-bin2list(N, ?GL_FLOAT, Bin) ->
+bin2list(N, ?SDL_FLOAT, Bin) ->
     bin2float(N, 4, Bin);
-bin2list(N, ?GL_DOUBLE, Bin) ->
+bin2list(N, ?SDL_DOUBLE, Bin) ->
     bin2float(N, 8, Bin);
 bin2list(_, boolean, Bin) ->
     [B =/= 0 || B <- binary_to_list(Bin)].
@@ -358,9 +358,9 @@ bin2int_1(N, Sz, Bin, Acc) ->
     <<_:N/binary,U:Sz/native-signed-unit:8,_/binary>> = Bin,
     bin2int_1(N-Sz, Sz, Bin, [U|Acc]).
 
-matrix2bin(Matrix, ?GL_FLOAT) ->
+matrix2bin(Matrix, ?SDL_FLOAT) ->
     matrix2bin_1(Matrix, 32);
-matrix2bin(Matrix, ?GL_DOUBLE) ->
+matrix2bin(Matrix, ?SDL_DOUBLE) ->
     matrix2bin_1(Matrix, 64).
 
 matrix2bin_1({A,B,C, E,F,G, I,J,K, M,N,O}, S) ->
@@ -400,14 +400,14 @@ copySdlImage2GLArray({surfacep, Image}, #sdlmem{bin=Mem}, Bpp)
 	    error({error, _O})
     end.
 
-mem_size(?GL_BYTE, Size) -> Size;
-mem_size(?GL_UNSIGNED_BYTE, Size) -> Size;
-mem_size(?GL_UNSIGNED_SHORT, Size) -> 2*Size;
-mem_size(?GL_SHORT, Size) -> 2*Size;
-mem_size(?GL_UNSIGNED_INT, Size) -> 4*Size;
-mem_size(?GL_INT, Size) -> 4*Size;
-mem_size(?GL_FLOAT, Size) -> 4*Size;
-mem_size(?GL_DOUBLE, Size) -> 8*Size.
+mem_size(?SDL_BYTE, Size) -> Size;
+mem_size(?SDL_UNSIGNED_BYTE, Size) -> Size;
+mem_size(?SDL_UNSIGNED_SHORT, Size) -> 2*Size;
+mem_size(?SDL_SHORT, Size) -> 2*Size;
+mem_size(?SDL_UNSIGNED_INT, Size) -> 4*Size;
+mem_size(?SDL_INT, Size) -> 4*Size;
+mem_size(?SDL_FLOAT, Size) -> 4*Size;
+mem_size(?SDL_DOUBLE, Size) -> 8*Size.
 
 %% Func: Debug 
 %% Args: Level (0 is off)

@@ -18,7 +18,7 @@
 -include("sdl_events.hrl").
 -include("sdl_video.hrl").
 -include("sdl_keyboard.hrl").
--include("gl.hrl").
+-include_lib("wx/include/gl.hrl").
 
 -export([go/0, go/1]).
 

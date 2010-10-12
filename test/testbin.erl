@@ -17,7 +17,6 @@
 -compile(export_all).
 %%-export([Function/Arity, ...]).
 -include("sdl.hrl").
--include("gl.hrl").
 
 init() ->
     go().
@@ -25,8 +24,8 @@ init() ->
 go() ->
     Wrapper = sdl:init(?SDL_INIT_VIDEO),
     io:format("Wrapper ~p~n", [Wrapper]),    
-    F32 = sdl_util:malloc(7, ?GL_FLOAT),
-    F64 = sdl_util:malloc(7, ?GL_DOUBLE),
+    F32 = sdl_util:malloc(7, ?SDL_FLOAT),
+    F64 = sdl_util:malloc(7, ?SDL_DOUBLE),
     Args = [0.0, 1.0, 1000000.0, 0.000001, -1.0, -1000000.0, -0.000001],
     io:format("E Writing ~f ~f ~f ~f ~f ~f ~f~n", Args),
     sdl_util:write(F32, Args),
