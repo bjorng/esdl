@@ -72,6 +72,7 @@ DRIVER_INIT(sdl_driver)
 static ErlDrvData sdl_driver_start(ErlDrvPort port, char *buff)
 {      
    sdl_data *data;   
+   ErlDrvSysInfo info;
 
 #ifdef _OSX_COCOA
    CPSProcessSerNum PSN;
@@ -91,42 +92,45 @@ static ErlDrvData sdl_driver_start(ErlDrvPort port, char *buff)
    if (data == NULL) {
       fprintf(stderr, " Couldn't alloc mem\r\n");
       return(ERL_DRV_ERROR_GENERAL);  /* ENOMEM */      
-   } else {
-      set_port_control_flags(port, PORT_CONTROL_FLAG_BINARY);
-      data->driver_data = port;
-      //      data->fns   = init_fps();   
-      
-      data->op    = 0;
-      data->len   = 0;
-      data->buff  = NULL; 
-
-      data->temp_bin = driver_alloc_binary(TEMP_BINARY_SIZE);
-
-      data->next_bin = 0;
-
-      init_fps(data);
-
+   }
+   set_port_control_flags(port, PORT_CONTROL_FLAG_BINARY);
+   data->driver_data = port;
+   //      data->fns   = init_fps();   
+   
+   data->op    = 0;
+   data->len   = 0;
+   data->buff  = NULL; 
+   
+   data->temp_bin = driver_alloc_binary(TEMP_BINARY_SIZE);   
+   data->next_bin = 0;
+   
+   driver_system_info(&info, sizeof(ErlDrvSysInfo));
+   data->use_smp = info.smp_support && info.scheduler_threads > 1;
+   if(data->use_smp)
+      start_opengl_thread(data);
+   init_fps(data);
+   
 #ifdef _OSX_COCOA
-      // Removes the warnings about memory leakage
-      // (not sure it actually works, though)
-      data->release_pool = 
-	objc_msgSend(objc_msgSend(objc_getClass("NSAutoreleasePool"), 
-				  @selector(alloc)), @selector(init));
- 
-      data->app = objc_msgSend(objc_getClass("NSApplication"), 
-			       @selector(sharedApplication));
+   // Removes the warnings about memory leakage
+   // (not sure it actually works, though)
+   data->release_pool = 
+      objc_msgSend(objc_msgSend(objc_getClass("NSAutoreleasePool"), 
+				@selector(alloc)), @selector(init));
+   
+   data->app = objc_msgSend(objc_getClass("NSApplication"), 
+			    @selector(sharedApplication));
 
-      // To get a Menu & a dock icon : 
-      err = CPSGetCurrentProcess(&PSN);
-      assert(!(err = CPSSetProcessName(&PSN,"ESDL")));
-      assert(!(err = CPSEnableForegroundOperation(&PSN,0x03,0x3C,0x2C,0x1103)));
-      assert(!(err = CPSSetFrontProcess(&PSN)));
-
-      // Makes the SDL window respond to keyboard events (???)
-      //[NSAppleEventManager sharedAppleEventManager];
+   // To get a Menu & a dock icon : 
+   err = CPSGetCurrentProcess(&PSN);
+   assert(!(err = CPSSetProcessName(&PSN,"ESDL")));
+   assert(!(err = CPSEnableForegroundOperation(&PSN,0x03,0x3C,0x2C,0x1103)));
+   assert(!(err = CPSSetFrontProcess(&PSN)));
+   
+   // Makes the SDL window respond to keyboard events (???)
+   //[NSAppleEventManager sharedAppleEventManager];
 
 #endif /* _OSX_COCOA */
-   }
+
    return (ErlDrvData) data;
 }
 
@@ -134,6 +138,9 @@ static void
 sdl_driver_stop(ErlDrvData handle) 
 {  
   sdl_data *sd = ((sdl_data *)handle);
+
+  if(sd->use_smp)
+     stop_opengl_thread();
 
   SDL_Quit();
   free(sd->fun_tab);
@@ -165,7 +172,7 @@ sdl_driver_control(ErlDrvData handle, unsigned op,
      func = sd->fun_tab[op];
      func(sd, count, buf);
   } else {
-     gl_dispatch(sd, op, buf);
+     gl_dispatch(sd, op, count, buf);
      sdl_free_binaries(sd);
   }
   (*res) = sd->buff;
@@ -198,7 +205,7 @@ sdl_driver_debug_control(ErlDrvData handle, unsigned op,
      }     
   } else {
      fprintf(stderr, "Command:%d ", op);
-     gl_dispatch(sd, op, buf);
+     gl_dispatch(sd, op, count, buf);
      sdl_free_binaries(sd);
      fprintf(stderr, "\r\n");
      return 0;

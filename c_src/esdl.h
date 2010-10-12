@@ -37,6 +37,7 @@ typedef struct {
 
 typedef struct sdl_data_def {
   void* driver_data;		/* Port or Driver specific data */
+  int use_smp;                  /* Use a thread for opengl commands */
   sdl_fun* fun_tab;		/* Pointers to functions */
   char** str_tab;		/* Pointers to function names */
 
@@ -59,8 +60,11 @@ char* sdl_get_temp_buff(sdl_data*, int);
 void sdl_free_binaries(sdl_data*);
 
 void init_fps(sdl_data*);
-void gl_dispatch(sdl_data *, int, char *);
+void gl_dispatch(sdl_data *, int, int, char *);
 void es_init_opengl(sdl_data *, int, char *);
+void start_opengl_thread(sdl_data *);
+void stop_opengl_thread();
+SDL_Surface * gl_sync_set_video_mode();
 
 /*   These must exactly match those in src/esdl.hrl */
 #define SDL_H                20

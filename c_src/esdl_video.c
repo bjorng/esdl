@@ -17,28 +17,37 @@
 
 void es_setVideoMode(sdl_data *sd, int len, char* bp) 
 {
-    char* start;
-    int w, h, bpp, type;
-    int sendlen;
-    SDL_Surface *screen;
-  
-    w    = get16be(bp);
-    h    = get16be(bp);
-    bpp  = get16be(bp);
-    type = get32be(bp);
+   char* start;
+   int sendlen;
+   SDL_Surface *screen;
 
-    screen = SDL_SetVideoMode(w, h, bpp, type);
+   if(!sd->use_smp) {
+      screen = es_setVideoMode2(bp);
+      /* Done from erlang know */
+      /* if ((type & SDL_OPENGL) == SDL_OPENGL) { */
+      /*   init_glexts(sd); */
+      /* } */
+   } else { /* opengl initialization must be called from thread */
+      gl_dispatch(sd, SDL_SetVideoModeFunc, len, bp);
+      screen = gl_sync_set_video_mode();
+   }
+   bp = start = sdl_get_temp_buff(sd, 8);
+   PUSHGLPTR(screen, bp);
+   
+   sendlen = bp - start;
+   sdl_send(sd, sendlen);
+}
 
-    /* Done from erlang know */
-    /* if ((type & SDL_OPENGL) == SDL_OPENGL) { */
-    /*   init_glexts(sd); */
-    /* } */
-    
-    bp = start = sdl_get_temp_buff(sd, 8);
-    PUSHGLPTR(screen, bp);
-    
-    sendlen = bp - start;
-    sdl_send(sd, sendlen);
+SDL_Surface * es_setVideoMode2(char* bp) 
+{
+   int w, h, bpp, type;
+   
+   w    = get16be(bp);
+   h    = get16be(bp);
+   bpp  = get16be(bp);
+   type = get32be(bp);
+   
+   return SDL_SetVideoMode(w, h, bpp, type);
 }
 
 void es_videoDriverName(sdl_data *sd, int len, char *buff)
@@ -857,12 +866,19 @@ void es_gl_getAttribute(sdl_data *sd, int len, char *buff)
 }
 
 void es_gl_swapBuffers(sdl_data *sd, int len, char *buff)
-{   
+{  
    char *bp, *start;
    int sendlen;
    Uint32 ts;
-
-   SDL_GL_SwapBuffers();
+   
+   if(!sd->use_smp) 
+      SDL_GL_SwapBuffers();
+   else
+      gl_dispatch(sd, SDL_GL_SwapBuffersFunc, len, buff);
+   
+   /* Timer is off for smp system I don't really care it was 
+      a bad idea anyway (works if vsync is on only I believe) */
+   
    bp = start = sdl_get_temp_buff(sd, 4);
    ts = SDL_GetTicks();
    put32be(bp, ts);
