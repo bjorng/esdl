@@ -51,10 +51,8 @@ pumpEvents() ->
 %%				SDL_eventaction action, Uint32 mask)
 %% Desc:  Get up to to 16 events of all types.
 peepEvents() ->
-    case call(?SDL_PeepEvents, []) of
-	[] -> [];
-	Events -> decode_events(Events, [])
-    end.
+    peepEvents(16, ?SDL_GETEVENT, ?SDL_ALLEVENTS).
+
 
 %% Func:  peepEvents/2
 %% Args:  NumEvents (might be 0) 
@@ -64,10 +62,7 @@ peepEvents() ->
 %%				SDL_eventaction action, Uint32 mask)
 %% Desc:  Exits if error (NumEvents < 256) 
 peepEvents(NumEvents, Mask) when NumEvents < 256 ->
-    case call(?SDL_PeepEvents, <<Mask:32,NumEvents:8>>) of
-	[] -> [];
-	Events -> decode_events(Events, [])
-    end.
+    peepEvents(NumEvents, ?SDL_GETEVENT, Mask).
 
 %% Func:  peepEvents/2
 %% Args:  NumEvents (might be 0) 
@@ -78,9 +73,12 @@ peepEvents(NumEvents, Mask) when NumEvents < 256 ->
 %%				SDL_eventaction action, Uint32 mask)
 %% Desc:  Exits if error (NumEvents < 256) 
 peepEvents(NumEvents, ?SDL_GETEVENT, Mask) when NumEvents < 256 ->
-    case call(?SDL_PeepEvents, <<Mask:32,NumEvents:8>>) of
-	[] -> [];
-	Events -> decode_events(Events, [])
+    call(?SDL_PeepEvents, <<Mask:32,NumEvents:8>>),
+    receive 
+	{'_esdl_result_', <<>>} -> 
+	    [];
+	{'_esdl_result_', Events} -> 
+	    decode_events(Events, [])
     end.
 
 %% Func:  pollEvent
@@ -89,12 +87,12 @@ peepEvents(NumEvents, ?SDL_GETEVENT, Mask) when NumEvents < 256 ->
 %% C-API func: int SDL_PollEvent(SDL_Event *event);
 %% Desc:
 pollEvent() ->
-    case call(?SDL_PollEvent, []) of
-	[] ->
+    call(?SDL_PollEvent, []),
+    receive 
+	{'_esdl_result_', <<>>} ->
 	    no_event;
-	Bin ->
-	    [Event] = decode_events(Bin, []),
-	    Event
+	{'_esdl_result_', Events} -> 
+	    hd(decode_events(Events, []))
     end.
 
 %% Func:  waitEvent
@@ -103,15 +101,12 @@ pollEvent() ->
 %% C-API func: int SDL_WaitEvent(SDL_Event *event);
 %% Desc:
 waitEvent() ->
-    case call(?SDL_WaitEvent, []) of
-	[] -> waitEvent();
-	Bin ->
-	    case decode_events(Bin, []) of 
-		[] ->            %% Unknown events comes as empty list
-		    waitEvent(); %% so we loop until we get an correct event. 
-		[Event] ->
-		    Event
-	    end
+    call(?SDL_WaitEvent, []),
+    receive 
+	{'_esdl_result_', <<>>} -> 
+	    [];
+	{'_esdl_result_', Events} -> 
+	    hd(decode_events(Events, []))
     end.
 
 %% Func:  eventState

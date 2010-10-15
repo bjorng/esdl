@@ -64,7 +64,7 @@ void gl_dispatch(sdl_data *, int, int, char *);
 void es_init_opengl(sdl_data *, int, char *);
 void start_opengl_thread(sdl_data *);
 void stop_opengl_thread();
-SDL_Surface * gl_sync_set_video_mode();
+void * esdl_gl_sync();
 
 /*   These must exactly match those in src/esdl.hrl */
 #define SDL_H                20

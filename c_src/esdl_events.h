@@ -14,10 +14,13 @@
 void es_pumpEvents(sdl_data *, int , char *);
 #define SDL_PeepEventsFunc SDL_PumpEventsFunc+1
 void es_peepEvents(sdl_data *, int , char *);
+void es_peepEvents2(ErlDrvPort port, ErlDrvTermData caller, char *bp);
 #define SDL_PollEventFunc  SDL_PeepEventsFunc+1
 void es_pollEvent(sdl_data *, int , char *);
+void es_pollEvent2(ErlDrvPort port, ErlDrvTermData caller);
 #define SDL_WaitEventFunc  SDL_PollEventFunc +1
 void es_waitEvent(sdl_data *, int , char *);
+void es_waitEvent2(ErlDrvPort port, ErlDrvTermData caller);
 #define SDL_EventStateFunc SDL_WaitEventFunc +1
 void es_eventState(sdl_data *, int , char *);
 

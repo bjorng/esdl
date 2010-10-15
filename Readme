@@ -1,6 +1,24 @@
 ESDL by Dan Gudmundsson 
 Currently located at http://esdl.sourceforge.net
 
+News
+========= 
+1.2:
+   I have removed the opengl specific part from esdl, now esdl
+   requires that wx is available for opengl usage.
+   
+   This means that this release is not backwards compatiable 
+   with the old release, some gl functions have been changed in wx gl.
+
+   This is done to only have one gl.erl in your (erlang) system,
+   and it also more up to date with the standard.
+   Actually only wx/ebin/gl.beam, wx_util.beam and wx/priv/OS/erl_gl.[so|dll]
+   is required.
+
+   Also using wx's opengl allowed me to create an opengl thread,
+   if the erlang emulator is multithreaded. So now sdl with opengl
+   works for both smp and single threaded erlang.
+   
 What is it?
 ===========
 Esdl is library for accessing SDL (Simple DirectMedia Layer)
@@ -22,8 +40,7 @@ Compilation and Installation
 =============================
 
 You need erlang (www.erlang.org). This release has only been
-tested on R13B, but R12B and possibly even older releases
-will probably also work.
+tested on R14B01, it requires that version for opengl to work.
 
 You need libsdl (www.libsdl.org) (the development package) version > 1.2.5
 
@@ -49,11 +66,8 @@ On MacOS X, the top-level Makefile will automatically use
 c_src/Makefile.macosx, but if you run make in the c_src direcotory,
 you need to run make as 'make -f Makefile.macosx'.
 
-To sucessfully build esdl you need complete GLU version 1.2 or later,
-many Linux system has a mesa-glu which don't have the correct tesselation
-routines. Download the prebuilt sgi-version from www.mesa3d.org and click 
-on SGI-GLU link to find a rpm.  Optionally you'll also need SDL_ttf
-for the font support and SDL_image for the image support.
+Optionally you'll also need SDL_ttf for the font support 
+and SDL_image for the image support.
 
     Note: SDL_ttf and SDL_image are disabled by default, since they
           depend on libraries not in the plain vanilla SDL packages.
@@ -125,11 +139,6 @@ sdl_img.erl loads images onto SDL surfaces.  None of the SDL_RWops
 functions (which are the greater part of the API) are implemented.
 The existing support will suffice in most cases though (e.g. loading
 images from file).
-
-Opengl is defined in the gl.erl module, everything in opengl-1.4 is
-implemented, note that it depends on the dirvers which functions are
-available.  Most of glu functions are implemented except most of the
-functions that require a function pointer.
 
 Extra functions:
 ================

@@ -17,69 +17,111 @@
 #define MAX_EVENT_SIZE 13
 
 /* Foward decls */
-static char* encode_event(const SDL_Event * ev, char * bp);
+static char* encode_event(const SDL_Event * , char *);
 
 /* API */
-void es_pumpEvents(sdl_data *sd, int len,char *buff)
-{   
-   SDL_PumpEvents();
+void es_pumpEvents(sdl_data *sd, int len, char *buff)
+{
+    if(sd->use_smp) 
+	gl_dispatch(sd, SDL_PumpEventsFunc, len, buff);
+    else
+	SDL_PumpEvents();
 }
 
 void es_peepEvents(sdl_data *sd, int len, char *bp)
 {
-  SDL_Event events[256];
-  int numevents, res;
-  Uint32 mask;
-  char *start;
+    if(sd->use_smp) 
+	gl_dispatch(sd, SDL_PeepEventsFunc, len, bp);   
+    else 
+	es_peepEvents2(sd->driver_data, driver_caller(sd->driver_data), bp);
+}
 
-  if (len == 0) {
-    mask = SDL_ALLEVENTS;
-    numevents = 16;
-  } else {
+void es_peepEvents2(ErlDrvPort port, ErlDrvTermData caller, char *bp)
+{  
+    SDL_Event events[256];
+    int numevents, res, i, sz;
+    Uint32 mask;
+    char *start;
+    ErlDrvBinary * bin;
+    ErlDrvTermData rt[8];
+    
     mask = * (Uint32 *) bp; bp += sizeof(Uint32);
     numevents = *bp++;
-  }
-  SDL_PumpEvents();
-  res = SDL_PeepEvents(events, numevents, SDL_GETEVENT, mask);
-  if (res > 0) {
-    int sendlen, i;
-    bp = start = sdl_get_temp_buff(sd, res*MAX_EVENT_SIZE);
+    
+    SDL_PumpEvents();
+    res = SDL_PeepEvents(events, numevents, SDL_GETEVENT, mask);
+    bin = driver_alloc_binary(res*MAX_EVENT_SIZE);
+    bp = start = bin->orig_bytes;
     for (i = 0; i < res; i++) {
-      bp = encode_event(&(events[i]), bp);
+	bp = encode_event(&(events[i]), bp);
     }
-    sendlen = bp - start;
-    sdl_send(sd, sendlen);
-  }
+    sz = bp-start;
+    rt[0] = ERL_DRV_ATOM; rt[1]=driver_mk_atom((char *) "_esdl_result_");
+    rt[2] = ERL_DRV_BINARY; rt[3] = (ErlDrvTermData) bin; rt[4] = sz; rt[5] = 0;
+    rt[6] = ERL_DRV_TUPLE; rt[7] = 2;
+    driver_send_term(port,caller,rt,8);
+    driver_free_binary(bin);
 }
 
 void es_pollEvent(sdl_data *sd, int len, char *buff)
 {
-  SDL_Event event;
-  
-  if (SDL_PollEvent(&event)) {
-    int sendlen;
-    char *bp, *start;
+    if(sd->use_smp) 
+	gl_dispatch(sd, SDL_PollEventFunc, len, buff);
+    else 
+	es_pollEvent2(sd->driver_data, driver_caller(sd->driver_data));
+}
 
-    bp = start = sdl_get_temp_buff(sd, MAX_EVENT_SIZE);
-    bp = encode_event(&event, bp);
-    sendlen = bp - start;
-    sdl_send(sd, sendlen);
-  }
+void es_pollEvent2(ErlDrvPort port, ErlDrvTermData caller) 
+{
+    SDL_Event event;
+    ErlDrvTermData rt[8];
+    ErlDrvBinary * bin;
+    char *bp, *start;
+    int sz;
+
+    bin = driver_alloc_binary(MAX_EVENT_SIZE);
+    bp = start = bin->orig_bytes;
+  
+    if (SDL_PollEvent(&event)) {
+	bp = encode_event(&event, bp);
+    }
+  
+    sz = bp-start;
+    rt[0] = ERL_DRV_ATOM; rt[1]=driver_mk_atom((char *) "_esdl_result_");  
+    rt[2] = ERL_DRV_BINARY; rt[3] = (ErlDrvTermData) bin; rt[4] = sz; rt[5] = 0;
+    rt[6] = ERL_DRV_TUPLE; rt[7] = 2;
+    driver_send_term(port,caller,rt,8);
+    driver_free_binary(bin);
 }
 
 void es_waitEvent(sdl_data *sd, int len,char *buff)
 {
+    if(sd->use_smp) 
+	gl_dispatch(sd, SDL_WaitEventFunc, len, buff);
+    else 
+	es_waitEvent2(sd->driver_data, driver_caller(sd->driver_data));
+}
+
+void es_waitEvent2(ErlDrvPort port, ErlDrvTermData caller) 
+{
     SDL_Event event;
-    int sendlen;
+    ErlDrvBinary * bin;
+    ErlDrvTermData rt[8];
     char *bp, *start;
+    int sz;
+
+    bin = driver_alloc_binary(MAX_EVENT_SIZE);
+    bp = start = bin->orig_bytes;
     
-    bp = start = sdl_get_temp_buff(sd, MAX_EVENT_SIZE);
     SDL_WaitEvent(&event);
     bp = encode_event(&event, bp);
-    if (*start != SDL_NOEVENT) {
-      sendlen = bp - start;
-      sdl_send(sd, sendlen);
-    }
+    
+    sz = bp-start;
+    rt[0] = ERL_DRV_ATOM; rt[1]=driver_mk_atom((char *) "_esdl_result_");  
+    rt[2] = ERL_DRV_BINARY; rt[3] = (ErlDrvTermData) bin; rt[4] = sz; rt[5] = 0;
+    rt[6] = ERL_DRV_TUPLE; rt[7] = 2;
+    driver_send_term(port,caller,rt,8);
+    driver_free_binary(bin);
 }
 
 void es_eventState(sdl_data *sd, int len, char *bp) 

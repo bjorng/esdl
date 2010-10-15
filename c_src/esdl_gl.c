@@ -12,14 +12,16 @@
 #include <dlfcn.h>
 #endif
 #include "esdl.h"
+#include "esdl_events.h"
 
 int esdl_gl_initiated = 0;
 ErlDrvTid esdl_thread;
 ErlDrvMutex * esdl_batch_locker_m;
 ErlDrvCond  * esdl_batch_locker_c;
-SDL_Surface * esdl_init_screen;
+void * esdl_result;
 
 void * esdl_gl_main_loop(void * );
+int es_init_opengl2(char *bp);
 
 typedef struct {
    ErlDrvTermData caller;
@@ -38,7 +40,7 @@ esdl_q_t esdl_q[MAX_Q];
 typedef void (*ESDL_GL_DISPATCH) (int, char *, ErlDrvPort, ErlDrvTermData, char **);
 ESDL_GL_DISPATCH esdl_gl_dispatch;
 
-typedef int (*ESDL_GL_INIT) ();
+typedef int (*ESDL_GL_INIT) (void *);
 
 /*** WIN32 ***/ 
 #ifdef _WIN32
@@ -62,23 +64,39 @@ typedef void * DL_LIB_P;
 #endif 
 
 /** Initialization code **/ 
-void es_init_opengl(sdl_data *sd, int len, char *bp) 
-{
-   DL_LIB_P LIBhandle;
-   ESDL_GL_INIT init_opengl;
+void es_init_opengl(sdl_data *sd, int len, char *bp) {
+    int result;
+    char *start;
 
-   char *start;
-   
-   start = sdl_get_temp_buff(sd, 2);
+    start = sdl_get_temp_buff(sd, 2);
+    if(!sd->use_smp) {
+	result = es_init_opengl2(bp);
+    } else {
+	gl_dispatch(sd, ESDL_OpenglInitFunc, len, bp);
+	result = (int) esdl_gl_sync();
+    }
+    start[0] = (char) result;
+    sdl_send(sd, 1);
+}
+
+int es_init_opengl2(char *bp) {
+    DL_LIB_P LIBhandle;
+    ESDL_GL_INIT init_opengl;
+
+#ifdef _WIN32
+  void * erlCallbacks = &WinDynDriverCallbacks;
+#else 
+  void * erlCallbacks = NULL;
+#endif
    
    if(esdl_gl_initiated == 0) {
-      if((LIBhandle = dlopen(bp, RTLD_LAZY))) {
+       if((LIBhandle = dlopen(bp, RTLD_LAZY))) {
 	 init_opengl = (ESDL_GL_INIT) dlsym(LIBhandle, "egl_init_opengl");
 	 esdl_gl_dispatch = (ESDL_GL_DISPATCH) dlsym(LIBhandle, "egl_dispatch");
 	 if(init_opengl && esdl_gl_dispatch) {
-	    init_opengl();
-	    start[0] = 1;
+	    init_opengl(erlCallbacks);
 	    esdl_gl_initiated = 1;
+	    return 1;
 	 } else {
 	    fprintf(stderr, "In lib %s:\r\n", bp);
 	    if(!init_opengl) 
@@ -86,17 +104,16 @@ void es_init_opengl(sdl_data *sd, int len, char *bp)
 	    if(!esdl_gl_dispatch) 
 	       fprintf(stderr, " function not found egl_dispatch\r\n");
 	    fflush(stderr);
-	    start[0] = 0;
+	    return 0;
 	 }
       } else {
 	 fprintf(stderr, "Failed locating lib %s:\r\n", bp);
 	 fflush(stderr);
-	 start[0] = 0;
+	 return 0;
       }
    } else {
-      start[0] = 2;
+       return 2;
    }
-   sdl_send(sd, 1);
 }
 
 void gl_dispatch(sdl_data *sd, int op, int len, char *bp) 
@@ -141,9 +158,12 @@ void start_opengl_thread(sdl_data *sd)
    esdl_batch_locker_c = erl_drv_cond_create((char *)"esdl_batch_locker_c");
    esdl_q_first = 0;
    esdl_q_n = 0;
-   esdl_init_screen = (void *) -1;
+   esdl_result = (void *) -1;
+   erl_drv_mutex_lock(esdl_batch_locker_m);
    erl_drv_thread_create("ESDL OpenGL dispatcher", &esdl_thread,
 			 esdl_gl_main_loop, (void *) sd, NULL);
+   erl_drv_cond_wait(esdl_batch_locker_c, esdl_batch_locker_m);
+   erl_drv_mutex_unlock(esdl_batch_locker_m);
 }
 
 void stop_opengl_thread() 
@@ -163,8 +183,9 @@ void * esdl_gl_main_loop(void *sd) {
    int i,j,pos;
    ErlDrvPort port = ((sdl_data *)sd)->driver_data;
    erl_drv_mutex_lock(esdl_batch_locker_m);
+   SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK );
    while(1) {
-      if(esdl_q_n > 0) {
+       if(esdl_q_n > 0) {
 	 for(i=0; i<3; i++) {
 	    bs[i] = esdl_q[esdl_q_first].base[i];
 	 }
@@ -172,13 +193,32 @@ void * esdl_gl_main_loop(void *sd) {
 	    esdl_gl_dispatch(esdl_q[esdl_q_first].op, esdl_q[esdl_q_first].buff,
 			     port, esdl_q[esdl_q_first].caller, bs);
 	 } else {
-	    if(esdl_q[esdl_q_first].op == SDL_GL_SwapBuffersFunc) {	       
-	       SDL_GL_SwapBuffers();
-	    }
-	    /* OpenGL must be initilized in the thread */
-	    if(esdl_q[esdl_q_first].op == SDL_SetVideoModeFunc) {
-	       esdl_init_screen = es_setVideoMode2(esdl_q[esdl_q_first].buff);
-	    }
+	     /* OpenGL must be initilized in the thread */
+	     switch(esdl_q[esdl_q_first].op) {
+	     case SDL_GL_SwapBuffersFunc:
+		 SDL_GL_SwapBuffers();
+		 break;
+	     case SDL_SetVideoModeFunc:
+		 esdl_result = es_setVideoMode2(esdl_q[esdl_q_first].buff);
+		 break;		 
+	     case ESDL_OpenglInitFunc:
+		 esdl_result = (void*) es_init_opengl2(esdl_q[esdl_q_first].buff);
+		 break;
+		 /* Events must be handled in this thread on windows */
+	     case SDL_PumpEventsFunc:
+		 SDL_PumpEvents();
+		 break;
+	     case SDL_PeepEventsFunc:
+		 es_peepEvents2(port, esdl_q[esdl_q_first].caller, 
+				esdl_q[esdl_q_first].buff);
+		 break;
+	     case SDL_PollEventFunc:
+		 es_pollEvent2(port, esdl_q[esdl_q_first].caller);
+		 break;
+	     case SDL_WaitEventFunc:
+		 es_waitEvent2(port, esdl_q[esdl_q_first].caller);
+		 break;	     
+	     }
 	 }
 	 for(i=0; i < esdl_q[esdl_q_first].no_bins; i++)
 	    driver_binary_dec_refc(esdl_q[esdl_q_first].bin[i]);
@@ -187,7 +227,8 @@ void * esdl_gl_main_loop(void *sd) {
 	 esdl_q_first %= MAX_Q;
 	 esdl_q_n--;
       } else {
-	 erl_drv_cond_signal(esdl_batch_locker_c);
+	  erl_drv_cond_signal(esdl_batch_locker_c);
+
 	 while(esdl_q_n == 0) {
 	    erl_drv_cond_wait(esdl_batch_locker_c, esdl_batch_locker_m);
 	 }
@@ -209,13 +250,13 @@ void * esdl_gl_main_loop(void *sd) {
    return NULL;
 }
 
-SDL_Surface * gl_sync_set_video_mode() {
-   SDL_Surface * screen;
+void * esdl_gl_sync() {
+   void * result;
    erl_drv_mutex_lock(esdl_batch_locker_m);
-   while(esdl_init_screen == (void *) -1)
-      erl_drv_cond_wait(esdl_batch_locker_c, esdl_batch_locker_m);
-   screen = esdl_init_screen;
+   while(esdl_result == (void *) -1)
+       erl_drv_cond_wait(esdl_batch_locker_c, esdl_batch_locker_m);
+   result = esdl_result;
    erl_drv_mutex_unlock(esdl_batch_locker_m);
-   esdl_init_screen = (void *) -1;
-   return screen;
+   esdl_result = (void *) -1;
+   return result;
 }

@@ -29,7 +29,7 @@ void es_setVideoMode(sdl_data *sd, int len, char* bp)
       /* } */
    } else { /* opengl initialization must be called from thread */
       gl_dispatch(sd, SDL_SetVideoModeFunc, len, bp);
-      screen = gl_sync_set_video_mode();
+      screen = esdl_gl_sync();
    }
    bp = start = sdl_get_temp_buff(sd, 8);
    PUSHGLPTR(screen, bp);
@@ -46,7 +46,6 @@ SDL_Surface * es_setVideoMode2(char* bp)
    h    = get16be(bp);
    bpp  = get16be(bp);
    type = get32be(bp);
-   
    return SDL_SetVideoMode(w, h, bpp, type);
 }
 
@@ -779,11 +778,6 @@ void es_wm_getInfo(sdl_data *sd, int len, char *buff)
    SDL_VERSION(&info.version);
    SDL_GetWMInfo(&info);
    bp = start = sdl_get_temp_buff(sd, 7);
-/*    fprintf(stderr, "es_wm_getInfo %d %d %d %d %d \r\n",  */
-/* 	   (unsigned int *) &info, (unsigned int*) &info.version, */
-/* 	   info.version.major, */
-/* 	   info.version.minor, */
-/* 	   info.version.patch); */
 
    put8(bp, info.version.major);
    put8(bp, info.version.minor);

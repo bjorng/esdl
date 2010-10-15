@@ -191,24 +191,24 @@ sdl_driver_debug_control(ErlDrvData handle, unsigned op,
   sd->len = 0;
   sd->op = op;
   if(op < OPENGL_START) {
-     fprintf(stderr, "Command:%d:%s: ", op, sd->str_tab[op]);
+     fprintf(stderr, "Command:%d:%s: ", op, sd->str_tab[op]);fflush(stderr);
      func = sd->fun_tab[op];
      func(sd, count, buf);
      if ((len = sd->len) >= 0) {
-	fprintf(stderr, "ok %d %p\r\n", len, sd->buff);
+	fprintf(stderr, "ok %d %p\r\n", len, sd->buff);fflush(stderr);
 	(*res) = sd->buff;
 	return len;
      } else {
-	fprintf(stderr, "error\r\n");
+	fprintf(stderr, "error\r\n");fflush(stderr);
 	*res = 0;
 	return -1;
      }     
   } else {
-     fprintf(stderr, "Command:%d ", op);
-     gl_dispatch(sd, op, count, buf);
-     sdl_free_binaries(sd);
-     fprintf(stderr, "\r\n");
-     return 0;
+      fprintf(stderr, "Command:%d ", op);fflush(stderr);
+      gl_dispatch(sd, op, count, buf);
+      sdl_free_binaries(sd);
+      fprintf(stderr, "\r\n");fflush(stderr);
+      return 0;
   }
 }
 
