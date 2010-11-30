@@ -70,7 +70,7 @@ go(Config) ->
     io:format("Extensions: ~s~n",  [gl:getString(?GL_EXTENSIONS)]),    
     io:format("Maximized: ~p~n",   [sdl_video:wm_isMaximized()]), 
 
-    %% io:format("~p~n~n", [catch gl:getConvolutionParameterfv(16#8011, 16#801A)]),
+    io:format("~p~n~n", [catch gl:getConvolutionParameterfv(16#8011, 16#801A)]),
 
     sdl_events:eventState(?SDL_ALLEVENTS ,?SDL_IGNORE),
     sdl_events:eventState(?SDL_KEYDOWN ,?SDL_ENABLE),
