@@ -206,7 +206,11 @@ void * esdl_gl_main_loop(void *sd) {
 		 break;
 	     case SDL_SetVideoModeFunc:
 		 esdl_result = es_setVideoMode2(esdl_q[esdl_q_first].buff);
-		 break;		 
+		 break;
+	     case SDL_VideoModeOKFunc:
+		 es_videoModeOK2(port, esdl_q[esdl_q_first].caller, 
+				 esdl_q[esdl_q_first].buff);
+		 break;
 	     case ESDL_OpenglInitFunc:
 		 esdl_result = (void*) es_init_opengl2(esdl_q[esdl_q_first].buff);
 		 break;

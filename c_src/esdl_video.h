@@ -19,6 +19,7 @@ void es_getVideoSurface(sdl_data *, int len, char *buff);
 void es_getVideoInfo(sdl_data *, int len, char*buff);
 #define SDL_VideoModeOKFunc     (SDL_GetVideoInfoFunc + 1)
 void es_videoModeOK(sdl_data *, int len, char*buff);
+void es_videoModeOK2(ErlDrvPort, ErlDrvTermData, char *);
 #define SDL_ListModesFunc       (SDL_VideoModeOKFunc + 1)
 void es_listModes(sdl_data *, int len, char *buff);
 #define SDL_SetVideoModeFunc    (SDL_ListModesFunc + 1)

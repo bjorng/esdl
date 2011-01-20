@@ -244,8 +244,10 @@ getVideoinfo() ->
 %% Returns:  true | false  (see sdl doc)
 %% C-API func: int SDL_VideoModeOK(int width, int height, int bpp, Uint32 flags);
 videoModeOK(W, H, Bpp, Type) ->
-    <<Res:8>> = call(?SDL_VideoModeOK, <<W:16, H:16, Bpp:16, Type:32>>),
-    Res /= 0.				  
+    call(?SDL_VideoModeOK, <<W:16, H:16, Bpp:16, Type:32>>),
+    receive
+	{'_esdl_result_', Res} -> Res /= 0
+    end.
 
 %% Func: listModes
 %% Args: PixelFormat (either as sdl_pixelformat record or a PixelFormat Ref or null) 

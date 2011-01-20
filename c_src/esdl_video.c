@@ -23,10 +23,6 @@ void es_setVideoMode(sdl_data *sd, int len, char* bp)
 
    if(!sd->use_smp) {
       screen = es_setVideoMode2(bp);
-      /* Done from erlang know */
-      /* if ((type & SDL_OPENGL) == SDL_OPENGL) { */
-      /*   init_glexts(sd); */
-      /* } */
    } else { /* opengl initialization must be called from thread */
       gl_dispatch(sd, SDL_SetVideoModeFunc, len, bp);
       screen = esdl_gl_sync();
@@ -106,13 +102,23 @@ void es_getVideoInfo(sdl_data *sd, int len, char *buff)
    sdl_send(sd, sendlen);
 }
 
-void es_videoModeOK(sdl_data *sd, int len, char *buff)
+void es_videoModeOK(sdl_data *sd, int len, char *bp)
+{   
+   if(!sd->use_smp) {
+       es_videoModeOK2(sd->driver_data, driver_caller(sd->driver_data), bp);
+   } else { /* opengl initialization must be called from thread */
+       gl_dispatch(sd, SDL_VideoModeOKFunc, len, bp);
+   }
+}
+
+void es_videoModeOK2(ErlDrvPort port, ErlDrvTermData caller, char *buff)
 {   
    char *bp, *start;
    int w, h, bpp, type;
    int sendlen;
    int res;
-  
+   ErlDrvTermData rt[8];
+
    bp = buff;
   
    w    = get16be(bp);
@@ -121,13 +127,12 @@ void es_videoModeOK(sdl_data *sd, int len, char *buff)
    type = get32be(bp);
   
    res = SDL_VideoModeOK(w,h,bpp,type);
-    
-   bp = start = sdl_get_temp_buff(sd, 1);
-   put8(bp, res);
-    
-   sendlen = bp - start;
-   sdl_send(sd, sendlen);
+   rt[0] = ERL_DRV_ATOM; rt[1]=driver_mk_atom((char *) "_esdl_result_");  
+   rt[2] = ERL_DRV_INT; rt[3] = res;
+   rt[4] = ERL_DRV_TUPLE; rt[5] = 2;
+   driver_send_term(port,caller,rt,6);
 }
+
 
 void es_listModes(sdl_data *sd, int len, char *buff)
 {
