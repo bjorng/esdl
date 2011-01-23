@@ -118,7 +118,7 @@ else
 fi
 
 echo -n "Checking make... "
-CYGMAKE=`which make 2>/dev/null`
+CYGMAKE=`which make 2>/dev/null | sed 's,.exe$,,g'`
 
 if [ -z "$CYGMAKE" ]; then
     echo "no."
@@ -141,8 +141,8 @@ echo "ok."
 
 echo -n "Looking for working erlang... "
 
-ERLC=`which erlc 2>/dev/null`
-ERL=`which erl 2>/dev/null`
+ERLC=`which erlc 2>/dev/null | sed 's,.exe$,,g'`
+ERL=`which erl 2>/dev/null | sed 's,.exe$,,g'`
 
 require_major=5
 require_minor=3
