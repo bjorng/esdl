@@ -95,8 +95,10 @@ void es_wm_getInfo(sdl_data *, int len, char *buff);
 
 #define SDL_GL_SetAttributeFunc   (SDL_WM_GetInfoFunc + 1)
 void es_gl_setAttribute(sdl_data *, int, char *);
+void es_gl_setAttribute2(ErlDrvPort, ErlDrvTermData, char *);
 #define SDL_GL_GetAttributeFunc   (SDL_GL_SetAttributeFunc + 1)
 void es_gl_getAttribute(sdl_data *, int, char *);
+void es_gl_getAttribute2(ErlDrvPort, ErlDrvTermData, char *);
 #define SDL_GL_SwapBuffersFunc    (SDL_GL_GetAttributeFunc + 1)
 void es_gl_swapBuffers(sdl_data *, int, char *);
 

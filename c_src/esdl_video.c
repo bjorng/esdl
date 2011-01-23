@@ -113,9 +113,8 @@ void es_videoModeOK(sdl_data *sd, int len, char *bp)
 
 void es_videoModeOK2(ErlDrvPort port, ErlDrvTermData caller, char *buff)
 {   
-   char *bp, *start;
+   char *bp;
    int w, h, bpp, type;
-   int sendlen;
    int res;
    ErlDrvTermData rt[8];
 
@@ -841,7 +840,17 @@ void es_wm_isMaximized(sdl_data *sd, int len, char *buff)
      sdl_send(sd, sendlen);
 }
 
-void es_gl_setAttribute(sdl_data *sd, int len, char *buff)
+void es_gl_setAttribute(sdl_data *sd, int len, char *bp)
+{
+    if(!sd->use_smp) {
+	es_gl_setAttribute2(sd->driver_data, 
+			    driver_caller(sd->driver_data), bp);
+    } else { /* opengl initialization must be called from thread */
+	gl_dispatch(sd, SDL_GL_SetAttributeFunc, len, bp);
+    }
+}
+
+void es_gl_setAttribute2(ErlDrvPort port, ErlDrvTermData caller, char *buff)
 {
     char *bp;
     int attr, val;
@@ -851,18 +860,33 @@ void es_gl_setAttribute(sdl_data *sd, int len, char *buff)
     SDL_GL_SetAttribute(attr, val);
 }
 
-void es_gl_getAttribute(sdl_data *sd, int len, char *buff)
+
+void es_gl_getAttribute(sdl_data *sd, int len, char *bp)
 {
-    char *bp, *start;
-    int attr, val, sendlen;
+    if(!sd->use_smp) {
+	es_gl_getAttribute2(sd->driver_data, 
+			    driver_caller(sd->driver_data), bp);
+    } else { /* opengl initialization must be called from thread */
+	gl_dispatch(sd, SDL_GL_GetAttributeFunc, len, bp);
+    }
+}
+
+void es_gl_getAttribute2(ErlDrvPort port, ErlDrvTermData caller, char *buff)
+{
+    char *bp;
+    int attr, val;
+    ErlDrvTermData rt[8];
+
     bp = buff;
     attr = get16be(bp);
     SDL_GL_GetAttribute(attr, &val);
-    bp = start = sdl_get_temp_buff(sd, 4);
-    put32be(bp, val);
-    sendlen = bp - start;
-    sdl_send(sd, sendlen);
+
+    rt[0] = ERL_DRV_ATOM; rt[1]=driver_mk_atom((char *) "_esdl_result_");  
+    rt[2] = ERL_DRV_INT; rt[3] = val;
+    rt[4] = ERL_DRV_TUPLE; rt[5] = 2;
+    driver_send_term(port,caller,rt,6);
 }
+
 
 void es_gl_swapBuffers(sdl_data *sd, int len, char *buff)
 {  
@@ -875,11 +899,11 @@ void es_gl_swapBuffers(sdl_data *sd, int len, char *buff)
    else
       gl_dispatch(sd, SDL_GL_SwapBuffersFunc, len, buff);
    
-   /* Timer is off for smp system I don't really care it was 
-      a bad idea anyway (works if vsync is on only I believe) */
+   /* Timer is removed it a bad idea anyway 
+      (works if vsync is on only I believe) */
    
    bp = start = sdl_get_temp_buff(sd, 4);
-   ts = SDL_GetTicks();
+   ts = 0; 
    put32be(bp, ts);
    sendlen = bp - start;
    sdl_send(sd, sendlen);

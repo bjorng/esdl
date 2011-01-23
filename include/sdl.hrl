@@ -31,6 +31,8 @@
 			  [?MODULE, ?LINE]) 
 	end (sdl:getError())).
 
+-define(SDL_USES_WX_GL, 1).
+
 -define(GL_BYTE_SIZE, 8).
 -define(GL_UNSIGNED_BYTE_SIZE, 8).
 -define(GL_SHORT_SIZE, 16).

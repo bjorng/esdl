@@ -1,5 +1,5 @@
 #! /bin/sh
-# Note that this script expects the cygwin version of echo etc
+# Note that this script expects the mingw/msys version of echo etc
 if [ X$MSYSTEM != XMINGW32 ]; then
     echo OS is $MSYSTEM
     echo "This script is supposed to be run in the" \
@@ -19,12 +19,12 @@ fi
 echo "ok."
 
 echo -n "Trying to locate MinGW gcc... "
-MINGW32GCC=`which mingw32-gcc 2>/dev/null`
+MINGW32GCC=`which mingw32-gcc 2>/dev/null | sed 's,.exe$,,g'`
 
 if [ -z "$MINGW32GCC" ]; then
     echo "no."
     echo "You need MinGW in your path." >&2 
-    echo "Alter your PATH either globally or in cygwin to include MinGW" >&2
+    echo "Alter your PATH either globally or in msys to include MinGW" >&2
     exit 1
 fi
 echo $MINGW32GCC 
@@ -62,7 +62,7 @@ if [ -z "$SDLDLL" ]; then
     echo "The SDL.dll shared library is not in PATH" >&2
     echo "The development version of the SDL libraries is needed" >&2
     echo "and the DLL itself should be in the PATH, alter PATH" \
-	 "globally or in cygwin" >&2
+	 "globally or in msys" >&2
     exit 1
 fi
 
@@ -122,7 +122,7 @@ CYGMAKE=`which make 2>/dev/null`
 
 if [ -z "$CYGMAKE" ]; then
     echo "no."
-    echo "Unable to find make. It seems you need to install more cygwin" \
+    echo "Unable to find make. It seems you need to install more msys packages" \
 	"packages..." >&2
     exit 1
 fi
@@ -132,7 +132,7 @@ gnutest=`make --version | head -1 | awk '{print $1}'`
 if [ X$gnutest != XGNU ]; then
     echo "no."
     echo "The make you have in your path is not a GNU make." >&2
-    echo "Make sure Cygwin's GNU make is installed and prior to any other" \
+    echo "Make sure GNU make is installed and prior to any other" \
          "make in your path." >&2
     exit 1
 fi
@@ -169,7 +169,7 @@ echo "SDL in $SDLROOT"
 echo "SDL style is $SDL_LIBTYPE"
 echo "SDL linkflags $SDL_LIBFLAGS"
 echo "SDL Include dir $SDLINCLUDE"
-echo "Cygwin Make is in $CYGMAKE"
+echo "Make is in $CYGMAKE"
 echo "Erlang is in $ERLTOP"
 echo
 echo -n "Creating some directories if non-existing... "

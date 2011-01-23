@@ -687,8 +687,11 @@ gl_setAttribute(Attr, Val) ->
 %% Returns: Attribute Value
 %% C-API func: int SDL_GL_GetAttribute(SDL_GLattr attr, int* value);
 gl_getAttribute(Attr) ->
-    <<Res:32>> = call(?SDL_GL_GetAttribute, <<Attr:16>>),
-    Res.
+    call(?SDL_GL_GetAttribute, <<Attr:16>>),
+    receive 
+	{'_esdl_result_', Res} ->
+	    Res
+    end.
 
 %% Func:    gl_swapBuffers
 %% Args:    
