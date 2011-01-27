@@ -21,7 +21,7 @@ ErlDrvCond  * esdl_batch_locker_c;
 void * esdl_result;
 
 void * esdl_gl_main_loop(void * );
-int es_init_opengl2(char *bp);
+int es_init_opengl2(ErlDrvPort, ErlDrvTermData, char *bp);
 
 typedef struct {
    ErlDrvTermData caller;
@@ -66,23 +66,19 @@ typedef void * DL_LIB_P;
 
 /** Initialization code **/ 
 void es_init_opengl(sdl_data *sd, int len, char *bp) {
-    int result;
-    char *start;
-
-    start = sdl_get_temp_buff(sd, 2);
     if(!sd->use_smp) {
-	result = es_init_opengl2(bp);
+	es_init_opengl2(sd->driver_data, 
+			driver_caller(sd->driver_data), bp);
     } else {
 	gl_dispatch(sd, ESDL_OpenglInitFunc, len, bp);
-	result = (int) esdl_gl_sync();
     }
-    start[0] = (char) result;
-    sdl_send(sd, 1);
 }
 
-int es_init_opengl2(char *bp) {
+int es_init_opengl2(ErlDrvPort port, ErlDrvTermData caller, char *bp) {
     DL_LIB_P LIBhandle;
     ESDL_GL_INIT init_opengl;
+    int res = 0;
+    ErlDrvTermData rt[8];
 
 #ifdef _WIN32
   void * erlCallbacks = &WinDynDriverCallbacks;
@@ -97,7 +93,7 @@ int es_init_opengl2(char *bp) {
 	 if(init_opengl && esdl_gl_dispatch) {
 	    init_opengl(erlCallbacks);
 	    esdl_gl_initiated = 1;
-	    return 1;
+	    res = 1;
 	 } else {
 	    fprintf(stderr, "In lib %s:\r\n", bp);
 	    if(!init_opengl) 
@@ -105,16 +101,22 @@ int es_init_opengl2(char *bp) {
 	    if(!esdl_gl_dispatch) 
 	       fprintf(stderr, " function not found egl_dispatch\r\n");
 	    fflush(stderr);
-	    return 0;
+	    res = 0;
 	 }
       } else {
 	 fprintf(stderr, "Failed locating lib %s:\r\n", bp);
 	 fflush(stderr);
-	 return 0;
+	 res = 0;
       }
    } else {
-       return 2;
+       res = 2;
    }
+
+   rt[0] = ERL_DRV_ATOM; rt[1]=driver_mk_atom((char *) "_esdl_result_");  
+   rt[2] = ERL_DRV_INT; rt[3] = res;
+   rt[4] = ERL_DRV_TUPLE; rt[5] = 2;
+   driver_send_term(port,caller,rt,6);   
+   return res;
 }
 
 void gl_dispatch(sdl_data *sd, int op, int len, char *bp) 
@@ -134,12 +136,16 @@ void gl_dispatch(sdl_data *sd, int op, int len, char *bp)
       int pos;
       erl_drv_mutex_lock(esdl_batch_locker_m);
       
-      while(esdl_q_n == MAX_Q)  /* queue is full wait */
-	 erl_drv_cond_wait(esdl_batch_locker_c, esdl_batch_locker_m);
+      while(esdl_q_n == MAX_Q) { /* queue is full wait */
+	  //fprintf(stderr, "%d: Wait \r\n", __LINE__); fflush(stderr);
+	  erl_drv_cond_wait(esdl_batch_locker_c, esdl_batch_locker_m);
+	  //fprintf(stderr, "%d: Wait done\r\n", __LINE__); fflush(stderr);
+      }
       
       pos = (esdl_q_first + esdl_q_n) % MAX_Q;
       esdl_q[pos].op = op;
       esdl_q[pos].buff = driver_alloc(len);
+      //fprintf(stderr, "%d: Q %d %d %d\r\n", __LINE__, op, pos, esdl_q_n); fflush(stderr);
       memcpy(esdl_q[pos].buff, bp, len);
       esdl_q[pos].caller = driver_caller(sd->driver_data);
       for(i=0; i< sd->next_bin; i++) {
@@ -191,14 +197,17 @@ void * esdl_gl_main_loop(void *sd) {
    SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK );
    while(1) {
        if(esdl_q_n > 0) {
-	 for(i=0; i<3; i++) {
-	     bs[i] = esdl_q[esdl_q_first].base[i];
-	     bs_sz[i] = esdl_q[esdl_q_first].size[i];
-	 }
-	 if(esdl_q[esdl_q_first].op >= OPENGL_START) {
-	    esdl_gl_dispatch(esdl_q[esdl_q_first].op, esdl_q[esdl_q_first].buff,
+	   for(i=0; i<3; i++) {
+	       bs[i] = esdl_q[esdl_q_first].base[i];
+	       bs_sz[i] = esdl_q[esdl_q_first].size[i];
+	   }
+	   //fprintf(stderr, "%d: X %d %d %d\r\n", __LINE__, esdl_q[esdl_q_first].op,
+	   //esdl_q_first, esdl_q_n); fflush(stderr);
+
+	   if(esdl_q[esdl_q_first].op >= OPENGL_START) {
+	       esdl_gl_dispatch(esdl_q[esdl_q_first].op, esdl_q[esdl_q_first].buff,
 			     port, esdl_q[esdl_q_first].caller, bs, bs_sz);
-	 } else {
+	   } else {
 	     /* OpenGL must be initilized in the thread */
 	     switch(esdl_q[esdl_q_first].op) {
 	     case SDL_GL_SwapBuffersFunc:
@@ -221,14 +230,16 @@ void * esdl_gl_main_loop(void *sd) {
 		 /* Other gl related functions */
 
 	     case SDL_SetVideoModeFunc:
-		 esdl_result = es_setVideoMode2(esdl_q[esdl_q_first].buff);
+		 es_setVideoMode2(port, esdl_q[esdl_q_first].caller, 
+				  esdl_q[esdl_q_first].buff);
 		 break;
 	     case SDL_VideoModeOKFunc:
 		 es_videoModeOK2(port, esdl_q[esdl_q_first].caller, 
 				 esdl_q[esdl_q_first].buff);
 		 break;
 	     case ESDL_OpenglInitFunc:
-		 esdl_result = (void*) es_init_opengl2(esdl_q[esdl_q_first].buff);
+		 es_init_opengl2(port, esdl_q[esdl_q_first].caller, 
+				 esdl_q[esdl_q_first].buff);
 		 break;
 	     case SDL_GL_GetAttributeFunc:
 		 es_gl_getAttribute2(port, esdl_q[esdl_q_first].caller, 
@@ -238,32 +249,43 @@ void * esdl_gl_main_loop(void *sd) {
 		 es_gl_setAttribute2(port, esdl_q[esdl_q_first].caller, 
 				     esdl_q[esdl_q_first].buff);
 		 break;
+	     case SDL_ShowCursorFunc:
+		 es_showCursor2(port, esdl_q[esdl_q_first].caller, 
+				esdl_q[esdl_q_first].buff);
+		 break;
+	     case SDL_WM_SetCaptionFunc:
+		 es_wm_setCaption2(esdl_q[esdl_q_first].buff);
+		 break;
 	     }
 	 }
 	 for(i=0; i < esdl_q[esdl_q_first].no_bins; i++)
-	    driver_binary_dec_refc(esdl_q[esdl_q_first].bin[i]);
+	     driver_free_binary(esdl_q[esdl_q_first].bin[i]);
 	 driver_free(esdl_q[esdl_q_first].buff);
+	 // fprintf(stderr, "%d: Xed %d \r\n", __LINE__, esdl_q[esdl_q_first].op); fflush(stderr);
+
 	 esdl_q_first++;
 	 esdl_q_first %= MAX_Q;
 	 esdl_q_n--;
-      } else {
-	  erl_drv_cond_signal(esdl_batch_locker_c);
-
-	 while(esdl_q_n == 0) {
-	    erl_drv_cond_wait(esdl_batch_locker_c, esdl_batch_locker_m);
-	 }
-	 if(esdl_q_n < 0) { /* Time to quit */
-	    esdl_q_n = -esdl_q_n-1;
-	    break;
-	 }
-      }
+       } else {
+	   erl_drv_cond_signal(esdl_batch_locker_c);
+	   // fprintf(stderr, "%d: TW\r\n", __LINE__); fflush(stderr);
+	   while(esdl_q_n == 0) {
+	       erl_drv_cond_wait(esdl_batch_locker_c, esdl_batch_locker_m);
+	   }
+	   // fprintf(stderr, "%d: TWed\r\n", __LINE__); fflush(stderr);
+	   if(esdl_q_n < 0) { /* Time to quit */
+	       // fprintf(stderr, "%d: T Quit\r\n", __LINE__); fflush(stderr);
+	       esdl_q_n = -esdl_q_n-1;
+	       break;
+	   }
+       }
    }
    /* Free all unused memory */
    for(i=0; i<esdl_q_n; i++) {
-      pos = (esdl_q_first + i) % MAX_Q;
-      driver_free(esdl_q[pos].buff);
-      for(j=0; j < esdl_q[pos].no_bins; j++)
-	 driver_binary_dec_refc(esdl_q[pos].bin[j]);      
+       pos = (esdl_q_first + i) % MAX_Q;
+       driver_free(esdl_q[pos].buff);
+       for(j=0; j < esdl_q[pos].no_bins; j++)
+	   driver_free_binary(esdl_q[pos].bin[j]);
    }
    erl_drv_mutex_unlock(esdl_batch_locker_m);
    erl_drv_thread_exit(NULL);
@@ -272,11 +294,13 @@ void * esdl_gl_main_loop(void *sd) {
 
 void * esdl_gl_sync() {
    void * result;
+   fprintf(stderr, "%d: GL sync start \r\n", __LINE__); fflush(stderr);
    erl_drv_mutex_lock(esdl_batch_locker_m);
    while(esdl_result == (void *) -1)
        erl_drv_cond_wait(esdl_batch_locker_c, esdl_batch_locker_m);
    result = esdl_result;
    erl_drv_mutex_unlock(esdl_batch_locker_m);
+   fprintf(stderr, "%d: GL sync done \r\n", __LINE__); fflush(stderr);
    esdl_result = (void *) -1;
    return result;
 }

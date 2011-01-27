@@ -40,6 +40,7 @@ void es_getCursor(sdl_data *, int len, char *buff);
 void es_freeCursor(sdl_data *, int len, char *buff);
 #define SDL_ShowCursorFunc SDL_FreeCursorFunc+1
 void es_showCursor(sdl_data *, int len, char *buff);
+void es_showCursor2(ErlDrvPort port, ErlDrvTermData caller, char *buff);
 
 #define SDL_GetWMInfoFunc SDL_ShowCursorFunc+1
 void es_getWMInfo(sdl_data *, int , char *);

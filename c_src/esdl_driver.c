@@ -168,13 +168,17 @@ sdl_driver_control(ErlDrvData handle, unsigned op,
   sd->buff = NULL;
   sd->len = 0;
   sd->op = op;
+
   if(op < OPENGL_START) {
+      // fprintf(stderr, "Command:%d:%s: ", op, sd->str_tab[op]);fflush(stderr);
      func = sd->fun_tab[op];
      func(sd, count, buf);
   } else {
+      // fprintf(stderr, "Command:%d:gl_??\r\n", op); fflush(stderr);
      gl_dispatch(sd, op, count, buf);
      sdl_free_binaries(sd);
   }
+  // fprintf(stderr, "%s:%d: Eed %d\r\n", __FILE__,__LINE__,op); fflush(stderr);
   (*res) = sd->buff;
   return sd->len;
 }

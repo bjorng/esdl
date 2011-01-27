@@ -117,5 +117,8 @@ showCursor(Bool) ->
 	    false -> 0;
 	    true -> 1
 	end,
-    <<Res:8>> = call(?SDL_ShowCursor, [B]),
-    Res =:= 1.
+    call(?SDL_ShowCursor, [B]),
+    receive 
+	{'_esdl_result_', Res} ->
+	    Res =:= 1
+    end.

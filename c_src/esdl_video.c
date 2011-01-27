@@ -17,32 +17,29 @@
 
 void es_setVideoMode(sdl_data *sd, int len, char* bp) 
 {
-   char* start;
-   int sendlen;
-   SDL_Surface *screen;
-
    if(!sd->use_smp) {
-      screen = es_setVideoMode2(bp);
+       es_setVideoMode2(sd->driver_data, 
+			driver_caller(sd->driver_data), bp);
    } else { /* opengl initialization must be called from thread */
-      gl_dispatch(sd, SDL_SetVideoModeFunc, len, bp);
-      screen = esdl_gl_sync();
+       gl_dispatch(sd, SDL_SetVideoModeFunc, len, bp);
    }
-   bp = start = sdl_get_temp_buff(sd, 8);
-   PUSHGLPTR(screen, bp);
-   
-   sendlen = bp - start;
-   sdl_send(sd, sendlen);
 }
 
-SDL_Surface * es_setVideoMode2(char* bp) 
+void es_setVideoMode2(ErlDrvPort port, ErlDrvTermData caller, char* bp) 
 {
    int w, h, bpp, type;
-   
+   SDL_Surface *screen;
+   ErlDrvTermData rt[8];
+
    w    = get16be(bp);
    h    = get16be(bp);
    bpp  = get16be(bp);
    type = get32be(bp);
-   return SDL_SetVideoMode(w, h, bpp, type);
+   screen = SDL_SetVideoMode(w, h, bpp, type),
+   rt[0] = ERL_DRV_ATOM; rt[1]=driver_mk_atom((char *) "_esdl_result_");  
+   rt[2] = ERL_DRV_UINT;  rt[3] = (ErlDrvUInt) screen;
+   rt[4] = ERL_DRV_TUPLE; rt[5] = 2;
+   driver_send_term(port,caller,rt,6);
 }
 
 void es_videoDriverName(sdl_data *sd, int len, char *buff)
@@ -106,7 +103,7 @@ void es_videoModeOK(sdl_data *sd, int len, char *bp)
 {   
    if(!sd->use_smp) {
        es_videoModeOK2(sd->driver_data, driver_caller(sd->driver_data), bp);
-   } else { /* opengl initialization must be called from thread */
+   } else { 
        gl_dispatch(sd, SDL_VideoModeOKFunc, len, bp);
    }
 }
@@ -690,13 +687,22 @@ void es_getGammaRamp(sdl_data *sd, int len, char * buff)
 
 void es_wm_setCaption(sdl_data *sd, int len, char *bp) 
 { 
-  char* title;
-  char* icon;
+    if(!sd->use_smp) {
+	es_wm_setCaption2(bp);
+    } else { 
+	gl_dispatch(sd, SDL_WM_SetCaptionFunc, len, bp);
+    }
+}
 
-  title = bp;
-  icon = title + strlen(title) + 1;
-   
-  SDL_WM_SetCaption(title, icon);      
+void es_wm_setCaption2(char *bp) 
+{
+    char* title;
+    char* icon;
+
+    title = bp;
+    icon = title + strlen(title) + 1;
+    
+    SDL_WM_SetCaption(title, icon);
 }
 
 void es_wm_getCaption(sdl_data *sd, int len, char *buff) 
@@ -809,7 +815,7 @@ void es_wm_isMaximized(sdl_data *sd, int len, char *buff)
 	SDL_SysWMinfo info;
 	
 	SDL_VERSION(&info.version);
-	SDL_GetWMInfo(&info);     
+	SDL_GetWMInfo(&info);
 	s = IsZoomed(info.window);
      }
 #else
@@ -845,7 +851,7 @@ void es_gl_setAttribute(sdl_data *sd, int len, char *bp)
     if(!sd->use_smp) {
 	es_gl_setAttribute2(sd->driver_data, 
 			    driver_caller(sd->driver_data), bp);
-    } else { /* opengl initialization must be called from thread */
+    } else { 
 	gl_dispatch(sd, SDL_GL_SetAttributeFunc, len, bp);
     }
 }
@@ -866,7 +872,7 @@ void es_gl_getAttribute(sdl_data *sd, int len, char *bp)
     if(!sd->use_smp) {
 	es_gl_getAttribute2(sd->driver_data, 
 			    driver_caller(sd->driver_data), bp);
-    } else { /* opengl initialization must be called from thread */
+    } else { 
 	gl_dispatch(sd, SDL_GL_GetAttributeFunc, len, bp);
     }
 }

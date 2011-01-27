@@ -24,7 +24,7 @@ void es_videoModeOK2(ErlDrvPort, ErlDrvTermData, char *);
 void es_listModes(sdl_data *, int len, char *buff);
 #define SDL_SetVideoModeFunc    (SDL_ListModesFunc + 1)
 void es_setVideoMode(sdl_data *, int len, char * buff);
-SDL_Surface * es_setVideoMode2(char * buff);
+void es_setVideoMode2(ErlDrvPort, ErlDrvTermData, char * buff);
 #define SDL_UpdateRectFunc      (SDL_SetVideoModeFunc + 1)
 /* Done from erlang using UpdateRectsFunc */
 #define SDL_UpdateRectsFunc     (SDL_UpdateRectFunc + 1)
@@ -80,6 +80,7 @@ void es_displayFormat(sdl_data *, int len, char * buff);
 
 #define SDL_WM_SetCaptionFunc   (SDL_DisplayFormatFunc +1)
 void es_wm_setCaption(sdl_data *, int len, char *buff);
+void es_wm_setCaption2(char *buff);
 #define SDL_WM_GetCaptionFunc   (SDL_WM_SetCaptionFunc +1)
 void es_wm_getCaption(sdl_data *, int len, char *buff);
 #define SDL_WM_SetIconFunc      (SDL_WM_GetCaptionFunc +1)

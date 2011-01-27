@@ -338,16 +338,24 @@ void es_freeCursor(sdl_data *sd, int len, char *bp)
 
 void es_showCursor(sdl_data *sd, int len, char *bp)
 {
-   int sendlen;
-   char *start;
+    if(!sd->use_smp) {
+	es_showCursor2(sd->driver_data, driver_caller(sd->driver_data), bp);
+    } else { 
+	gl_dispatch(sd, SDL_ShowCursorFunc, len, bp);
+    }
+}
+
+void es_showCursor2(ErlDrvPort port, ErlDrvTermData caller, char *bp)
+{
    Uint8 bool;
+   ErlDrvTermData rt[8];
 
    bool = (Uint8) *bp;
    bool = SDL_ShowCursor(bool);
-   bp = start = sdl_get_temp_buff(sd, 1);
-   put8(bp, bool);
-   sendlen = bp - start;
-   sdl_send(sd, sendlen);
+   rt[0] = ERL_DRV_ATOM; rt[1]=driver_mk_atom((char *) "_esdl_result_");
+   rt[2] = ERL_DRV_INT; rt[3] = bool;
+   rt[4] = ERL_DRV_TUPLE; rt[5] = 2;
+   driver_send_term(port,caller,rt,6);
 }
 
 void es_numJoysticks(sdl_data *sd, int len,char *buff)

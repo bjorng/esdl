@@ -189,22 +189,24 @@ getPixels({surfacep, Ref}, Size) ->
 %% C-API func:  SDL_Surface *SDL_SetVideoMode(int width, int height, 
 %%                                            int bpp, Uint32 flags);
 setVideoMode(W, H, Bpp, Type) ->
-    case call(?SDL_SetVideoMode, <<W:16,H:16,Bpp:16,Type:32>>) of
-	<<0:?_PTR>> -> error;
-	<<Res:?_PTR>> -> 
+    call(?SDL_SetVideoMode, <<W:16,H:16,Bpp:16,Type:32>>),
+    receive 
+	{'_esdl_result_', 0} -> error;
+	{'_esdl_result_', Pointer} -> 
 	    case (Type band ?SDL_OPENGL) > 1 of
 		true ->
-		    WXDL = wxe_util:wxgl_dl(),
-		    case call(?ESDL_Init_Opengl,  <<(list_to_binary(WXDL))/binary, 0:8>>) of
-			<<0>> ->
+		    WXDL = list_to_binary(wxe_util:wxgl_dl()),		    
+		    call(?ESDL_Init_Opengl,  <<(WXDL)/binary, 0:8>>),
+		    receive 
+			{'_esdl_result_', 0} ->
 			    error(opengl_init_failed);
-			<<GL:8>> when GL > 0 ->
+			{'_esdl_result_', GL} when GL > 0 ->
 			    put(opengl_port, esdl_port),
 			    ok
 		    end;
 		false -> ok
 	    end,
-	    {surfacep, Res}
+	    {surfacep, Pointer}
     end.
 
 %% Func: videoDriverName
