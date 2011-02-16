@@ -20,8 +20,8 @@
 #endif
 
 #ifdef _OSX_COCOA
-#include "CPS.h"
-#include "SDLMain.h"
+//#include "CPS.h"
+//#include "SDLMain.h"
 #include <Cocoa/Cocoa.h>
 #include <objc/objc-runtime.h>
 #endif
@@ -75,8 +75,8 @@ static ErlDrvData sdl_driver_start(ErlDrvPort port, char *buff)
    ErlDrvSysInfo info;
 
 #ifdef _OSX_COCOA
-   CPSProcessSerNum PSN;
-   OSErr err;
+   ProcessSerialNumber psn;
+   NSAutoreleasePool *pool;
 #endif /* _OSX_COCOA */
 
 #ifdef _WIN32
@@ -106,33 +106,38 @@ static ErlDrvData sdl_driver_start(ErlDrvPort port, char *buff)
    
    driver_system_info(&info, sizeof(ErlDrvSysInfo));
    data->use_smp = info.smp_support && info.scheduler_threads > 1;
+   fprintf(stderr, "Use smp %d\r\n", data->use_smp);
    if(data->use_smp)
       start_opengl_thread(data);
+   
    init_fps(data);
    
 #ifdef _OSX_COCOA
-   // Removes the warnings about memory leakage
-   // (not sure it actually works, though)
-   data->release_pool = 
-      objc_msgSend(objc_msgSend(objc_getClass("NSAutoreleasePool"), 
-				@selector(alloc)), @selector(init));
-   
-   data->app = objc_msgSend(objc_getClass("NSApplication"), 
-			    @selector(sharedApplication));
+   // Enable GUI 
+   GetCurrentProcess(&psn);
+   TransformProcessType(&psn, kProcessTransformToForegroundApplication);
+   SetFrontProcess(&psn);
+   // Enable Cocoa calls from Carbon app
+   NSApplicationLoad();
 
-   // To get a Menu & a dock icon : 
-   err = CPSGetCurrentProcess(&PSN);
-   assert(!(err = CPSSetProcessName(&PSN,"ESDL")));
-   assert(!(err = CPSEnableForegroundOperation(&PSN,0x03,0x3C,0x2C,0x1103)));
-   assert(!(err = CPSSetFrontProcess(&PSN)));
+   // Setup and enable gui
+   pool = [[NSAutoreleasePool alloc] init];
+
+   NSApplication *app = [NSApplication sharedApplication];
+   // Load and set icon
    
-   // Makes the SDL window respond to keyboard events (???)
-   //[NSAppleEventManager sharedAppleEventManager];
+   NSMutableString *file = [[NSMutableString alloc] init];
+   //[file appendFormat:@"%s/%s", erl_wx_privdir, "erlang-logo64.png"];
+   //[file appendFormat:@"%s/%s", "/usr/local/lib/erlang/lib/wx-0.98.8/priv", "erlang-logo64.png"];
+   //NSImage *icon = [[NSImage alloc] initWithContentsOfFile: file];
+   //[app setApplicationIconImage: icon];
+   [app activateIgnoringOtherApps: YES];
 
 #endif /* _OSX_COCOA */
 
    return (ErlDrvData) data;
 }
+
 
 static void
 sdl_driver_stop(ErlDrvData handle) 
@@ -170,7 +175,7 @@ sdl_driver_control(ErlDrvData handle, unsigned op,
   sd->op = op;
 
   if(op < OPENGL_START) {
-      // fprintf(stderr, "Command:%d:%s: ", op, sd->str_tab[op]);fflush(stderr);
+     // fprintf(stderr, "Command:%d:%s: ", op, sd->str_tab[op]);fflush(stderr);
      func = sd->fun_tab[op];
      func(sd, count, buf);
   } else {

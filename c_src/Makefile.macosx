@@ -19,6 +19,8 @@
 #UNIVERSAL_SDK = -isysroot /Developer/SDKs/MacOSX10.4u.sdk
 #UNIVERSAL_FLAGS = $(UNIVERSAL_SDK) -arch i386 -arch ppc
 
+# or 
+UNIVERSAL_FLAGS = -arch i386
 CC = cc
 
 #
@@ -26,9 +28,9 @@ CC = cc
 # the SDL framework has been installed in /Library/Frameworks.
 #
 
-CFLAGS	= -g -O2 -Wall -D_THREAD_SAFE -D_OSX_COCOA -I/Library/Frameworks/SDL.framework/Headers -F/Library/Frameworks $(ERLINC) $(UNIVERSAL_FLAGS)
+CFLAGS	= -g -O2 -Wall -ObjC -D_THREAD_SAFE -D_REENTRANT -D_OSX_COCOA -I/Library/Frameworks/SDL.framework/Headers -F/Library/Frameworks $(ERLINC) $(UNIVERSAL_FLAGS)
 
-LDFLAGS = -F/Library/Frameworks -framework OpenGL -framework SDL -framework OpenGL -framework AGL -framework IOKit -framework Cocoa -L. $(UNIVERSAL_FLAGS)
+LDFLAGS = -F/Library/Frameworks -framework SDL -framework IOKit -framework Carbon -framework Cocoa -L. $(UNIVERSAL_FLAGS)
 
 TARGETDIR = ../priv
 
@@ -36,20 +38,17 @@ TARGETDIR = ../priv
 ERL_DIR := $(shell echo 'io:format("~s~n",[code:root_dir()]),halt().' | erl | sed 's,^[0-9]*> *,,g' | tail +2)
 ERLINC = -I$(ERL_DIR)/usr/include
 
-
 # Files
 
 COMMON	=	esdl_wrapper esdl_gen esdl_spec esdl_util \
 		esdl_video esdl_events esdl_audio \
-		esdl_gl esdl_glu esdl_glext
+		esdl_gl
 
 COMMON_OBJ	= $(COMMON:%=%.o)
 
 # Targets
 
-#target: libsdlmain.a $(TARGETDIR)/sdlwrapper $(TARGETDIR)/sdl_driver.so
 target:  $(TARGETDIR)/sdl_driver.so
-
 
 clean:  
 	rm -f $(COMMON_OBJ) 
@@ -66,23 +65,8 @@ clean:
 	$(CC) -c -I/Library/Frameworks/SDL.framework/Headers $(CFLAGS) $<
 
 
-#esdl_main.o :	esdl_main.c
-#	$(CC) -c -ObjC $(CFLAGS) $(ERLINC) $<
-
-
 esdl_driver.o :	esdl_driver.c
 	$(CC) -c -ObjC $(CFLAGS) $(ERLINC) $<
-
-libsdlmain.a	: SDLMain.o
-	ar cru libsdlmain.a SDLMain.o
-	ranlib libsdlmain.a
-
-
-##
-## sdlwrapper
-
-#$(TARGETDIR)/sdlwrapper: esdl_main.o esdl_stream.o $(COMMON_OBJ) 
-#	$(CC) $< esdl_stream.o $(COMMON_OBJ) $(LDFLAGS) -o $@
 
 ##
 ## sdl_driver.so
