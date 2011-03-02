@@ -112,6 +112,9 @@ static ErlDrvData sdl_driver_start(ErlDrvPort port, char *buff)
    return (ErlDrvData) data;
 }
 
+#ifdef _OSX_COCOA
+extern OSErr  CPSSetProcessName (ProcessSerialNumber *psn, char *processname);
+#endif
 
 void esdl_init_native_gui() 
 {
@@ -119,12 +122,12 @@ void esdl_init_native_gui()
    ProcessSerialNumber psn;
    NSAutoreleasePool *pool;
 
-   [[NSProcessInfo processInfo] setProcessName:@"Erlang"]; 
+   // [[NSProcessInfo processInfo] setProcessName:@"Erlang"]; 
    // Enable GUI 
    GetCurrentProcess(&psn);
+   CPSSetProcessName(&psn, "Erlang");  // Undocumented function (but above doesn't work)
    TransformProcessType(&psn, kProcessTransformToForegroundApplication);
    SetFrontProcess(&psn);
-   
 
    // Enable Cocoa calls from Carbon app
    NSApplicationLoad();
@@ -135,7 +138,7 @@ void esdl_init_native_gui()
    NSApplication *app = [NSApplication sharedApplication];
    // Load and set icon
    
-   NSMutableString *file = [[NSMutableString alloc] init];
+   //NSMutableString *file = [[NSMutableString alloc] init];
    //[file appendFormat:@"%s/%s", erl_wx_privdir, "erlang-logo64.png"];
    //[file appendFormat:@"%s/%s", "/usr/local/lib/erlang/lib/wx-0.98.8/priv", "erlang-logo64.png"];
    //NSImage *icon = [[NSImage alloc] initWithContentsOfFile: file];
