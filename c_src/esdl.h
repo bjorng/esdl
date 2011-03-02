@@ -98,6 +98,8 @@ void es_init(sdl_data *sd, int len, char * buff);
 void es_quit(sdl_data *sd, int len, char * buff);
 void es_getError(sdl_data *sd, int len, char *buff);
 
+void esdl_init_native_gui();
+
 #endif
 
 #ifdef __cplusplus

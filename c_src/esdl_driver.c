@@ -74,11 +74,6 @@ static ErlDrvData sdl_driver_start(ErlDrvPort port, char *buff)
    sdl_data *data;   
    ErlDrvSysInfo info;
 
-#ifdef _OSX_COCOA
-   ProcessSerialNumber psn;
-   NSAutoreleasePool *pool;
-#endif /* _OSX_COCOA */
-
 #ifdef _WIN32
    if ( SDL_RegisterApp("Erlang SDL", CS_BYTEALIGNCLIENT, 
 			GetModuleHandle(NULL)) < 0 ) {
@@ -107,16 +102,30 @@ static ErlDrvData sdl_driver_start(ErlDrvPort port, char *buff)
    driver_system_info(&info, sizeof(ErlDrvSysInfo));
    data->use_smp = info.smp_support && info.scheduler_threads > 1;
    fprintf(stderr, "Use smp %d\r\n", data->use_smp);
-   if(data->use_smp)
+   if(data->use_smp) {
       start_opengl_thread(data);
-   
+   } else { // The following code needs to called from main thread
+      esdl_init_native_gui();
+   }
    init_fps(data);
    
+   return (ErlDrvData) data;
+}
+
+
+void esdl_init_native_gui() 
+{
 #ifdef _OSX_COCOA
+   ProcessSerialNumber psn;
+   NSAutoreleasePool *pool;
+
+   [[NSProcessInfo processInfo] setProcessName:@"Erlang"]; 
    // Enable GUI 
    GetCurrentProcess(&psn);
    TransformProcessType(&psn, kProcessTransformToForegroundApplication);
    SetFrontProcess(&psn);
+   
+
    // Enable Cocoa calls from Carbon app
    NSApplicationLoad();
 
@@ -134,10 +143,7 @@ static ErlDrvData sdl_driver_start(ErlDrvPort port, char *buff)
    [app activateIgnoringOtherApps: YES];
 
 #endif /* _OSX_COCOA */
-
-   return (ErlDrvData) data;
 }
-
 
 static void
 sdl_driver_stop(ErlDrvData handle) 
@@ -146,8 +152,8 @@ sdl_driver_stop(ErlDrvData handle)
 
   if(sd->use_smp)
      stop_opengl_thread();
-
-  SDL_Quit();
+  else 
+     SDL_Quit();
   free(sd->fun_tab);
   free(sd->str_tab);
 

@@ -14,6 +14,16 @@
 #include "esdl.h"
 #include "esdl_events.h"
 
+
+#ifdef  _OSX_COCOA
+int erl_drv_stolen_main_thread_join(ErlDrvTid tid, void **respp);
+int erl_drv_steal_main_thread(char *name,
+			      ErlDrvTid *dtid,
+			      void* (*func)(void*),
+			      void* arg,
+			      ErlDrvThreadOpts *opts);
+#endif
+
 int esdl_gl_initiated = 0;
 ErlDrvTid esdl_thread;
 ErlDrvMutex * esdl_batch_locker_m;
@@ -164,26 +174,37 @@ void gl_dispatch(sdl_data *sd, int op, int len, char *bp)
 
 void start_opengl_thread(sdl_data *sd) 
 {
+   int res;
    esdl_batch_locker_m = erl_drv_mutex_create((char *)"esdl_batch_locker_m");
    esdl_batch_locker_c = erl_drv_cond_create((char *)"esdl_batch_locker_c");
    esdl_q_first = 0;
    esdl_q_n = 0;
    esdl_result = (void *) -1;
    erl_drv_mutex_lock(esdl_batch_locker_m);
-   erl_drv_thread_create("ESDL OpenGL dispatcher", &esdl_thread,
-			 esdl_gl_main_loop, (void *) sd, NULL);
-   erl_drv_cond_wait(esdl_batch_locker_c, esdl_batch_locker_m);
-   erl_drv_mutex_unlock(esdl_batch_locker_m);
+#ifdef  _OSX_COCOA
+   res = erl_drv_steal_main_thread("ESDL OpenGL dispatcher", &esdl_thread,
+				   esdl_gl_main_loop, (void *) sd, NULL);
+#else
+   res = erl_drv_thread_create("ESDL OpenGL dispatcher", &esdl_thread,
+			       esdl_gl_main_loop, (void *) sd, NULL);
+#endif
+   if(res == 0) {
+      erl_drv_cond_wait(esdl_batch_locker_c, esdl_batch_locker_m);
+      erl_drv_mutex_unlock(esdl_batch_locker_m);
+   }
 }
 
-void stop_opengl_thread() 
-{   
+void stop_opengl_thread()
+{
    erl_drv_mutex_lock(esdl_batch_locker_m);
    esdl_q_n = -(esdl_q_n+1);
    erl_drv_cond_signal(esdl_batch_locker_c);
    erl_drv_mutex_unlock(esdl_batch_locker_m);   
-   
+#ifdef  _OSX_COCOA
+   erl_drv_stolen_main_thread_join(esdl_thread, NULL);
+#else
    erl_drv_thread_join(esdl_thread, NULL);
+#endif
    erl_drv_mutex_destroy(esdl_batch_locker_m);
    erl_drv_cond_destroy(esdl_batch_locker_c);
 }
@@ -193,6 +214,7 @@ void * esdl_gl_main_loop(void *sd) {
    int bs_sz[3];
    int i,j,pos;
    ErlDrvPort port = ((sdl_data *)sd)->driver_data;
+   esdl_init_native_gui();
    erl_drv_mutex_lock(esdl_batch_locker_m);
    SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK );
    while(1) {
@@ -288,7 +310,10 @@ void * esdl_gl_main_loop(void *sd) {
 	   driver_free_binary(esdl_q[pos].bin[j]);
    }
    erl_drv_mutex_unlock(esdl_batch_locker_m);
+   SDL_Quit();
+#ifndef _OSX_COCOA
    erl_drv_thread_exit(NULL);
+#endif
    return NULL;
 }
 
