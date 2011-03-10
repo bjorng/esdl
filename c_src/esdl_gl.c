@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include <string.h>
 #ifndef _WIN32
+#include <windows.h>
+#include <strsafe.h>
 #include <dlfcn.h>
 #endif
 #include "esdl.h"
@@ -70,8 +72,31 @@ HMODULE dlopen(const char *DLL, int unused)
     return LoadLibrary(DLL);
 }
 
+void DisplayErrorMsg() 
+{ 
+    // Retrieve the system error message for the last-error code
+
+    LPVOID lpMsgBuf;
+    DWORD dw = GetLastError(); 
+
+    FormatMessage(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+        FORMAT_MESSAGE_FROM_SYSTEM |
+        FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL,
+        dw,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPTSTR) &lpMsgBuf,
+        0, NULL );
+
+    MessageBox(NULL, (LPCTSTR)lpMsgBuf, TEXT("Error"), MB_OK);
+    LocalFree(lpMsgBuf);
+}
+
 #else 
 typedef void * DL_LIB_P;
+void DisplayErrorMsg() {
+}
 #endif 
 
 /** Initialization code **/ 
@@ -115,6 +140,7 @@ int es_init_opengl2(ErlDrvPort port, ErlDrvTermData caller, char *bp) {
 	 }
       } else {
 	 fprintf(stderr, "Failed locating lib %s:\r\n", bp);
+	 DisplayErrorMsg();
 	 fflush(stderr);
 	 res = 0;
       }

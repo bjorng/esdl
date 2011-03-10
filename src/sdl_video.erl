@@ -195,7 +195,11 @@ setVideoMode(W, H, Bpp, Type) ->
 	{'_esdl_result_', Pointer} -> 
 	    case (Type band ?SDL_OPENGL) > 1 of
 		true ->
-		    WXDL = list_to_binary(wxe_util:wxgl_dl()),		    
+		    DynLib = case os:type() of
+				 {win32,_} -> "erl_gl.dll";
+				 _ ->         "erl_gl.so"
+			     end,		    
+		    WXDL = list_to_binary(filename:join(code:priv_dir(wx),DynLib)),
 		    call(?ESDL_Init_Opengl,  <<(WXDL)/binary, 0:8>>),
 		    receive 
 			{'_esdl_result_', 0} ->

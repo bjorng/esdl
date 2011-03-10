@@ -100,8 +100,12 @@ static ErlDrvData sdl_driver_start(ErlDrvPort port, char *buff)
    data->next_bin = 0;
    
    driver_system_info(&info, sizeof(ErlDrvSysInfo));
+#ifdef _OSX_COCOA
+   data->use_smp = info.smp_support;
+#else
    data->use_smp = info.smp_support && info.scheduler_threads > 1;
-   fprintf(stderr, "Use smp %d\r\n", data->use_smp);
+#endif
+   // fprintf(stderr, "Use smp %d\r\n", data->use_smp);
    if(data->use_smp) {
       start_opengl_thread(data);
    } else { // The following code needs to called from main thread
