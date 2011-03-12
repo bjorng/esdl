@@ -649,8 +649,10 @@ wm_iconifyWindow() ->
 wm_toggleFullScreen(Surface) when is_record(Surface, sdl_surface) ->
     wm_toggleFullScreen(Surface#sdl_surface.self);
 wm_toggleFullScreen({surfacep, Ref}) ->
-    <<Res:8>> = call(?SDL_WM_ToggleFullScreen, <<Ref:?_PTR>>),
-    Res == 1.
+    cast(?SDL_WM_ToggleFullScreen, <<Ref:?_PTR>>),
+    receive
+	{'_esdl_result_', Res} ->  Res == 1
+    end.
 
 %% Func:   wm_grabInput
 %% Args:   GrabMode (?SDL_GRAB_QUERY | ?SDL_GRAB_OFF | ?SDL_GRAB_ON)
@@ -666,9 +668,11 @@ wm_grabInput(GrabMode) ->
 %% C-API func: 
 %% Desc:  Only windows returns anything useful (window handle)
 wm_getInfo() ->
-    <<Major:8, Minor:8, Patch:8, Rest/binary>> 
-	= call(?SDL_WM_GetInfo, []),
-    {{Major, Minor, Patch}, Rest}.
+    cast(?SDL_WM_GetInfo, []),
+    receive 
+	{'_esdl_result_', Major, Minor, Patch, Rest} ->
+	    {{Major, Minor, Patch}, <<Rest:32/unsigned-native>>}
+    end.
 
 %% Func:   wm_isMaximized
 %% Args:   

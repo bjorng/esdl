@@ -285,6 +285,10 @@ void * esdl_gl_main_loop(void *sd) {
 		 es_videoModeOK2(port, esdl_q[esdl_q_first].caller, 
 				 esdl_q[esdl_q_first].buff);
 		 break;
+	     case SDL_WM_ToggleFullScreenFunc:
+		 es_wm_toggleFullScreen2(port, esdl_q[esdl_q_first].caller, 
+					 esdl_q[esdl_q_first].buff);
+		 break;
 	     case ESDL_OpenglInitFunc:
 		 es_init_opengl2(port, esdl_q[esdl_q_first].caller, 
 				 esdl_q[esdl_q_first].buff);
@@ -304,6 +308,11 @@ void * esdl_gl_main_loop(void *sd) {
 	     case SDL_WM_SetCaptionFunc:
 		 es_wm_setCaption2(esdl_q[esdl_q_first].buff);
 		 break;
+	     case SDL_WM_GetInfoFunc:
+		 es_wm_getInfo2(port, esdl_q[esdl_q_first].caller, 
+				esdl_q[esdl_q_first].buff);
+		 break;
+
 	     }
 	 }
 	 for(i=0; i < esdl_q[esdl_q_first].no_bins; i++)

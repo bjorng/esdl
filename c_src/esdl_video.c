@@ -747,20 +747,29 @@ void es_wm_iconifyWindow(sdl_data *sd, int len, char *buff)
    SDL_WM_IconifyWindow();     
 }
 
-void es_wm_toggleFullScreen(sdl_data *sd, int len, char *buff) 
+void es_wm_toggleFullScreen(sdl_data *sd, int len, char *bp) 
 {
-   char *bp, *start;
-   SDL_Surface *sptr;
-   int res, sendlen;
-  
-   bp = buff;   
-   POPGLPTR(sptr, bp);
-   res = SDL_WM_ToggleFullScreen(sptr);
-   bp = start = sdl_get_temp_buff(sd, 1);
-   
-   put8(bp, res); 
-   sendlen = bp - start;
-   sdl_send(sd, sendlen);
+    if(!sd->use_smp) {
+	es_wm_toggleFullScreen2(sd->driver_data, driver_caller(sd->driver_data), bp);
+    } else {
+	gl_dispatch(sd, SDL_WM_ToggleFullScreenFunc, len, bp);
+    }
+}
+
+void es_wm_toggleFullScreen2(ErlDrvPort port, ErlDrvTermData caller, char *buff) 
+{
+    char *bp;
+    SDL_Surface *sptr;
+    int res;
+    ErlDrvTermData rt[8];
+
+    bp = buff;   
+    POPGLPTR(sptr, bp);
+    res = SDL_WM_ToggleFullScreen(sptr);
+    rt[0] = ERL_DRV_ATOM; rt[1]=driver_mk_atom((char *) "_esdl_result_");  
+    rt[2] = ERL_DRV_INT; rt[3] = res;
+    rt[4] = ERL_DRV_TUPLE; rt[5] = 2;
+    driver_send_term(port,caller,rt,6);
 }
 
 
@@ -778,30 +787,42 @@ void es_wm_grabInput(sdl_data *sd, int len, char *bp)
   sdl_send(sd, sendlen);
 }
 
-void es_wm_getInfo(sdl_data *sd, int len, char *buff) 
+void es_wm_getInfo(sdl_data *sd, int len, char *bp) 
 {
-   char *bp, *start;
-   SDL_SysWMinfo info;
-   int sendlen;
+    if(!sd->use_smp) {
+	es_wm_getInfo2(sd->driver_data, driver_caller(sd->driver_data), bp);
+    } else {
+	gl_dispatch(sd, SDL_WM_GetInfoFunc, len, bp);
+    }
+}
 
-   bp = buff;   
+void es_wm_getInfo2(ErlDrvPort port, ErlDrvTermData caller, char *buff) 
+{
+   int res;
+   SDL_SysWMinfo info;
+   ErlDrvTermData rt[12];
+
    SDL_VERSION(&info.version);
    SDL_GetWMInfo(&info);
-   bp = start = sdl_get_temp_buff(sd, 7);
 
-   put8(bp, info.version.major);
-   put8(bp, info.version.minor);
-   put8(bp, info.version.patch);
+   rt[0] = ERL_DRV_ATOM; rt[1]=driver_mk_atom((char *) "_esdl_result_");  
+   rt[2] = ERL_DRV_INT; rt[3] = info.version.major;
+   rt[4] = ERL_DRV_INT; rt[5] = info.version.minor;
+   rt[6] = ERL_DRV_INT; rt[7] = info.version.patch;
 #ifdef WIN32
-   if(sizeof(info.window) == 4)
-      put32be(bp, (unsigned int) info.window);
-   else
-      put32be(bp, 0);
+   if(sizeof(info.window) == 4) {
+       rt[8] = ERL_DRV_UINT; rt[9] = (unsigned int) info.window;
+       fprintf(stderr, "%s:%d\r\n", __FILE__,__LINE__); fflush(stderr);
+   } else {
+       rt[8] = ERL_DRV_UINT; rt[9] = 0;
+   }
 #else
-   put32be(bp, 0);
+   rt[8] = ERL_DRV_UINT; rt[9] = 0;
 #endif
-   sendlen = bp - start;
-   sdl_send(sd, sendlen);
+   rt[10] = ERL_DRV_TUPLE; rt[11] = 5;
+   fprintf(stderr, "%s:%d\r\n", __FILE__,__LINE__); fflush(stderr);
+   res = driver_send_term(port,caller,rt,12);
+   fprintf(stderr, "%s:%d %d\r\n", __FILE__,__LINE__, res); fflush(stderr);
 }
 
 void es_wm_isMaximized(sdl_data *sd, int len, char *buff)

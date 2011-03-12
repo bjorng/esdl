@@ -89,10 +89,12 @@ void es_wm_setIcon(sdl_data *, int len, char *buff);
 void es_wm_iconifyWindow(sdl_data *, int len, char *buff);
 #define SDL_WM_ToggleFullScreenFunc (SDL_WM_IconifyWindowFunc +1)
 void es_wm_toggleFullScreen(sdl_data *, int len, char *buff);
+void es_wm_toggleFullScreen2(ErlDrvPort, ErlDrvTermData, char *);
 #define SDL_WM_GrabInputFunc    (SDL_WM_ToggleFullScreenFunc +1)
 void es_wm_grabInput(sdl_data *, int len, char *buff);
 #define SDL_WM_GetInfoFunc    (SDL_WM_GrabInputFunc +1)
 void es_wm_getInfo(sdl_data *, int len, char *buff);
+void es_wm_getInfo2(ErlDrvPort, ErlDrvTermData, char *);
 
 #define SDL_GL_SetAttributeFunc   (SDL_WM_GetInfoFunc + 1)
 void es_gl_setAttribute(sdl_data *, int, char *);
