@@ -135,6 +135,10 @@ void es_setClipRect(sdl_data *, int len, char *buff);
 #define SDL_DisplayFormatAlphaFunc   (SDL_SetClipRectFunc + 1)
 void es_displayFormatAlpha(sdl_data *, int len, char * buff);
 
+#define SDL_WM_MaximizeFunc   (SDL_DisplayFormatAlphaFunc + 1)
+void es_wm_maximize(sdl_data *, int len, char * buff);
+void es_wm_maximize2(ErlDrvPort, ErlDrvTermData, char *);
+
 #ifdef __cplusplus
     }
 #endif 

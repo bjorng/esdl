@@ -68,6 +68,7 @@
 	 wm_grabInput/1,
 	 wm_getInfo/0,
 	 wm_isMaximized/0,
+	 wm_maximize/0,
 	 %% OpenGL Support funcs 
 	 gl_setAttribute/2,
 	 gl_getAttribute/1,
@@ -682,6 +683,14 @@ wm_getInfo() ->
 wm_isMaximized() ->
     <<Bool:8>> = call(?SDL_WM_IsMaximized, []),
     Bool /= 0.
+
+%% Func:   wm_maximize
+%% Args:   
+%% Returns: nothing
+%% C-API func: 
+%% Desc:  Only works on windows 
+wm_maximize() ->
+    cast(?SDL_WM_Maximize, []).
 
 %%%%%%%%%%%%%%%%%% GL support Funcs %%%%%%%%%%%%%%%%%%%%%
 

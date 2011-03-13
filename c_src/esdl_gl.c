@@ -9,9 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 #ifndef _WIN32
-#include <windows.h>
-#include <strsafe.h>
-#include <dlfcn.h>
+#include <dlfcn.h> 
 #endif
 #include "esdl.h"
 #include "esdl_events.h"
@@ -312,7 +310,10 @@ void * esdl_gl_main_loop(void *sd) {
 		 es_wm_getInfo2(port, esdl_q[esdl_q_first].caller, 
 				esdl_q[esdl_q_first].buff);
 		 break;
-
+	     case SDL_WM_MaximizeFunc:
+		 es_wm_maximize2(port, esdl_q[esdl_q_first].caller, 
+				 esdl_q[esdl_q_first].buff);
+		 break;
 	     }
 	 }
 	 for(i=0; i < esdl_q[esdl_q_first].no_bins; i++)

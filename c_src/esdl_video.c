@@ -812,7 +812,6 @@ void es_wm_getInfo2(ErlDrvPort port, ErlDrvTermData caller, char *buff)
 #ifdef WIN32
    if(sizeof(info.window) == 4) {
        rt[8] = ERL_DRV_UINT; rt[9] = (unsigned int) info.window;
-       fprintf(stderr, "%s:%d\r\n", __FILE__,__LINE__); fflush(stderr);
    } else {
        rt[8] = ERL_DRV_UINT; rt[9] = 0;
    }
@@ -820,9 +819,7 @@ void es_wm_getInfo2(ErlDrvPort port, ErlDrvTermData caller, char *buff)
    rt[8] = ERL_DRV_UINT; rt[9] = 0;
 #endif
    rt[10] = ERL_DRV_TUPLE; rt[11] = 5;
-   fprintf(stderr, "%s:%d\r\n", __FILE__,__LINE__); fflush(stderr);
    res = driver_send_term(port,caller,rt,12);
-   fprintf(stderr, "%s:%d %d\r\n", __FILE__,__LINE__, res); fflush(stderr);
 }
 
 void es_wm_isMaximized(sdl_data *sd, int len, char *buff)
@@ -866,6 +863,27 @@ void es_wm_isMaximized(sdl_data *sd, int len, char *buff)
      sendlen = bp - start;
      sdl_send(sd, sendlen);
 }
+
+void es_wm_maximize(sdl_data *sd, int len, char *bp)
+{
+    if(!sd->use_smp) {
+	es_wm_maximize2(sd->driver_data, 
+			driver_caller(sd->driver_data), bp);
+    } else { 
+	gl_dispatch(sd, SDL_WM_MaximizeFunc, len, bp);
+    }
+}
+
+void es_wm_maximize2(ErlDrvPort port, ErlDrvTermData caller, char *buff)
+{
+#ifdef _WIN32
+    SDL_SysWMinfo info;
+    SDL_GetWMInfo(&info);
+    ShowWindow(info.window, SW_SHOWMAXIMIZED);
+#endif
+}
+
+
 
 void es_gl_setAttribute(sdl_data *sd, int len, char *bp)
 {

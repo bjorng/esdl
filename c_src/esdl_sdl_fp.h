@@ -54,6 +54,7 @@
 { SDL_WM_GrabInputFunc, "SDL_WM_GrabInputFunc",    es_wm_grabInput },
 { SDL_WM_GetInfoFunc, "SDL_WM_GetInfoFunc",     es_wm_getInfo },
 { SDL_WM_IsMaximizedFunc, "SDL_WM_IsMaximizedFunc",     es_wm_isMaximized },
+{ SDL_WM_MaximizeFunc, "SDL_WM_MaximizeFunc",     es_wm_maximize },
 
    /** EVENT FUNCTIONS */
 { SDL_PumpEventsFunc, "SDL_PumpEventsFunc",  es_pumpEvents },

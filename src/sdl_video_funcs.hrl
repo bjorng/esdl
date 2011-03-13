@@ -86,3 +86,4 @@
 -define(SDL_GetClipRect,          ?SDL_GetRGBA + 1).
 -define(SDL_SetClipRect,          ?SDL_GetClipRect + 1).
 -define(SDL_DisplayFormatAlpha,   ?SDL_SetClipRect + 1).
+-define(SDL_WM_Maximize,          ?SDL_DisplayFormatAlpha +1).
