@@ -47,7 +47,7 @@ void copySdlImage2GLArray(sdl_data *sd, int len, char * buff)
   SDL_Surface *image;
   unsigned char * mem;
   char *bp, *start;
-  int i, j = 0, k, sendlen;
+  int i, j = 0, k;
   Uint8  rs,bs,gs,as;
 
   bp = buff;

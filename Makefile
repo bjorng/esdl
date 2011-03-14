@@ -96,13 +96,10 @@ relsrc: target
 		rm -rf $(RELDIR)/* ; \
 	fi ;
 	cp Makefile* license.terms README-SDL.txt Readme Readme.MacOSX-Cocoa Readme.win32 esdl.pub $(RELDIR)
-	cp Configure-cygwin-mingw.sh $(RELDIR)
+	cp Configure-cygwin-mingw.sh Configure-mingw.sh $(RELDIR)
 	echo ESDL_VSN=$(REL) > $(RELDIR)/vsn.mk
-	mkdir $(RELDIR)/api_gen
-	cp api_gen/conv.erl api_gen/gldefs api_gen/glfuncs \
-	   api_gen/gludefs api_gen/glufuncs $(RELDIR)/api_gen
 	mkdir $(RELDIR)/c_src
-	cp c_src/*.h c_src/*.c c_src/SDLMain.m c_src/Makefile* $(RELDIR)/c_src
+	cp c_src/*.h c_src/*.c c_src/Makefile* $(RELDIR)/c_src
 	mkdir $(RELDIR)/doc
 	cp doc/Makefile* doc/makedoc.erl doc/*.html $(RELDIR)/doc
 	mkdir $(RELDIR)/ebin

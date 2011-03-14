@@ -35,7 +35,7 @@ Needed tools
 ------------
 
 *) Cygwin, full installation with development tools etc.
-   http://www.cygwin.com
+   http://www.cygwin.com  (or Msys is enough nowadays)
 
 *) MinGW, you can use the self installing EXE package. 
    Add to your cygwin path properly.
@@ -47,7 +47,7 @@ Needed tools
    needed in runtime as well as compile time.
    http://www.libsdl.org
 
-*) Erlang, currently 5.3 (R9C-0) or later is required. Note the thing
+*) Erlang, currently (R14B02) or later is required. Note the thing
    about PATH's and spaces above. Erlang does not add itself to your
    path upon installation, add the appropriate path to your .bashrc.
    http://www.erlang.org
@@ -59,8 +59,9 @@ Configuring
 -----------
 
 In the same directory as this file resides, you should find a shell
-script named Configure-cygwin-mingw.sh. Run it from within the cygwin
-bash shell. cd to the directory where it resides before running.
+script named Configure-cygwin-mingw.sh or Configure-mingw in msys.
+Run it from within the cygwin bash shell. cd to the directory where it
+resides before running.
 
 If it fails, try to correct what seems to be wrong and run again. When
 successful, you should have everything you need to compile.
