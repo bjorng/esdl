@@ -37,10 +37,11 @@
 static ErlDrvData sdl_driver_start(ErlDrvPort port, char *buff);
 static void sdl_driver_stop(ErlDrvData handle);
 static void sdl_driver_finish(void);
-static int sdl_driver_control(ErlDrvData handle, unsigned int command, 
-			      char* buf, int count, char** res, int res_size);
-static int sdl_driver_debug_control(ErlDrvData handle, unsigned int command, 
-				    char* buf, int count, char** res, int res_size);
+static ErlDrvSSizeT sdl_driver_control(ErlDrvData handle, unsigned int command, 
+				       char* buf, ErlDrvSizeT, char** res, ErlDrvSizeT);
+static ErlDrvSizeT sdl_driver_debug_control(ErlDrvData handle, unsigned int command, 
+					    char* buf, ErlDrvSizeT count, char** res, 
+					    ErlDrvSizeT res_size);
 
 static void standard_outputv(ErlDrvData drv_data, ErlIOVec *ev);
 
@@ -62,6 +63,16 @@ static ErlDrvEntry sdl_driver_entry = {
     sdl_driver_control,    /* F_PTR control, port_control callback */
     NULL,                  /* F_PTR timeout, reserved */
     standard_outputv,	   /* F_PTR outputv, reserved */
+    NULL,                  /* async */ 
+    NULL,                  /* flush */
+    NULL,                  /* call */
+    NULL,                  /* Event */
+    ERL_DRV_EXTENDED_MARKER,
+    ERL_DRV_EXTENDED_MAJOR_VERSION,
+    ERL_DRV_EXTENDED_MINOR_VERSION,
+    ERL_DRV_FLAG_USE_PORT_LOCKING, /* Port lock */ 
+    NULL,                  /* Reserved Handle */
+    NULL,                  /* Process Exited */
 };
 
 DRIVER_INIT(sdl_driver)
@@ -176,9 +187,9 @@ sdl_driver_finish(void)
 {
 }
 
-static int
+static ErlDrvSSizeT
 sdl_driver_control(ErlDrvData handle, unsigned op,
-		   char* buf, int count, char** res, int res_size)
+		   char* buf, ErlDrvSizeT count, char** res, ErlDrvSizeT res_size)
 {
   sdl_data* sd = (sdl_data *) handle;
   sdl_fun func;
@@ -190,20 +201,20 @@ sdl_driver_control(ErlDrvData handle, unsigned op,
   if(op < OPENGL_START) {
      // fprintf(stderr, "Command:%d:%s: ", op, sd->str_tab[op]);fflush(stderr);
      func = sd->fun_tab[op];
-     func(sd, count, buf);
+     func(sd, (int) count, buf);
   } else {
       // fprintf(stderr, "Command:%d:gl_??\r\n", op); fflush(stderr);
-     gl_dispatch(sd, op, count, buf);
+      gl_dispatch(sd, op, (int) count, buf);
      sdl_free_binaries(sd);
   }
   // fprintf(stderr, "%s:%d: Eed %d\r\n", __FILE__,__LINE__,op); fflush(stderr);
   (*res) = sd->buff;
-  return sd->len;
+  return (ErlDrvSizeT) sd->len;
 }
 
-static int
+static ErlDrvSizeT
 sdl_driver_debug_control(ErlDrvData handle, unsigned op,
-			 char* buf, int count, char** res, int res_size)
+			 char* buf, ErlDrvSizeT count, char** res, ErlDrvSizeT res_size)
 {
   sdl_data* sd = (sdl_data *) handle;
   sdl_fun func;
@@ -215,11 +226,11 @@ sdl_driver_debug_control(ErlDrvData handle, unsigned op,
   if(op < OPENGL_START) {
      fprintf(stderr, "Command:%d:%s: ", op, sd->str_tab[op]);fflush(stderr);
      func = sd->fun_tab[op];
-     func(sd, count, buf);
+     func(sd, (int) count, buf);
      if ((len = sd->len) >= 0) {
 	fprintf(stderr, "ok %d %p\r\n", len, sd->buff);fflush(stderr);
 	(*res) = sd->buff;
-	return len;
+	return (ErlDrvSizeT) len;
      } else {
 	fprintf(stderr, "error\r\n");fflush(stderr);
 	*res = 0;
@@ -227,7 +238,7 @@ sdl_driver_debug_control(ErlDrvData handle, unsigned op,
      }     
   } else {
       fprintf(stderr, "Command:%d ", op);fflush(stderr);
-      gl_dispatch(sd, op, count, buf);
+      gl_dispatch(sd, op, (ErlDrvSizeT) count, buf);
       sdl_free_binaries(sd);
       fprintf(stderr, "\r\n");fflush(stderr);
       return 0;
