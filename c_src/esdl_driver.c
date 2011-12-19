@@ -34,14 +34,20 @@
 
 #define TEMP_BINARY_SIZE 512
 
+#if (ERL_DRV_EXTENDED_MAJOR_VERSION < 2)
+/* R14B or earlier types */
+#define ErlDrvSizeT  int
+#define ErlDrvSSizeT int
+#endif
+
 static ErlDrvData sdl_driver_start(ErlDrvPort port, char *buff);
 static void sdl_driver_stop(ErlDrvData handle);
 static void sdl_driver_finish(void);
-static ErlDrvSSizeT sdl_driver_control(ErlDrvData handle, unsigned int command, 
+static ErlDrvSSizeT sdl_driver_control(ErlDrvData handle, unsigned int command,
 				       char* buf, ErlDrvSizeT, char** res, ErlDrvSizeT);
-static ErlDrvSizeT sdl_driver_debug_control(ErlDrvData handle, unsigned int command, 
-					    char* buf, ErlDrvSizeT count, char** res, 
-					    ErlDrvSizeT res_size);
+static ErlDrvSSizeT sdl_driver_debug_control(ErlDrvData handle, unsigned int command,
+					     char* buf, ErlDrvSizeT count, char** res,
+					     ErlDrvSizeT res_size);
 
 static void standard_outputv(ErlDrvData drv_data, ErlIOVec *ev);
 
@@ -212,7 +218,7 @@ sdl_driver_control(ErlDrvData handle, unsigned op,
   return (ErlDrvSizeT) sd->len;
 }
 
-static ErlDrvSizeT
+static ErlDrvSSizeT
 sdl_driver_debug_control(ErlDrvData handle, unsigned op,
 			 char* buf, ErlDrvSizeT count, char** res, ErlDrvSizeT res_size)
 {
