@@ -55,6 +55,7 @@
 { SDL_WM_GetInfoFunc, "SDL_WM_GetInfoFunc",     es_wm_getInfo },
 { SDL_WM_IsMaximizedFunc, "SDL_WM_IsMaximizedFunc",     es_wm_isMaximized },
 { SDL_WM_MaximizeFunc, "SDL_WM_MaximizeFunc",     es_wm_maximize },
+{ SDL_WM_MacFileDialog, "SDL_WM_MacFileDialog",   es_wm_mac_file_dialog },
 
    /** EVENT FUNCTIONS */
 { SDL_PumpEventsFunc, "SDL_PumpEventsFunc",  es_pumpEvents },

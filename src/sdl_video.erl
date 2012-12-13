@@ -69,6 +69,7 @@
 	 wm_getInfo/0,
 	 wm_isMaximized/0,
 	 wm_maximize/0,
+	 wm_mac_file_dialog/1,
 	 %% OpenGL Support funcs 
 	 gl_setAttribute/2,
 	 gl_getAttribute/1,
@@ -691,6 +692,28 @@ wm_isMaximized() ->
 %% Desc:  Only works on windows 
 wm_maximize() ->
     cast(?SDL_WM_Maximize, []).
+
+%% Func:   wm_maximize
+%% Args:
+%% Returns: nothing
+%% C-API func:
+%% Desc:  Only works on Mac
+wm_mac_file_dialog(Props) ->
+    Operation = case proplists:get_value(operation, Props) of
+		    open -> 0;
+		    save -> 1
+		end,
+    Title = proplists:get_value(title, Props),
+    Dir = proplists:get_value(directory, Props),
+    DefName = proplists:get_value(default_filename, Props),
+    Filters0 = proplists:get_value(filters, Props),
+    Filters = [[F,0] || "."++F <- Filters0] ++ [0],
+    Data = [Operation,Dir,0,Title,0,DefName,0|Filters],
+    call(?SDL_WM_MacFileDialog, Data),
+    receive
+	{'_esdl_result_',String} ->
+	    String
+    end.
 
 %%%%%%%%%%%%%%%%%% GL support Funcs %%%%%%%%%%%%%%%%%%%%%
 

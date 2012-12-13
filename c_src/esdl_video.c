@@ -15,6 +15,12 @@
 
 #include <SDL_syswm.h>
 
+#ifdef  _OSX_COCOA
+#  import <Cocoa/Cocoa.h>
+#endif
+
+static size_t do_mac_file_dialog(char* buf, char* res, size_t res_size);
+
 void es_setVideoMode(sdl_data *sd, int len, char* bp) 
 {
    if(!sd->use_smp) {
@@ -883,6 +889,36 @@ void es_wm_maximize2(ErlDrvPort port, ErlDrvTermData caller, char *buff)
 #endif
 }
 
+void es_wm_mac_file_dialog(sdl_data *sd, int len, char *bp)
+{
+    if (!sd->use_smp) {
+	es_wm_mac_file_dialog2(sd->driver_data, 
+			       driver_caller(sd->driver_data), bp);
+    } else { 
+	gl_dispatch(sd, SDL_WM_MacFileDialog, len, bp);
+    }
+}
+
+void es_wm_mac_file_dialog2(ErlDrvPort port, ErlDrvTermData caller, char *buf)
+{
+    ErlDrvTermData rt[8];
+    char res[1024];
+    size_t res_size;
+
+    res_size = do_mac_file_dialog(buf, res, sizeof(res));
+    rt[0] = ERL_DRV_ATOM;
+    rt[1] = driver_mk_atom((char *) "_esdl_result_");
+
+    rt[2] = ERL_DRV_STRING;
+    rt[3] = (ErlDrvUInt) res;
+    rt[4] = (ErlDrvUInt) res_size;
+
+    rt[5] = ERL_DRV_TUPLE;
+    rt[6] = 2;
+
+    driver_send_term(port, caller, rt, 7);
+}
+
 
 
 void es_gl_setAttribute(sdl_data *sd, int len, char *bp)
@@ -1041,4 +1077,65 @@ void es_displayFormatAlpha(sdl_data *sd, int len, char * buff)
    sdl_send(sd, sendlen);
 }
 
+static size_t
+do_mac_file_dialog(char* buf, char* res, size_t res_size)
+{
+#ifndef  _OSX_COCOA
+    return 0;
+#else
+    int result;
+    char *defdir;
+    char *filter;
+    char *title;
+    char *defname;
+    NSString* defdir1;
+    NSURL* defdir_url;
+    NSString* title1;
+    NSString* defname1;
+    int command;
+    NSSavePanel* Panel;
 
+    @autoreleasepool {
+	command = *buf++;
+	defdir = buf; /* Default directory */
+	title = defdir + strlen(defdir) + 1;  /* Title of dialog */
+	defname = title + strlen(title) + 1; /* Default name for file */
+	filter = defname + strlen(defname) + 1; /* Filters */
+	defdir1 = [NSString stringWithUTF8String:defdir];
+	defdir_url = [NSURL fileURLWithPath:defdir1 isDirectory:true];
+	title1 = [NSString stringWithUTF8String:title];
+	defname1 = [NSString stringWithUTF8String:defname];
+
+	if (command == 0) {		/* Open/Import */
+	    NSOpenPanel* oPanel = [NSOpenPanel openPanel];
+	    [oPanel setAllowsMultipleSelection:NO];
+	    Panel = oPanel;
+	} else {			/* Save/Export*/
+	    Panel = [NSSavePanel savePanel];
+	    [Panel setNameFieldStringValue:defname1];
+	}
+
+	NSMutableArray* fileTypes = [NSMutableArray arrayWithCapacity:10];
+	while (filter[0] != 0) {
+	    NSString* AFilter = [NSString stringWithUTF8String:filter];
+
+	    [fileTypes addObject:AFilter];
+	    filter += strlen(filter) + 1;
+	}
+	[Panel setTitle:title1];
+	[Panel setDirectoryURL:defdir_url];
+	[Panel setAllowedFileTypes:fileTypes];
+
+	result = [Panel runModal];
+	if (result != NSOKButton) {
+	    res_size = 0;
+	} else {
+	    NSURL* chosenURL = [Panel URL];
+	    NSString *aFile = [chosenURL path];
+	    const char* utf8str = [aFile UTF8String];
+	    res_size = strlcpy(res, utf8str, res_size);
+	}
+	return res_size;
+    }
+#endif
+}

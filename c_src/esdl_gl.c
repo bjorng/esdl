@@ -314,6 +314,10 @@ void * esdl_gl_main_loop(void *sd) {
 		 es_wm_maximize2(port, esdl_q[esdl_q_first].caller, 
 				 esdl_q[esdl_q_first].buff);
 		 break;
+	     case SDL_WM_MacFileDialog:
+		 es_wm_mac_file_dialog2(port, esdl_q[esdl_q_first].caller,
+				       esdl_q[esdl_q_first].buff);
+		 break;
 	     }
 	 }
 	 for(i=0; i < esdl_q[esdl_q_first].no_bins; i++)
