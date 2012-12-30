@@ -40,6 +40,12 @@
 #define ErlDrvSSizeT int
 #endif
 
+#ifdef  _OSX_COCOA
+#  define AUTO_RELEASE_POOL @autoreleasepool
+#else
+#  define AUTO_RELEASE_POOL
+#endif
+
 static ErlDrvData sdl_driver_start(ErlDrvPort port, char *buff);
 static void sdl_driver_stop(ErlDrvData handle);
 static void sdl_driver_finish(void);
@@ -207,7 +213,9 @@ sdl_driver_control(ErlDrvData handle, unsigned op,
   if(op < OPENGL_START) {
      // fprintf(stderr, "Command:%d:%s: ", op, sd->str_tab[op]);fflush(stderr);
      func = sd->fun_tab[op];
-     func(sd, (int) count, buf);
+     AUTO_RELEASE_POOL {
+	 func(sd, (int) count, buf);
+     }
   } else {
       // fprintf(stderr, "Command:%d:gl_??\r\n", op); fflush(stderr);
       gl_dispatch(sd, op, (int) count, buf);
