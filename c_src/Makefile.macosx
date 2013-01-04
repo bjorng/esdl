@@ -68,6 +68,9 @@ clean:
 esdl_driver.o :	esdl_driver.c
 	$(CC) -c -ObjC $(CFLAGS) $(ERLINC) $<
 
+esdl_video.o :	esdl_video.c
+	$(CC) -c -ObjC $(CFLAGS) $(ERLINC) $<
+
 ##
 ## sdl_driver.so
 

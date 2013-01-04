@@ -138,6 +138,9 @@ void es_displayFormatAlpha(sdl_data *, int len, char * buff);
 #define SDL_WM_MaximizeFunc   (SDL_DisplayFormatAlphaFunc + 1)
 void es_wm_maximize(sdl_data *, int len, char * buff);
 void es_wm_maximize2(ErlDrvPort, ErlDrvTermData, char *);
+#define SDL_WM_MacFileDialog   (SDL_WM_MaximizeFunc + 1)
+void es_wm_mac_file_dialog(sdl_data *, int len, char * buff);
+void es_wm_mac_file_dialog2(ErlDrvPort, ErlDrvTermData, char *);
 
 #ifdef __cplusplus
     }
