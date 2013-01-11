@@ -8,7 +8,7 @@ ESRC = .
 EBIN = ../ebin
 ERLC = erlc
 ERLINC = ../include
-ERL_FLAGS = -I$(ERLINC) +inline +warn_unused_vars
+ERL_FLAGS = -I$(ERLINC) +inline +warn_unused_vars +debug_info
 
 ifeq ($(ENABLE_SDL_TTF), yes)
 		SDL_TTF_MOD=sdl_ttf
