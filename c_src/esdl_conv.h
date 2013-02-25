@@ -21,7 +21,7 @@
 #define BYTECONV_H
 
 #ifndef FLAVOUR_WOGGLE
-#include <SDL_byteorder.h>
+#include <SDL/SDL_byteorder.h>
 #endif
 
 #define put8(s,n) do { \

@@ -200,9 +200,13 @@ setVideoMode(W, H, Bpp, Type) ->
 		    DynLib = case os:type() of
 				 {win32,_} -> "erl_gl.dll";
 				 _ ->         "erl_gl.so"
-			     end,		    
-		    WXDL = list_to_binary(filename:join(code:priv_dir(wx),DynLib)),
-		    call(?ESDL_Init_Opengl,  <<(WXDL)/binary, 0:8>>),
+			     end,
+		    WXDL0 = filename:join(code:priv_dir(wx),DynLib),
+		    WXDL = filelib:is_file(WXDL0) orelse
+			filename:join([code:priv_dir(wx),
+				       erlang:system_info(system_architecture),
+				       DynLib]),
+		    call(?ESDL_Init_Opengl,  <<(list_to_binary(WXDL))/binary, 0:8>>),
 		    receive 
 			{'_esdl_result_', 0} ->
 			    error(opengl_init_failed);

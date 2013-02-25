@@ -16,7 +16,7 @@
 #ifdef WIN32
 #include <windows.h>  /* needed by Windows' gl.h etc */
 #endif
-#include <SDL.h>
+#include <SDL/SDL.h>
 
 #include "esdl_conv.h"
 

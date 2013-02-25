@@ -16,7 +16,6 @@
 -module(sdl_img).
 
 -include("sdl_img_funcs.hrl").
--include("gl.hrl").
 -include("sdl_util.hrl").
 -include("sdl_video.hrl").
 

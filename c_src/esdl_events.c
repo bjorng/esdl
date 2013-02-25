@@ -12,7 +12,7 @@
  */
 
 #include "esdl.h"
-#include <SDL_events.h>
+#include <SDL/SDL_events.h>
 
 #define MAX_EVENT_SIZE 13
 

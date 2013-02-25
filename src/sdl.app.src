@@ -1,0 +1,19 @@
+%%%-------------------------------------------------------------------
+%%% @author Dan Gudmundsson <dgud@erlang.org>
+%%% @copyright (C) 2013, Dan Gudmundsson
+%%% @doc
+%%%
+%%% @end
+%%% Created : 25 Feb 2013 by Dan Gudmundsson <dgud@erlang.org>
+%%%-------------------------------------------------------------------
+
+
+{application, sdl,
+ [{description, "SDL binding for Erlang"},
+  {vsn, git},
+  {modules,  {modules}},
+  {env, []},
+  {applications,[kernel,stdlib]}
+ ]
+}.
+

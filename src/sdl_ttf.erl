@@ -16,7 +16,6 @@
 
 -include("sdl_ttf.hrl").
 -include("sdl_ttf_funcs.hrl").
--include("gl.hrl").
 -include("sdl_util.hrl").
 -include("sdl_video.hrl").
 

@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include "esdl.h"
 
-#include <SDL_syswm.h>
+#include <SDL/SDL_syswm.h>
 
 #ifdef  _OSX_COCOA
 #  import <Cocoa/Cocoa.h>
@@ -804,7 +804,6 @@ void es_wm_getInfo(sdl_data *sd, int len, char *bp)
 
 void es_wm_getInfo2(ErlDrvPort port, ErlDrvTermData caller, char *buff) 
 {
-   int res;
    SDL_SysWMinfo info;
    ErlDrvTermData rt[12];
 
@@ -825,7 +824,7 @@ void es_wm_getInfo2(ErlDrvPort port, ErlDrvTermData caller, char *buff)
    rt[8] = ERL_DRV_UINT; rt[9] = 0;
 #endif
    rt[10] = ERL_DRV_TUPLE; rt[11] = 5;
-   res = driver_send_term(port,caller,rt,12);
+   driver_send_term(port,caller,rt,12);
 }
 
 void es_wm_isMaximized(sdl_data *sd, int len, char *buff)
