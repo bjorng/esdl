@@ -13,8 +13,6 @@
 #include <stdlib.h>
 #include "esdl.h"
 
-#include <SDL/SDL_syswm.h>
-
 #ifdef  _OSX_COCOA
 #  import <Cocoa/Cocoa.h>
 #endif
@@ -649,7 +647,7 @@ void es_setGamma(sdl_data *sd, int len, char *bp)
    blue  = * (float *) bp; bp += sizeof(float);
    res = SDL_SetGamma(red, green, blue);
    bp = start = sdl_get_temp_buff(sd, 4);
-   * (float *) bp = res;
+   * (float *) bp = (float) res;
    sendlen = bp - start;
    sdl_send(sd, sendlen);
 }

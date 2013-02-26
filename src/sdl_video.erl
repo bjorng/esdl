@@ -202,10 +202,12 @@ setVideoMode(W, H, Bpp, Type) ->
 				 _ ->         "erl_gl.so"
 			     end,
 		    WXDL0 = filename:join(code:priv_dir(wx),DynLib),
-		    WXDL = filelib:is_file(WXDL0) orelse
-			filename:join([code:priv_dir(wx),
-				       erlang:system_info(system_architecture),
-				       DynLib]),
+		    WXDL = case filelib:is_file(WXDL0) of
+			       true -> WXDL0;
+			       false -> filename:join([code:priv_dir(wx),
+						       erlang:system_info(system_architecture),
+						       DynLib])
+			   end,
 		    call(?ESDL_Init_Opengl,  <<(list_to_binary(WXDL))/binary, 0:8>>),
 		    receive 
 			{'_esdl_result_', 0} ->

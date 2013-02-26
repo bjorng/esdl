@@ -32,7 +32,7 @@ SetupUnix = fun(_) ->
 		    SDL_CFLAGS = lists:delete($\n, os:cmd("sdl-config --cflags")),
 		    SDL_LIBS   = lists:delete($\n, os:cmd("sdl-config --libs")),
 		    %% io:format("CFLAGS ~p~nLIBS ~p~n",[SDL_CFLAGS,SDL_LIBS]),
-		    AddConf("SDL_LIBS", SDL_LIBS,
+		    AddConf("SDL_LIBDIR", SDL_LIBS,
 			    AddConf("SDL_CFLAGS", SDL_CFLAGS, PortEnv0))
 	    end.
 %% Windows stuff below
@@ -55,25 +55,32 @@ WinEnvPrefix = fun(_, mingw)   ->
 		       ""
 	       end.
 
-WinSetupGCC = fun(OpenCLDir) ->
+WinSetupGCC = fun(SDLDir) ->
 		      io:format("Using gcc as compiler~n"),
-		      Dir = case filelib:is_dir(OpenCLDir) of
-				true -> OpenCLDir;
+		      Dir = case filelib:is_dir(SDLDir) of
+				true -> SDLDir;
 				false -> 
 				    EnvPrefix = WinEnvPrefix(gcc, WinType()),
-				    ExtDir = EnvPrefix++OpenCLDir,
+				    ExtDir = EnvPrefix++SDLDir,
 				    filelib:is_dir(ExtDir) orelse 
-					Error("Could not find OpenCL Dir in:~n"
+					Error("Could not find SDL dir in:~n"
 					      "  ~s~n  ~s~n"
-					      " set OPENCL_DIR=/path/to/opencl", 
-					      [OpenCLDir, ExtDir]),
+					      " set SDL_DIR=/path/to/opencl", 
+					      [SDLDir, ExtDir]),
 				    ExtDir
 			    end,
 		      Inc = ConcatDir("-I", "include", Dir),
-		      Lib = ConcatDir("-L", "lib", Dir),
+		      Type = case erlang:system_info(wordsize) of
+				 4 -> "x86";
+				 8 -> "x64"
+			     end,
 
-		      E0 = AddConf("OPENCL_LIBDIR", Lib,
-				   AddConf("OPENCL_INCDIR", Inc, PortEnv0)),
+		      Lib = case filelib:is_dir(filename:join([Dir, "lib", Type])) of
+				true  -> ConcatDir("-L", filename:join("lib", Type), Dir);
+				false -> ConcatDir("-L", "lib", Dir)
+			    end,
+		      E0 = AddConf("SDL_LIBDIR", Lib,
+				   AddConf("SDL_INCDIR", Inc, PortEnv0)),
 		      GCCConf =[{"win32", "CC" , GetEnv("CC")},
 				{"win32", "DRV_CC_TEMPLATE",
 				 "$CC -c $CFLAGS $DRV_CFLAGS $PORT_IN_FILES -o $PORT_OUT_FILE"},
@@ -81,7 +88,7 @@ WinSetupGCC = fun(OpenCLDir) ->
 				 "$CC $PORT_IN_FILES $LDFLAGS $DRV_LDFLAGS -o $PORT_OUT_FILE"},
 				{"win32", "DRV_CFLAGS" , "-g -Wall $ERL_CFLAGS"},
 				{"win32", "DRV_LDFLAGS", "-shared $ERL_LDFLAGS"},
-				{"win32", "LDFLAGS", "$LDFLAGS $OPENCL_LIBDIR -lOpenCL"},
+				{"win32", "LDFLAGS", "$LDFLAGS $SDL_LIBDIR -lSDL"},
 				{"win32", "ERL_LDFLAGS", ""}],
 		      Replace = fun(New = {Os, Val, _}, Env) ->
 					Add = fun({POs, PVal, _}, {_,Acc}) 
@@ -111,63 +118,82 @@ Win32VerifyLinkCmd = fun() ->
 			     end
 		     end.
 
-WinSetupCL = fun(OpenCLDir) ->
+WinSetupCL = fun(SDLDir) ->
 		     io:format("Using cl.exe as compiler~n"),
 		     Win32VerifyLinkCmd(),
-		     Dir = case filelib:is_dir(OpenCLDir) of
-			       true -> OpenCLDir;
+		     Dir = case filelib:is_dir(SDLDir) of
+			       true -> SDLDir;
 			       false -> 
 				   EnvPrefix = WinEnvPrefix(cl, WinType()),
-				   ExtDir = EnvPrefix++OpenCLDir,
-				   filelib:is_dir(ExtDir) orelse 
-				       Error("Could not find OpenCL Dir in:~n"
-					     "  ~s~n  ~s~n"
-					     " set OPENCL_DIR=/path/to/opencl", 
-					     [OpenCLDir, ExtDir]),
-				   ExtDir
+				   ExtDir = EnvPrefix++SDLDir,
+				   case filelib:is_dir(ExtDir) of
+				       true -> 
+					   Error("Could not find SDL dir in:~n"
+						 "  ~s~n  ~s~n"
+						 " set SDL_DIR=/path/to/opencl", 
+						 [SDLDir, ExtDir]),
+					   ExtDir
+				   end
 			   end,
 		     Inc = ConcatDir("/I ", "include", Dir),
-		     Lib = ConcatDir("", "lib", Dir),
-		     AddConf("OPENCL_LIBDIR", Lib,
-			     AddConf("OPENCL_INCDIR", Inc, PortEnv0))
+		     Type = case erlang:system_info(wordsize) of
+				4 -> "x86";
+				8 -> "x64"
+			    end,
+		     Lib = ConcatDir("", filename:join("lib",Type), Dir),
+		     AddConf("SDL_LIBDIR", Lib,
+			     AddConf("SDL_INCDIR", Inc, PortEnv0))
 	     end.
 
-SetupWin32 = fun(OpenCLDir) ->
+SetupWin32 = fun(SDLDir) ->
 		     %% Do we want to compile with Microsoft's toolchain
 		     case os:find_executable("cl.exe") of
 			 false ->
 			     os:find_executable("gcc") orelse 
 				 Error("No known compiler found",[]),
-			     WinSetupGCC(OpenCLDir);
+			     WinSetupGCC(SDLDir);
 			 _ ->
 			     case GetEnv("CC") of
-				 "gcc"     -> WinSetupGCC(OpenCLDir);
-				 "gcc.exe" -> WinSetupGCC(OpenCLDir);
-				 "cc"      -> WinSetupGCC(OpenCLDir);
-				 "cc.exe"  -> WinSetupGCC(OpenCLDir);
-				 false     -> WinSetupCL(OpenCLDir);
+				 "gcc"     -> WinSetupGCC(SDLDir);
+				 "gcc.exe" -> WinSetupGCC(SDLDir);
+				 "cc"      -> WinSetupGCC(SDLDir);
+				 "cc.exe"  -> WinSetupGCC(SDLDir);
+				 false     -> WinSetupCL(SDLDir);
 				 Other     -> Error("No known compiler found: CC=~s",[Other])
 			     end
 		     end
 	     end.
 
+WinLocateSDLDir = fun() ->
+			  [File|_] = string:tokens(os:cmd("where SDL.dll"), "\r\n"),
+			  case filelib:is_file(File) of
+			      false -> 
+				  Error("Could not find SDL dir:~n"
+					" set SDL_DIR=/path/to/opencl or ~n"
+					" or add SDL.dll dir to PATH~n",
+					[]);
+			      true ->
+				  filename:dirname(filename:dirname(File))
+			  end
+		  end.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-OCLDir = case GetEnv("SDL_DIR") of
+SDLDir = case GetEnv("SDL_DIR") of
 	     false ->
 		 case os:type() of
 		     {unix,  _} -> [];
 		     {darwin,_} -> [];
-		     {win32, _} -> "/opt/local/"
+		     {win32, _} -> WinLocateSDLDir()
 		 end;
 	     Dir -> Dir
 	 end.
 
 PortEnv = case os:type() of
 	      {win32, _} -> %% Massage Windows paths
-		  SetupWin32(OCLDir);
+		  SetupWin32(SDLDir);
 	      _ ->
-		  SetupUnix(OCLDir)
+		  SetupUnix(SDLDir)
 	  end.
 
 %% io:format("Config ~p~n",[PortEnv]).

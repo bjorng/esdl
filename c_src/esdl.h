@@ -15,8 +15,16 @@
 
 #ifdef WIN32
 #include <windows.h>  /* needed by Windows' gl.h etc */
+#include "SDL.h"
+#include "SDL_byteorder.h"
+#include "SDL_events.h"
+#include "SDL_syswm.h"
+#else
+#include "SDL/SDL.h"
+#include "SDL/SDL_byteorder.h"
+#include "SDL/SDL_events.h"
+#include "SDL/SDL_syswm.h"
 #endif
-#include <SDL/SDL.h>
 
 #include "esdl_conv.h"
 

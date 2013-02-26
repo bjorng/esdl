@@ -12,7 +12,6 @@
  */
 
 #include "esdl.h"
-#include <SDL/SDL_events.h>
 
 #define MAX_EVENT_SIZE 13
 
@@ -657,7 +656,7 @@ static char* encode_event(const SDL_Event * ev, char * bp)
       put8(bp, SDL_JOYHATMOTION);
       put8(bp, ev->jhat.which);
       put8(bp, ev->jhat.hat);	    
-      put16be(bp, ev->jhat.value);
+      put8(bp, ev->jhat.value);
       break;
    case SDL_JOYBUTTONDOWN:/* Joystick button pressed */
    case SDL_JOYBUTTONUP:	/* Joystick button released */

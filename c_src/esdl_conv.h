@@ -20,10 +20,6 @@
 #ifndef BYTECONV_H
 #define BYTECONV_H
 
-#ifndef FLAVOUR_WOGGLE
-#include <SDL/SDL_byteorder.h>
-#endif
-
 #define put8(s,n) do { \
   (s)[0] = (char)((n) & 0xff); \
   (s) += 1; \
