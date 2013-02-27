@@ -91,7 +91,6 @@ go(Mode) ->
 			      ]),
     Secs = Time / 1000000,
     io:format("FPS: ~p (Frames ~p)~n", [catch Frames/Secs, Frames]),
-    cleanup_audio(Audio),
     sdl:quit(),           
     ok.
 
@@ -369,9 +368,6 @@ play(Sample, Reason) ->
 %%    io:format("eplay ~p ~n", [Reason]),
     sdl_audio:play_audio(Sample, 1).
 
-cleanup_audio(no_audio) ->    ok;
-cleanup_audio(Sample) ->
-    sdl_audio:freeWAV(Sample).
 
 audio_server(false) -> ok;
 audio_server(_) ->

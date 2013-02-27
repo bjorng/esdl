@@ -1,25 +1,6 @@
 ESDL by Dan Gudmundsson 
 Currently located at http://esdl.sourceforge.net
 
-News
-========= 
-1.2:
-   I have removed the opengl specific part from esdl, now esdl
-   requires that wx is available for opengl usage.
-   
-   This means that this release is not backwards compatible 
-   with the old release, some gl functions have been changed in wx gl.
-
-   This is done to only have one gl.erl in your (erlang) system,
-   and it also more up to date with the standard.
-   Actually only wx/ebin/gl.beam wx/ebin/glu.beam and wx/priv/OS/erl_gl.[so|dll]
-   is required.
-
-   Also using wx's opengl allowed me to create an opengl thread,
-   if the erlang emulator is multithreaded. So now sdl with opengl
-   works for both smp and single threaded erlang.
-   
-   
 What is it?
 ===========
 Esdl is library for accessing SDL (Simple DirectMedia Layer)
@@ -37,35 +18,56 @@ OpenGL is a cross-platform standard for 3D rendering and
 3D hardware acceleration. More information can be found at
 www.opengl.org
 
+News
+========= 
+1.3.1:
+   Throw away Makefiles and use rebar for building
+
+1.3:
+   Builds with otp-r15b
+
+1.2:
+   I have removed the opengl specific part from esdl, now esdl
+   requires that wx is available for opengl usage.
+   
+   This means that this release is not backwards compatible 
+   with the old release, some gl functions have been changed in wx gl.
+
+   This is done to only have one gl.erl in your (erlang) system,
+   and it also more up to date with the standard.
+   Actually only wx/ebin/gl.beam wx/ebin/glu.beam and wx/priv/OS/erl_gl.[so|dll]
+   is required.
+
+   Also using wx's opengl allowed me to create an opengl thread,
+   if the erlang emulator is multithreaded. So now sdl with opengl
+   works for both smp and single threaded erlang.
+   
+ 
 Compilation and Installation
 =============================
 
 You need erlang (www.erlang.org). This release has only been
-tested on R14B02, it requires that version for opengl to work.
+tested on R16B, it requires R14B version for opengl to work.
 
 You need libsdl (www.libsdl.org) (the development package) version > 1.2.5
-
-You need opengl (with glu-1.2 (full version) libraries from your 
-hardware manufacturer or a software version from www.mesa3d.org.
+For windows grab SDL-devel-1.2.15-VC.zip 
+    (which work with both gcc and cl and contains both x86 and x64 libs)
 
 And optionally you'll need:
 * SDL_ttf (www.libsdl.org/projects/SDL_ttf/) version > 2.0.7
 * SDL_image (www.libsdl.org/projects/SDL_image/) version > 1.2.4
 
-Precompiled versions are available for Windows. 
+You need rebar, see: github.com/rebar/rebar
 
-For Unix-like systems (including MacOS X):
+Build with: 
+rebar compile
 
-Untar the esdl-VERSION.src.tar.gz file and type 'make; make install INSTALL_DIR=/ESDL_PATH/'
-or put it anywhere and add the path in your ~/.erlang (C:/windows/.erlang)
-file.
+On windows:
+SDL_DIR=/opt/local rebar compile (requires Microsoft's SDK)
+or CC=gcc SDL_DIR=/opt/local rebar compile (requires mingw)
+also copy SDL.dll to esdl/priv dir or put SDL.dll somewhere in your path.
 
-You might need to modify the c_src/Makefile (or c_src/Makefile.macosx)
-to point out the correct paths to header files and libraries.
-
-On MacOS X, the top-level Makefile will automatically use
-c_src/Makefile.macosx, but if you run make in the c_src direcotory,
-you need to run make as 'make -f Makefile.macosx'.
+::This is currently not supported::
 
 Optionally you'll also need SDL_ttf for the font support 
 and SDL_image for the image support.
@@ -79,10 +81,6 @@ and SDL_image for the image support.
               ENABLE_SDL_TTF = yes
               ENABLE_SDL_IMAGE = yes
 
-Install sdl so that the os can find the dynamic libraries:
-On windows: put the .dll's somewhere in your path or in $ESDL_PATH/priv
-            (in the precompiled version (maybe old) SDL.dll is included)
-On unix:    put the .so libs somewhere in your LD_LIBRARY_PATH
 
 Testing esdl can be done by building the tests in the test directory and 
 running the test programs, example:
@@ -99,71 +97,6 @@ Eshell V5.1.1  (abort with ^G)
 7> test_glfont:go("/usr/share/fonts/truetype/freefont/FreeSans.ttf").
 8> test_glimg:go().
 
-Note: Using esdl on nvidia cards and their drivers requires that erlang
-was built with threads. 
-
-That is when building erlang do ./configure -enable-threads
-otherwise Erlang will crash with segfault
-
-Performance & Quality?
-====================== 
-Is not as fast as in 'C' obviously, but the opengl part is pretty 
-fast if you have an opengl accelerated 3d card.
-
-The sdl_video performance is not that fast mainly due to that most
-of the sdl functions is synchronous (i.e. has return values which 
-erlang must wait for).
-
-This code is almost untested, i.e it contains a lot of bugs.
-
-What is done and what are the main differences with the 'C' libraries?
-======================================================================
-In general I have tried to follow the libraries as much as possible,
-usually the only changes are the return values, in 'C' you use arguments
-to do multiple returns which erlang won't allow instead a tuple is returned
-containing the values.
-
-The SDL functions have been split into several erlang modules 
-(with corresponding header files). 
-General SDL functions, such as SDL_Init, are in the sdl.erl module. 
-Most of the video related functions are in the sdl_video.erl module.
-The event functions are sliced into the following modules: 
-sdl_event.erl, sdl_active.erl, sdl_keyboard.erl, sdl_mouse.erl. 
-
-sdl_audio.erl handles some of the audio functions, the audio part needs
-more work.
-The cdrom, threads and time functions are not implemented.
-
-sdl_ttf.erl takes care of the TrueType fonts.
-
-sdl_img.erl loads images onto SDL surfaces.  None of the SDL_RWops
-functions (which are the greater part of the API) are implemented.
-The existing support will suffice in most cases though (e.g. loading
-images from file).
-
-Extra functions:
-================
-Most of the SDL_video functions requires a pointer to a 
-video_surface structure, to be able to handle these structures 
-the following functions has been added:
-sdl_video:getSurface/1, sdl_video:getPixelFormat/1, 
-sdl_video:getPalette/1, sdl_video:getPixels/2 
-
-Some of the Opengl functions also requires pointers to memory 
-areas, the sdl_util module contains functions to handle these.
-sdl_util:malloc/2, sdl_util:free/1, sdl_util:read/2, sdl_util:readBin/2, 
-sdl_util:write/2.
-
-What's need to be done and what do I want you to do?
-====================================================
-
-Someone with some experience with audio programming can take a look at the 
-audio part which needs some work.
-
-The other sdl packages such as sdl_image, sdl_mixer and sdl_mpeg.
-
-If you make something funny or good looking applications, it would be fun
-if you let me know and gave me some credit.
 
 Regards 
 /Dan (d g u d @ users.sf.net)

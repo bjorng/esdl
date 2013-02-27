@@ -4,7 +4,6 @@
 %% This would have been nicer if it was an escript..
 %% Start at the bottom and read upwards
 {value, {port_env, PortEnv0}, Config0} = lists:keytake(port_env, 1, CONFIG).
-
 GetEnv = fun(Var) -> 
 		 case os:getenv(Var) of
 		     [] -> false;
@@ -25,7 +24,6 @@ Error = fun(Format, Args) ->
 ConcatDir = fun(Prefix, PostFix, Dir) ->
 		    Prefix ++ filename:join(Dir, PostFix)
 	    end.
-
 SetupUnix = fun(_) ->
 		    (false == os:find_executable("sdl-config")) andalso
 			Error("Could not find sdl-config~n",[]),
@@ -54,7 +52,6 @@ WinEnvPrefix = fun(_, mingw)   ->
 		  (_, _) ->
 		       ""
 	       end.
-
 WinSetupGCC = fun(SDLDir) ->
 		      io:format("Using gcc as compiler~n"),
 		      Dir = case filelib:is_dir(SDLDir) of
@@ -165,15 +162,20 @@ SetupWin32 = fun(SDLDir) ->
 	     end.
 
 WinLocateSDLDir = fun() ->
-			  [File|_] = string:tokens(os:cmd("where SDL.dll"), "\r\n"),
-			  case filelib:is_file(File) of
-			      false -> 
-				  Error("Could not find SDL dir:~n"
-					" set SDL_DIR=/path/to/opencl or ~n"
-					" or add SDL.dll dir to PATH~n",
-					[]);
-			      true ->
-				  filename:dirname(filename:dirname(File))
+			  case string:tokens(os:cmd("where SDL.dll"), "\r\n") of
+			      [] -> 
+				  io:format("Trying to with SDL_DIR=/opt/local/~n"),
+				  "/opt/local/";
+			      [File|_] ->
+				  case filelib:is_file(File) of
+				      false -> 
+					  Error("Could not find SDL dir:~n"
+						" set SDL_DIR=/path/to/opencl or ~n"
+						" or add SDL.dll dir to PATH~n",
+						[]);
+				      true ->
+					  filename:dirname(filename:dirname(File))
+				  end
 			  end
 		  end.
 
@@ -197,5 +199,4 @@ PortEnv = case os:type() of
 		  SetupUnix(SDLDir)
 	  end.
 
-%% io:format("Config ~p~n",[PortEnv]).
 [{port_env, PortEnv}|Config0].
