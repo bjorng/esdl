@@ -183,7 +183,6 @@ SDLDir = case GetEnv("SDL_DIR") of
 	     false ->
 		 case os:type() of
 		     {unix,  _} -> [];
-		     {darwin,_} -> [];
 		     {win32, _} -> WinLocateSDLDir()
 		 end;
 	     Dir -> Dir
@@ -192,7 +191,9 @@ SDLDir = case GetEnv("SDL_DIR") of
 PortEnv = case os:type() of
 	      {win32, _} -> %% Massage Windows paths
 		  SetupWin32(SDLDir);
-	      _ ->
+	      {unix, darwin} ->
+		  PortEnv0;
+	      {unix, _} ->
 		  SetupUnix(SDLDir)
 	  end.
 
