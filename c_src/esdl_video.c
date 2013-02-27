@@ -53,7 +53,7 @@ void es_videoDriverName(sdl_data *sd, int len, char *buff)
 
   bp = sdl_get_temp_buff(sd, 512);
   if (SDL_VideoDriverName(bp, 512) != NULL) {
-    sendlen = strlen(bp);
+      sendlen = (int) strlen(bp);
   }
   sdl_send(sd, sendlen);
 }
@@ -67,7 +67,7 @@ void es_getVideoSurface(sdl_data *sd, int len, char *buff)
    
    ref = SDL_GetVideoSurface();
    PUSHGLPTR(ref, bp);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -99,7 +99,7 @@ void es_getVideoInfo(sdl_data *sd, int len, char *buff)
    put32be(bp, vi->video_mem);   
    PUSHGLPTR(vi->vfmt, bp);
    
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -189,7 +189,7 @@ void es_listModes(sdl_data *sd, int len, char *buff)
 	 put16be(bp, res[i]->h); 	 
       }
    }
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -204,7 +204,7 @@ void es_flip(sdl_data *sd, int len, char *buff)
    res = SDL_Flip(ref);
    start = bp = sdl_get_temp_buff(sd, 1);
    put8(bp, res);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -232,7 +232,7 @@ void es_setColors(sdl_data *sd, int len, char *buff)
 
    start = bp = sdl_get_temp_buff(sd, 1);
    put8(bp, res);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -255,7 +255,7 @@ void es_mapRGB(sdl_data *sd, int len, char *buff)
    
    bp = start = sdl_get_temp_buff(sd, 4);
    put32be(bp, res);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -348,7 +348,7 @@ void es_blitSurface(sdl_data *sd, int len, char * buff)
       error();
    };
    
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -387,7 +387,7 @@ void es_fillRect(sdl_data *sd, int len, char * buff)
    
    bp = start = sdl_get_temp_buff(sd, 1);
    put8(bp, res);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -436,7 +436,7 @@ void es_setColorKey(sdl_data *sd, int len, char * buff)
     
    bp = start = sdl_get_temp_buff(sd, 1);
    put8(bp, res);    
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -454,7 +454,7 @@ void es_displayFormat(sdl_data *sd, int len, char * buff)
    bp = start = sdl_get_temp_buff(sd, 8);
    PUSHGLPTR(new, bp);
     
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -498,7 +498,7 @@ void es_createRGBSurface(sdl_data *sd, int len, char *buff){
    bp = start = sdl_get_temp_buff(sd, 8);
    PUSHGLPTR(sptr, bp);
     
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -531,7 +531,7 @@ void es_createRGBSurfaceFrom(sdl_data *sd, int len, char *buff){
 	 bp = start = sdl_get_temp_buff(sd, 8);
 	 sptr = NULL;
 	 PUSHGLPTR(sptr, bp);	   
-	 sendlen = bp - start;
+	 sendlen = (int) (bp - start);
 	 sdl_send(sd, sendlen);
 	 return;
       }
@@ -543,7 +543,7 @@ void es_createRGBSurfaceFrom(sdl_data *sd, int len, char *buff){
    bp = start = sdl_get_temp_buff(sd, 8);
    PUSHGLPTR(sptr, bp);
    
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -573,7 +573,7 @@ void es_lockSurface(sdl_data *sd, int len, char * buff)
    bp = start = sdl_get_temp_buff(sd, 1);
    put8(bp, res);
    
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -596,7 +596,7 @@ void es_loadBMP(sdl_data *sd, int len, char* bp)
    bmpSurface = SDL_LoadBMP(bp);    
    bp = start = sdl_get_temp_buff(sd, 8);
    PUSHGLPTR(bmpSurface, bp);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -610,7 +610,7 @@ void es_saveBMP(sdl_data *sd, int len, char* bp)
    res = SDL_SaveBMP(sptr, bp);    
    bp = start = sdl_get_temp_buff(sd, 1);
    put8(bp, res); 
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -627,7 +627,7 @@ void es_setAlpha(sdl_data *sd, int len, char *buff)
    res = SDL_SetAlpha(sptr, flag, alpha);
    bp = start = sdl_get_temp_buff(sd, 4);
    put32be(bp, res); 
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -648,7 +648,7 @@ void es_setGamma(sdl_data *sd, int len, char *bp)
    res = SDL_SetGamma(red, green, blue);
    bp = start = sdl_get_temp_buff(sd, 4);
    * (float *) bp = (float) res;
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -664,7 +664,7 @@ void es_setGammaRamp(sdl_data *sd, int len, char * buff)
    res = SDL_SetGammaRamp(red,green,blue);
    bp = start = sdl_get_temp_buff(sd, 4);
    put32be(bp, res); 
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -685,7 +685,7 @@ void es_getGammaRamp(sdl_data *sd, int len, char * buff)
    for(i=0; i<256; i++) {
       put16be(bp, blue[i]);
    }
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -726,7 +726,7 @@ void es_wm_getCaption(sdl_data *sd, int len, char *buff)
    for(i = 0; i < iconlen; i++)
       put8(bp, icon[i]);   
    
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -787,7 +787,7 @@ void es_wm_grabInput(sdl_data *sd, int len, char *bp)
   mode = SDL_WM_GrabInput(mode);
   bp = start = sdl_get_temp_buff(sd, 1);
   *bp++ = mode;
-  sendlen = bp - start;
+  sendlen = (int) (bp - start);
   sdl_send(sd, sendlen);
 }
 
@@ -863,7 +863,7 @@ void es_wm_isMaximized(sdl_data *sd, int len, char *buff)
 
      start = bp = sdl_get_temp_buff(sd, 1);
      put8(bp, s);
-     sendlen = bp - start;
+     sendlen = (int) (bp - start);
      sdl_send(sd, sendlen);
 }
 
@@ -984,7 +984,7 @@ void es_gl_swapBuffers(sdl_data *sd, int len, char *buff)
    bp = start = sdl_get_temp_buff(sd, 4);
    ts = 0; 
    put32be(bp, ts);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -1008,7 +1008,7 @@ void es_mapRGBA(sdl_data *sd, int len, char *buff)
    
    bp = start = sdl_get_temp_buff(sd, 4);
    put32be(bp, res);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -1035,7 +1035,7 @@ void es_getClipRect(sdl_data *sd, int len, char *buff)
    put16be(bp, rect.y);
    put16be(bp, rect.w);
    put16be(bp, rect.h);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -1071,7 +1071,7 @@ void es_displayFormatAlpha(sdl_data *sd, int len, char * buff)
    bp = start = sdl_get_temp_buff(sd, 8);
    PUSHGLPTR(new, bp);
     
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 

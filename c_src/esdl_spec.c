@@ -34,7 +34,7 @@ void es_getSurface(sdl_data *sd, int len, char * buff)
 /*     put32be(bp, screen->clip_miny); */
 /*     put32be(bp, screen->clip_maxy); */
     
-    sendlen = bp - start;
+    sendlen = (int) (bp - start);
     sdl_send(sd, sendlen);
 }
 
@@ -73,7 +73,7 @@ void es_getPixelFormat(sdl_data *sd, int len, char * buff)
     put32be(bp, format->colorkey);
     put8(bp, format->alpha);
     
-    sendlen = bp - start;
+    sendlen = (int) (bp - start);
     sdl_send(sd, sendlen);
 }
 
@@ -92,7 +92,7 @@ void es_getPalette(sdl_data *sd, int len, char * buff)
     if(palette == NULL) {
        bp = start = sdl_getbuff(sd, 2);
        put16be(bp, 0);
-       sendlen = bp - start;
+       sendlen = (int) (bp - start);
        sdl_send(sd, sendlen);
        return;
     }
@@ -107,7 +107,7 @@ void es_getPalette(sdl_data *sd, int len, char * buff)
 	put8(bp, palette->colors[i].b);	
     }
 
-    sendlen = bp - start;
+    sendlen = (int) (bp - start);
     sdl_send(sd, sendlen);
 }
 
@@ -192,6 +192,6 @@ void es_getPixels(sdl_data *sd, int len, char * buff)
       break;
    }
    
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }

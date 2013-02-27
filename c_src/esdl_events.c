@@ -54,7 +54,7 @@ void es_peepEvents2(ErlDrvPort port, ErlDrvTermData caller, char *bp)
     for (i = 0; i < res; i++) {
 	bp = encode_event(&(events[i]), bp);
     }
-    sz = bp-start;
+    sz = (int) (bp-start);
     rt[0] = ERL_DRV_ATOM; rt[1]=driver_mk_atom((char *) "_esdl_result_");
     rt[2] = ERL_DRV_BINARY; rt[3] = (ErlDrvTermData) bin; rt[4] = sz; rt[5] = 0;
     rt[6] = ERL_DRV_TUPLE; rt[7] = 2;
@@ -85,7 +85,7 @@ void es_pollEvent2(ErlDrvPort port, ErlDrvTermData caller)
 	bp = encode_event(&event, bp);
     }
   
-    sz = bp-start;
+    sz = (int)(bp-start);
     rt[0] = ERL_DRV_ATOM; rt[1]=driver_mk_atom((char *) "_esdl_result_");  
     rt[2] = ERL_DRV_BINARY; rt[3] = (ErlDrvTermData) bin; rt[4] = sz; rt[5] = 0;
     rt[6] = ERL_DRV_TUPLE; rt[7] = 2;
@@ -115,7 +115,7 @@ void es_waitEvent2(ErlDrvPort port, ErlDrvTermData caller)
     SDL_WaitEvent(&event);
     bp = encode_event(&event, bp);
     
-    sz = bp-start;
+    sz = (int) (bp-start);
     rt[0] = ERL_DRV_ATOM; rt[1]=driver_mk_atom((char *) "_esdl_result_");  
     rt[2] = ERL_DRV_BINARY; rt[3] = (ErlDrvTermData) bin; rt[4] = sz; rt[5] = 0;
     rt[6] = ERL_DRV_TUPLE; rt[7] = 2;
@@ -135,7 +135,7 @@ void es_eventState(sdl_data *sd, int len, char *bp)
    res = SDL_EventState(type, state);
    bp = start = sdl_get_temp_buff(sd, 1);
    put8(bp, res);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -151,7 +151,7 @@ void es_getAppState(sdl_data *sd, int len,char *buff)
    bp = start = sdl_get_temp_buff(sd, 1);
    state = SDL_GetAppState();
    put8(bp, state);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
  
@@ -166,7 +166,7 @@ void es_enableUNICODE(sdl_data *sd, int len,char *buff)
    bp = start = sdl_get_temp_buff(sd, 1);
    enable = SDL_EnableUNICODE(enable);
    put8(bp, enable);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -181,7 +181,7 @@ void es_enableKeyRepeat(sdl_data *sd, int len,char *buff)
    bp = start = sdl_get_temp_buff(sd, 1);
    res = SDL_EnableKeyRepeat(delay, intv);
    put8(bp, res);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -200,7 +200,7 @@ void es_getKeyName(sdl_data *sd, int len,char *buff)
       name++;
    }
    
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -214,7 +214,7 @@ void es_getKeyState(sdl_data *sd, int len,char *buff)
    bp = start = sdl_get_temp_buff(sd, length);
    for(i=0; i<length; i++)
       put8(bp, keys[i]);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -227,7 +227,7 @@ void es_getModState(sdl_data *sd, int len,char *buff)
      char *bp, *start;
      bp = start = sdl_get_temp_buff(sd, 2);
      put16be(bp, state);
-     sendlen = bp - start;
+     sendlen = (int) (bp - start);
      sdl_send(sd, sendlen);
    }
 }
@@ -254,7 +254,7 @@ void es_getMouseState(sdl_data *sd, int len,char *buff)
    put8(bp, state);
    put16be(bp, x);
    put16be(bp, y);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -270,7 +270,7 @@ void es_getRelativeMouseState(sdl_data *sd, int len,char *buff)
    put8(bp, state);
    put16be(bp, x);
    put16be(bp, y);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -302,7 +302,7 @@ void es_createCursor(sdl_data *sd, int len, char *bp)
   cursor = SDL_CreateCursor(data, mask, w, h, hotx, hoty);
   bp = start = sdl_get_temp_buff(sd, 8);
   PUSHGLPTR(cursor, bp);
-  sendlen = bp - start;
+  sendlen = (int) (bp - start);
   sdl_send(sd, sendlen);
 }
 
@@ -323,7 +323,7 @@ void es_getCursor(sdl_data *sd, int len,char *buff)
    bp = start = sdl_get_temp_buff(sd, 8);
    c = SDL_GetCursor();
    PUSHGLPTR(c, bp);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -367,7 +367,7 @@ void es_numJoysticks(sdl_data *sd, int len,char *buff)
    bp = start = sdl_get_temp_buff(sd, 1);
    joys = SDL_NumJoysticks();
    put8(bp, joys);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -386,7 +386,7 @@ void es_joystick_name(sdl_data *sd, int len,char *buff)
       put8(bp, *name);
       name++;
    }
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -403,7 +403,7 @@ void es_joystick_open(sdl_data *sd, int len,char *buff)
    if((joy = SDL_JoystickOpen(index)) != NULL) {
       PUSHGLPTR(joy, bp);
    }
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -418,7 +418,7 @@ void es_joystick_opened(sdl_data *sd, int len,char *buff)
    bp = start = sdl_get_temp_buff(sd, 1);
    bool = SDL_JoystickOpened(index);
    put8(bp, bool);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -434,7 +434,7 @@ void es_joystick_index(sdl_data *sd, int len,char *buff)
    bp = start = sdl_get_temp_buff(sd, 1);
    index = SDL_JoystickIndex(joy);
    put8(bp,index);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -450,7 +450,7 @@ void es_joystick_numAxes(sdl_data *sd, int len,char *buff)
    bp = start = sdl_get_temp_buff(sd, 1);
    axes = SDL_JoystickNumAxes(joy);
    put8(bp,axes);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -466,7 +466,7 @@ void es_joystick_numBalls(sdl_data *sd, int len,char *buff)
    bp = start = sdl_get_temp_buff(sd, 1);
    balls = SDL_JoystickNumBalls(joy);
    put8(bp,balls);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -482,7 +482,7 @@ void es_joystick_numHats(sdl_data *sd, int len,char *buff)
    bp = start = sdl_get_temp_buff(sd, 1);
    hats = SDL_JoystickNumHats(joy);
    put8(bp,hats);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -498,7 +498,7 @@ void es_joystick_numButtons(sdl_data *sd, int len,char *buff)
    bp = start = sdl_get_temp_buff(sd, 1);
    buttons = SDL_JoystickNumButtons(joy);
    put8(bp,buttons);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -517,7 +517,7 @@ void es_joystick_eventState(sdl_data *sd, int len,char *buff)
    bp = start = sdl_get_temp_buff(sd, 4);
    state = SDL_JoystickEventState(state);
    put32be(bp, state);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -533,7 +533,7 @@ void es_joystick_getAxis(sdl_data *sd, int len,char *buff)
    bp = start = sdl_get_temp_buff(sd, 4);
    state = SDL_JoystickGetAxis(joy, axis);
    put32be(bp, state);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -550,7 +550,7 @@ void es_joystick_getHat(sdl_data *sd, int len,char *buff)
    bp = start = sdl_get_temp_buff(sd, 1);
    state = SDL_JoystickGetHat(joy, hat);
    put8(bp,state);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -567,7 +567,7 @@ void es_joystick_getButton(sdl_data *sd, int len,char *buff)
    bp = start = sdl_get_temp_buff(sd, 1);
    state = SDL_JoystickGetButton(joy, button);
    put8(bp,state);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -587,7 +587,7 @@ void es_joystick_getBall(sdl_data *sd, int len,char *buff)
       put32be(bp, dx);
       put32be(bp, dy);
    }
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 

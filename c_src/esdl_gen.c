@@ -34,10 +34,10 @@ void es_getError(sdl_data *sd, int len, char *buff)
    char * err, *bp, *start;  
    int length;
    err = SDL_GetError();
-   length = strlen(err);
+   length = (int) strlen(err);
    bp = start = sdl_getbuff(sd, length);
    while(*err != '\0') {
       put8(bp, *err++);
    }
-   sdl_send(sd, bp - start);
+   sdl_send(sd, (int) (bp - start));
 }

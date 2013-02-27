@@ -153,7 +153,7 @@ int es_init_opengl2(ErlDrvPort port, ErlDrvTermData caller, char *bp) {
    return res;
 }
 
-void gl_dispatch(sdl_data *sd, int op, int len, char *bp) 
+void gl_dispatch(sdl_data *sd, int op, ErlDrvSizeT len, char *bp) 
 {
    int i;
    if(!sd->use_smp) {  /* Not SMP invoke directly */
@@ -161,7 +161,7 @@ void gl_dispatch(sdl_data *sd, int op, int len, char *bp)
       int bs_sz[3];
       for(i=0; i<3; i++) {
 	  bs[i] = sd->bin[i].base;
-	  bs_sz[i] = sd->bin[i].size;
+	  bs_sz[i] = (int) sd->bin[i].size;
       }
       esdl_gl_dispatch(op, bp, sd->driver_data, driver_caller(sd->driver_data), bs, bs_sz);
    } else { 
@@ -185,7 +185,7 @@ void gl_dispatch(sdl_data *sd, int op, int len, char *bp)
       for(i=0; i< sd->next_bin; i++) {
 	 esdl_q[pos].base[i] = sd->bin[i].base;
 	 esdl_q[pos].bin[i]  = sd->bin[i].bin;
-	 esdl_q[pos].size[i] = sd->bin[i].size;
+	 esdl_q[pos].size[i] = (int) sd->bin[i].size;
 	 driver_binary_inc_refc(sd->bin[i].bin);
       }
       esdl_q[pos].no_bins = sd->next_bin;
@@ -245,7 +245,7 @@ void * esdl_gl_main_loop(void *sd) {
        if(esdl_q_n > 0) {
 	   for(i=0; i<3; i++) {
 	       bs[i] = esdl_q[esdl_q_first].base[i];
-	       bs_sz[i] = esdl_q[esdl_q_first].size[i];
+	       bs_sz[i] = (int) esdl_q[esdl_q_first].size[i];
 	   }
 	   //fprintf(stderr, "%d: X %d %d %d\r\n", __LINE__, esdl_q[esdl_q_first].op,
 	   //esdl_q_first, esdl_q_n); fflush(stderr);

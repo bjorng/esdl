@@ -68,7 +68,7 @@ char* sdl_get_temp_buff(sdl_data*, int);
 void sdl_free_binaries(sdl_data*);
 
 void init_fps(sdl_data*);
-void gl_dispatch(sdl_data *, int, int, char *);
+void gl_dispatch(sdl_data *, int, ErlDrvSizeT, char *);
 void es_init_opengl(sdl_data *, int, char *);
 void start_opengl_thread(sdl_data *);
 void stop_opengl_thread();

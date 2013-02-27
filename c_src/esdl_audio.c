@@ -40,7 +40,7 @@ void play_audio(sdl_data *sd, int len, char *buff)
    
    SDL_UnlockAudio();
    bp = start = sdl_getbuff(sd, 0);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -90,7 +90,7 @@ void es_audioDriverName(sdl_data *sd, int len, char *bp)
     
   bp = sdl_get_temp_buff(sd, 256);
   if (SDL_AudioDriverName(bp, 256) != NULL) {
-    sendlen = strlen(bp);
+      sendlen = (int) strlen(bp);
   }
   sdl_send(sd, sendlen);
 }
@@ -136,7 +136,7 @@ void es_openAudio(sdl_data *sd, int len, char *buff)
        wave.silence = obptr->silence;
    } 
   
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -149,7 +149,7 @@ void es_getAudioStatus(sdl_data *sd, int len, char *buff)
    s = SDL_GetAudioStatus();
    start = bp = sdl_getbuff(sd, 1);
    put8(bp, s);
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 
@@ -183,7 +183,7 @@ void es_loadWAV(sdl_data *sd, int len, char *bp)
        PUSHGLPTR(ptr, bp);
        put32be(bp, blen);
     }
-    sendlen = bp - start;
+    sendlen = (int) (bp - start);
     sdl_send(sd, sendlen);
 }
 
@@ -243,7 +243,7 @@ void es_convertAudio(sdl_data *sd, int len, char *buff)
 	 }
       }
    }   
-   sendlen = bp - start;
+   sendlen = (int) (bp - start);
    sdl_send(sd, sendlen);
 }
 void es_mixAudio(sdl_data *sd, int len, char *buff)

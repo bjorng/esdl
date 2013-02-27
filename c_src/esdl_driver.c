@@ -252,7 +252,7 @@ sdl_driver_debug_control(ErlDrvData handle, unsigned op,
      }     
   } else {
       fprintf(stderr, "Command:%d ", op);fflush(stderr);
-      gl_dispatch(sd, op, (ErlDrvSizeT) count, buf);
+      gl_dispatch(sd, op, count, buf);
       sdl_free_binaries(sd);
       fprintf(stderr, "\r\n");fflush(stderr);
       return 0;
