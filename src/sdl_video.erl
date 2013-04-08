@@ -677,9 +677,10 @@ wm_grabInput(GrabMode) ->
 %% Desc:  Only windows returns anything useful (window handle)
 wm_getInfo() ->
     cast(?SDL_WM_GetInfo, []),
+    PtrSize = 8*erlang:system_info(wordsize),
     receive 
 	{'_esdl_result_', Major, Minor, Patch, Rest} ->
-	    {{Major, Minor, Patch}, <<Rest:32/unsigned-native>>}
+	    {{Major, Minor, Patch}, <<Rest:PtrSize/unsigned-native>>}
     end.
 
 %% Func:   wm_isMaximized

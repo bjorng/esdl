@@ -173,7 +173,7 @@ void es_listModes(sdl_data *sd, int len, char *buff)
 
    bp = start = sdl_get_temp_buff(sd, 128*2*4+1);
    res = SDL_ListModes(pfp, flags);
-   switch((long)res) {
+   switch((size_t) res) {
    case 0: /* NULL */
       put8(bp, 0);      
       break;
@@ -814,9 +814,9 @@ void es_wm_getInfo2(ErlDrvPort port, ErlDrvTermData caller, char *buff)
    rt[6] = ERL_DRV_INT; rt[7] = info.version.patch;
 #ifdef WIN32
    if(sizeof(info.window) == 4) {
-       rt[8] = ERL_DRV_UINT; rt[9] = (unsigned int) info.window;
+       rt[8] = ERL_DRV_UINT; rt[9] = (unsigned int) (size_t) info.window;
    } else {
-       rt[8] = ERL_DRV_UINT; rt[9] = 0;
+       rt[8] = ERL_DRV_UINT64; rt[9] = (ErlDrvUInt64) &info.window;
    }
 #else
    rt[8] = ERL_DRV_UINT; rt[9] = 0;
@@ -881,7 +881,7 @@ void es_wm_maximize2(ErlDrvPort port, ErlDrvTermData caller, char *buff)
 {
 #ifdef _WIN32
     SDL_SysWMinfo info;
-	SDL_VERSION(&info.version);
+    SDL_VERSION(&info.version);
     SDL_GetWMInfo(&info);
     ShowWindow(info.window, SW_SHOWMAXIMIZED);
 #endif

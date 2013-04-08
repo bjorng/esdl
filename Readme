@@ -63,9 +63,15 @@ Build with:
 rebar compile
 
 On windows:
+===========
 SDL_DIR=/opt/local rebar compile (requires Microsoft's SDK)
-or CC=gcc SDL_DIR=/opt/local rebar compile (requires mingw)
+or 
+CC=gcc SDL_DIR=/opt/local rebar compile (requires mingw)
 also copy SDL.dll to esdl/priv dir or put SDL.dll somewhere in your path.
+
+Note: for x64 and mingw-gcc you (currently) can not link against libraries build with 
+MCL so you will need to recreate the dependency libs,
+see http://sourceforge.net/apps/trac/mingw-w64/wiki/Answer%2064%20bit%20MSVC-generated%20x64%20.lib
 
 ::This is currently not supported::
 
