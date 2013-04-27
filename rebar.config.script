@@ -52,6 +52,26 @@ WinEnvPrefix = fun(_, mingw)   ->
 		  (_, _) ->
 		       ""
 	       end.
+
+
+InstallSDLDLL = fun(LibDir) ->
+			PrivDLL = "priv/SDL.dll",
+			io:format("SDL ~p ~p~n", [LibDir, filelib:is_file(PrivDLL)]),
+			case filelib:is_file(PrivDLL) of
+			    false -> 
+				case file:copy(filename:join([LibDir, "SDL.dll"]), PrivDLL) of
+				    ok -> ok;
+				    _ ->
+					case os:find_executable("SDL.dll") of
+					    false -> io:format("WARNING: Could not locate SDL.dll~n");
+					    Where -> file:copy(Where, PrivDLL)
+					end
+				end;
+			    true -> 
+				ok
+			end
+		end.
+
 WinSetupGCC = fun(SDLDir) ->
 		      io:format("Using gcc as compiler~n"),
 		      Dir = case filelib:is_dir(SDLDir) of
@@ -73,10 +93,12 @@ WinSetupGCC = fun(SDLDir) ->
 			     end,
 
 		      Lib = case filelib:is_dir(filename:join([Dir, "lib", Type])) of
-				true  -> ConcatDir("-L", filename:join("lib", Type), Dir);
-				false -> ConcatDir("-L", "lib", Dir)
+				true  -> ConcatDir("", filename:join("lib", Type), Dir);
+				false -> ConcatDir("", "lib", Dir)
 			    end,
-		      E0 = AddConf("SDL_LIBDIR", Lib,
+		      InstallSDLDLL(Lib),
+
+		      E0 = AddConf("SDL_LIBDIR", "-L" ++ Lib,
 				   AddConf("SDL_INCDIR", Inc, PortEnv0)),
 		      GCCConf =[{"win32", "CC" , GetEnv("CC")},
 				{"win32", "DRV_CC_TEMPLATE",
@@ -138,6 +160,7 @@ WinSetupCL = fun(SDLDir) ->
 				8 -> "x64"
 			    end,
 		     Lib = ConcatDir("", filename:join("lib",Type), Dir),
+		     InstallSDLDLL(Lib),
 		     AddConf("SDL_LIBDIR", Lib,
 			     AddConf("SDL_INCDIR", Inc, PortEnv0))
 	     end.
