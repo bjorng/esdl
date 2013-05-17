@@ -100,7 +100,11 @@ WinSetupGCC = fun(SDLDir) ->
 
 		      E0 = AddConf("SDL_LIBDIR", "-L" ++ Lib,
 				   AddConf("SDL_INCDIR", Inc, PortEnv0)),
-		      GCCConf =[{"win32", "CC" , GetEnv("CC")},
+		      CC = case GetEnv("CC") of
+			       undefined -> "gcc";
+			       EnvCC -> EnvCC
+			   end,
+		      GCCConf =[{"win32", "CC" , CC},
 				{"win32", "DRV_CC_TEMPLATE",
 				 "$CC -c $CFLAGS $DRV_CFLAGS $PORT_IN_FILES -o $PORT_OUT_FILE"},
 				{"win32", "DRV_LINK_TEMPLATE",
@@ -169,7 +173,7 @@ SetupWin32 = fun(SDLDir) ->
 		     %% Do we want to compile with Microsoft's toolchain
 		     case os:find_executable("cl.exe") of
 			 false ->
-			     os:find_executable("gcc") orelse 
+			     (os:find_executable("gcc") == false) andalso 
 				 Error("No known compiler found",[]),
 			     WinSetupGCC(SDLDir);
 			 _ ->
