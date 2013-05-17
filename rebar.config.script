@@ -101,7 +101,7 @@ WinSetupGCC = fun(SDLDir) ->
 		      E0 = AddConf("SDL_LIBDIR", "-L" ++ Lib,
 				   AddConf("SDL_INCDIR", Inc, PortEnv0)),
 		      CC = case GetEnv("CC") of
-			       undefined -> "gcc";
+			       false -> "gcc";
 			       EnvCC -> EnvCC
 			   end,
 		      GCCConf =[{"win32", "CC" , CC},
