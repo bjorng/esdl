@@ -53,6 +53,12 @@ You need libsdl (www.libsdl.org) (the development package) version > 1.2.5
 For windows grab SDL-devel-1.2.15-VC.zip 
     (which work with both gcc and cl and contains both x86 and x64 libs)
 
+On Mac OS X, you also must install XQuartz from:
+
+   http://xquartz.macosforge.org
+
+(Needed for the X11 header files.)
+
 And optionally you'll need:
 * SDL_ttf (www.libsdl.org/projects/SDL_ttf/) version > 2.0.7
 * SDL_image (www.libsdl.org/projects/SDL_image/) version > 1.2.4
