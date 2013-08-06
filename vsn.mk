@@ -1,1 +1,1 @@
-ESDL_VSN=esdl-1.2
+ESDL_VSN=esdl-1.3.1
