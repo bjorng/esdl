@@ -139,20 +139,14 @@ static ErlDrvData sdl_driver_start(ErlDrvPort port, char *buff)
    return (ErlDrvData) data;
 }
 
-#ifdef _OSX_COCOA
-extern OSErr  CPSSetProcessName (ProcessSerialNumber *psn, char *processname);
-#endif
-
 void esdl_init_native_gui() 
 {
 #ifdef _OSX_COCOA
    ProcessSerialNumber psn;
    NSAutoreleasePool *pool;
 
-   // [[NSProcessInfo processInfo] setProcessName:@"Erlang"]; 
    // Enable GUI 
    GetCurrentProcess(&psn);
-   CPSSetProcessName(&psn, "Erlang");  // Undocumented function (but above doesn't work)
    TransformProcessType(&psn, kProcessTransformToForegroundApplication);
    SetFrontProcess(&psn);
 
